@@ -1,0 +1,17 @@
+#  TODO
+- DONE: Fix bug in authentication "CreateAccountViewController" that causes the gradient not to expand to fit the screen
+- DONE: Add edit buttons to High/Lows
+- DONE: Change color for CreateAccountViewController button and/or ForgotPasswordViewController button
+- DONE: Add Emoji support
+- DONE: Implement TextViewDelegate methods in EditHLViewController
+- DONE: Flag and Like support for High/Lows
+- DONE: Add commenting support for High/Low
+- DONE: Add comment fetching for High/Low (may require some backend work)
+- DONE: Make comments collapsible
+- Add left and right swipe to view previous High/Lows
+- Add profile page
+- Integrate friending system (with push notifications)
+- Add feed page
+- Add calendar view
+- Possibly add feature to make High/Lows private?
+- Possibly restrict certain features as premium
