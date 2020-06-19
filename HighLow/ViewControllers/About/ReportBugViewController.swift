@@ -32,10 +32,12 @@ class ReportBugViewController: UIViewController {
             "message": MessageInput.text
         ]
         
-        authenticatedRequest(url: "https://api.gethighlow.com/bug_reports/submit", method: .post, parameters: params, onFinish: { json in
+        authenticatedRequest(url: "/bug_reports/submit", method: .post, parameters: params, onFinish: { json in
             self.SubmitButton.stopLoading()
             if json["status"] == nil {
                 alert("An error occurred", "Please try again")
+            } else {
+                alert("Your report has been submitted", "We will address it as soon as we can")
             }
         }, onError: { error in
             alert("An error occurred", "Please try again")
@@ -43,11 +45,18 @@ class ReportBugViewController: UIViewController {
         })
     }
     
+    override func updateViewColors() {
+        self.view.backgroundColor = getColor("White2Black")
+        MessageInput.backgroundColor = getColor("Separator")
+        MessageInput.textColor = getColor("BlackText")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        handleDarkMode()
         self.navigationController?.navigationBar.barStyle = .black
         
+        updateViewColors()
         //Register for keyboard notifications
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)

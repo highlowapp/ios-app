@@ -12,6 +12,9 @@ class HLImageView: UIImageView {
     
     var indicator: UIActivityIndicatorView = UIActivityIndicatorView()
     var url: String?
+    var opensFullScreen: Bool = false
+    
+    weak var delegate: HLImageViewDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -41,6 +44,20 @@ class HLImageView: UIImageView {
         indicator.hidesWhenStopped = true
     }
     
+    @objc func openFullScreen() {
+        let fullScreenViewController = ImageFullScreenViewController()
+        fullScreenViewController.loadImage(url: self.url ?? "")
+        self.delegate?.openImageFullScreen(viewController: fullScreenViewController)
+    }
+    
+    func doesOpenFullScreen() {
+        opensFullScreen = true
+        
+        let tapper = UITapGestureRecognizer(target: self, action: #selector(openFullScreen))
+        self.addGestureRecognizer(tapper)
+        self.isUserInteractionEnabled = true
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -65,4 +82,9 @@ class HLImageView: UIImageView {
         })
         
     }
+}
+
+
+protocol HLImageViewDelegate: AnyObject {
+    func openImageFullScreen(viewController: ImageFullScreenViewController)
 }

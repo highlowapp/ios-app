@@ -31,11 +31,17 @@ class ShowAllCommentsViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+    
+    override func updateColors() {
+        self.backgroundColor = getColor("White2Black")
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.backgroundColor = .white
+        updateColors()
+        
         label.setTitleColor(AppColors.primary, for: .normal)
+        label.titleLabel?.font = UIFont(name: "Chalkboard SE", size: 20)!
         
         if state {
             label.setTitle("Show less comments", for: .normal)

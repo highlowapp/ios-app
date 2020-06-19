@@ -73,6 +73,8 @@ class HLTextField: UIView {
         //self.layer.cornerRadius = 10
         self.backgroundColor = rgb(240, 240, 240)
         
+        textField.textColor = .black
+        
         //UITextView
         textField.translatesAutoresizingMaskIntoConstraints = false
         
@@ -169,6 +171,18 @@ class HLTextField: UIView {
         
         self.addSubview(gradient)
         self.addConstraints(gradientConstraints)
+        
+        themeSwitch(onDark: {
+            lightModeOn()
+        }, onLight: {
+        }, onAuto: {
+            if #available(iOS 12.0, *), traitCollection.userInterfaceStyle == .dark {
+                lightModeOn()
+            }
+        })
+        
+        
+        
     }
     
 }

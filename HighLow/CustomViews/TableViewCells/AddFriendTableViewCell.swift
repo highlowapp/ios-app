@@ -31,7 +31,7 @@ class AddFriendTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        self.backgroundColor = getColor("White2Black")
         //Profile Image
         profileImageView.layer.cornerRadius = 17.5
         
@@ -43,7 +43,7 @@ class AddFriendTableViewCell: UITableViewCell {
         
         //Name label
         nameLabel.font = .systemFont(ofSize: 20)
-        nameLabel.textColor = .darkText
+        nameLabel.textColor = getColor("BlackText")
         
         self.contentView.addSubview(nameLabel)
         
@@ -73,7 +73,7 @@ class AddFriendTableViewCell: UITableViewCell {
         addButton.isHidden = true
         
         
-        authenticatedRequest(url: "https://api.gethighlow.com/user/" + self.uid + "/request_friend", method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/" + self.uid + "/request_friend", method: .post, parameters: [:], onFinish: { json in
             
             self.activityIndicator.stopAnimating()
             

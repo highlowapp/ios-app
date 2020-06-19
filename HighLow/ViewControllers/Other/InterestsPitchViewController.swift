@@ -15,6 +15,10 @@ class InterestsPitchViewController: UIViewController, EditInterestViewController
         skipFunc()
     }
     
+    func didDisappear() {
+        skipFunc()
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,7 +71,7 @@ class InterestsPitchViewController: UIViewController, EditInterestViewController
         buttons.addArrangedSubview(absolutely)
         
         let skip = HLButton(frame: .zero)
-        
+        skip.gradientOn = false
         skip.title = "Later"
         skip.colorStyle = "white"
         skip.addTarget(self, action: #selector(skipFunc), for: .touchUpInside)
@@ -75,6 +79,8 @@ class InterestsPitchViewController: UIViewController, EditInterestViewController
         buttons.addArrangedSubview(skip)
         
         container.eqBottom(buttons)
+        
+        
         
     }
     

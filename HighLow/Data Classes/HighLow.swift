@@ -22,6 +22,7 @@ class HighLow {
     var uid: String?
     var liked: Int?
     var flagged: Int?
+    var blocked: Bool = false
     
     weak var delegate: HighLowDelegate?
     
@@ -116,6 +117,8 @@ class HighLow {
             case "liked":
                 self.liked = i.value as? Int
                 break;
+            case "blocked":
+                self.blocked = i.value as? Bool ?? false
             default:
                 break;
             }
@@ -127,7 +130,7 @@ class HighLow {
         
         if let hli = highlowid {
         
-            authenticatedRequest(url: "https://api.gethighlow.com/highlow/" + hli , method: .get, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/highlow/" + hli , method: .get, parameters: [:], onFinish: { json in
                 
                 if (json["error"] as? String) != nil {
                     
@@ -181,7 +184,7 @@ class HighLow {
     
     func getComments(callback: @escaping([Comment]) -> Void) {
         if let hli = self.highlowid {
-            authenticatedRequest(url: "https://api.gethighlow.com/highlow/get_comments/" + hli, method: .get, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/highlow/get_comments/" + hli, method: .get, parameters: [:], onFinish: { json in
                 
                 if json["error"] != nil {
                     //There was an error

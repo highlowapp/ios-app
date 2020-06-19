@@ -32,12 +32,12 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
         
         SubmitButton.startLoading()
         
-        Alamofire.request("https://api.gethighlow.com/auth/forgot_password", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
+        AF.request(getHostName() + "/auth/forgot_password", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
             
             self.SubmitButton.stopLoading()
             
-            if let result = response.result.value {
-                
+            switch response.result {
+            case .success(let result):
                 //Convert to JSON
                 let JSON = result as! NSDictionary
                 
@@ -58,7 +58,8 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
                     self.Message.text = "Success! You should be receiving an email shortly."
                     
                 }
-                
+            case .failure( _):
+                return
                 
                 
             }

@@ -30,10 +30,16 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.view.backgroundColor = getColor("White2Black")
+        handleDarkMode()
         //Header
         tableView.tableHeaderView = UIView()
         
@@ -66,7 +72,7 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
     
     
     func getFriendSuggestions() {
-        authenticatedRequest(url: "https://api.gethighlow.com/user/friends/suggestions", method: .get, parameters: [:], onFinish: {
+        authenticatedRequest(url: "/user/friends/suggestions", method: .get, parameters: [:], onFinish: {
             json in
             if let users = json["users"] as? [NSDictionary] {
                 self.users = []
@@ -94,7 +100,7 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         let params: [String: Any] = [
             "search": searchBar.text ?? ""
         ]
-        authenticatedRequest(url: "https://api.gethighlow.com/user/search", method: .post, parameters: params, onFinish: { json in
+        authenticatedRequest(url: "/user/search", method: .post, parameters: params, onFinish: { json in
             
             self.searchBar.isLoading = false
             
@@ -146,6 +152,7 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
     func openProfile(uid: String) {
         let profileTableViewController = ProfileTableViewController()
         profileTableViewController.uid = uid
+        profileTableViewController.restricted = true 
         
         self.navigationController?.pushViewController(profileTableViewController, animated: true)
     }

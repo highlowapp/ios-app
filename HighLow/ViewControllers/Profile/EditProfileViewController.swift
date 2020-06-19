@@ -8,6 +8,7 @@
 
 import UIKit
 import TagListView
+import PopupDialog
 
 class EditProfileViewController: UITableViewController, UITableViewCellDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditInterestsTableViewCellDelegate, EditInterestViewControllerDelegate {
     func willEdit() {
@@ -69,8 +70,15 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         }
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
+        self.view.backgroundColor = getColor("White2Black")
 
         tableView.keyboardDismissMode = .onDrag
         tableView.tableHeaderView = UIView()
@@ -138,11 +146,11 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
             cell.delegate = self
             switch indexPath.row {
             case 0:
-                cell.textField.text = formState["firstName"] as! String
+                cell.textField.text = formState["firstName"] as? String
                 cell.namePiece = "firstName"
                 break
             case 1:
-                cell.textField.text = formState["lastName"] as! String
+                cell.textField.text = formState["lastName"] as? String
                 cell.namePiece = "lastName"
                 break
             default:
@@ -179,7 +187,7 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         if indexPath.section == 3 {
             let cell = EditBioTableViewCell(style: .default, reuseIdentifier: "editBio")
             
-            cell.textView.text = formState["bio"] as! String
+            cell.textView.text = formState["bio"] as? String
             
             cell.delegate = self
             return cell
@@ -229,22 +237,20 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         ]
         
         //Make request
-        authenticatedRequest(url: "https://api.gethighlow.com/user/set_profile", method: .post, parameters: params, file: updatedImage, onFinish: { json in
+        authenticatedRequest(url: "/user/set_profile", method: .post, parameters: params, file: updatedImage, onFinish: { json in
             loader.stopLoading()
             self.delegate?.editProfileViewControllerDidEndEditing()
             self.dismiss(animated: true, completion: nil)
         }, onError: { error in
             loader.stopLoading()
             
-            let alert = UIAlertController(title: "An error occurred", message: "Please try again", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alert, animated: true)
+            alert("An error occurred", "Please try again.")
         })
         
     }
     
     func didAlert(alert: UIAlertController) {
-        self.present(alert, animated: true)
+        //self.present(alert, animated: true)
     }
     
     func didTap(sender: UITableViewCell) {
@@ -303,15 +309,15 @@ class EditNameTableViewCell: UITableViewCell, UITextFieldDelegate {
     }
     
     private func setup() {
-        
-        self.backgroundColor = .white
-        
+                
         self.addSubview(textField)
+        self.backgroundColor = getColor("White2Black")
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
         textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
+        textField.textColor = getColor("BlackText")
         self.bottomAnchor.constraint(equalTo: textField.bottomAnchor, constant: 10).isActive = true
         
     }
@@ -346,9 +352,7 @@ class EditProfileImageTableViewCell: UITableViewCell {
     }
     
     private func setup() {
-        
-        self.backgroundColor = .white
-        
+        self.backgroundColor = getColor("White2Black")
         self.addSubview(profileImage)
         
         profileImage.isUserInteractionEnabled = true
@@ -396,13 +400,12 @@ class EditBioTableViewCell: UITableViewCell, UITextViewDelegate {
     }
     
     private func setup() {
-        
-        self.backgroundColor = .white
-        
+        self.backgroundColor = getColor("White2Black")
         textView.isEditable = true
         textView.isScrollEnabled = false
         textView.font = .systemFont(ofSize: 15)
         textView.delegate = self
+        textView.textColor = getColor("BlackText")
         
         self.addSubview(textView)
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -419,9 +422,7 @@ class EditBioTableViewCell: UITableViewCell, UITextViewDelegate {
         let numberOfChars = newText.count
         
         if numberOfChars > 140 {
-            let alert = UIAlertController(title: "Whoops!", message: "140 character max for bio", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            delegate?.didAlert(alert: alert)
+            alert("Whoops!", "140 character max for bio")
         }
         
         return numberOfChars <= 140
@@ -456,6 +457,7 @@ class EditInterestsTableViewCell: UITableViewCell {
     weak var delegate: EditInterestsTableViewCellDelegate?
     
     private func setup() {
+        self.backgroundColor = getColor("White2Black")
         tagList.translatesAutoresizingMaskIntoConstraints = false
         tagList.textColor = .white
         tagList.tagBackgroundColor = AppColors.primary

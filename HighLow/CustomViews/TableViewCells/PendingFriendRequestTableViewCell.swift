@@ -27,24 +27,29 @@ class PendingFriendRequestTableViewCell: UITableViewCell {
         self.awakeFromNib()
     }
     
+    override func updateColors() {
+        self.backgroundColor = getColor("White2Black")
+        nameLabel.textColor = getColor("BlackText")
+    }
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        updateColors()
         //Profile Image
         profileImageView.layer.cornerRadius = 17.5
         
         self.contentView.addSubview(profileImageView)
         
-        profileImageView.eqLeading(self, 20).eqTop(self, 10).width(35).height(35)
+        profileImageView.eqLeading(contentView, 20).eqTop(contentView, 10).width(35).height(35)
         
         //Name label
         nameLabel.font = .systemFont(ofSize: 20)
-        nameLabel.textColor = .darkText
+        
         
         self.contentView.addSubview(nameLabel)
         
-        nameLabel.centerY(profileImageView).leadingToTrailing(profileImageView, 10).eqTop(profileImageView)
+        nameLabel.centerY(profileImageView).leadingToTrailing(profileImageView, 10)
         
         //Description
         let description = UILabel()
@@ -72,7 +77,7 @@ class PendingFriendRequestTableViewCell: UITableViewCell {
         self.contentView.addSubview(accept)
         self.contentView.addSubview(reject)
         
-        accept.eqLeading(self, 10).topToBottom(description, 10).width(100).height(35)
+        accept.eqLeading(contentView, 10).topToBottom(description, 10).width(100).height(35)
         reject.leadingToTrailing(accept, 10).eqTop(accept).eqWidth(accept).eqHeight(accept)
         
         accept.addTarget(self, action: #selector(acceptFriendship), for: .touchUpInside)
@@ -114,7 +119,7 @@ class PendingFriendRequestTableViewCell: UITableViewCell {
         
         
         loader.startLoading()
-        authenticatedRequest(url: "https://api.gethighlow.com/user/" + uid + "/unfriend", method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/" + uid + "/unfriend", method: .post, parameters: [:], onFinish: { json in
             loader.stopLoading()
             loader.removeFromSuperview()
             if json["status"] != nil {
@@ -143,7 +148,7 @@ class PendingFriendRequestTableViewCell: UITableViewCell {
         
         
         loader.startLoading()
-        authenticatedRequest(url: "https://api.gethighlow.com/user/accept_friend/" + uid, method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/accept_friend/" + uid, method: .post, parameters: [:], onFinish: { json in
             loader.stopLoading()
             loader.removeFromSuperview()
             if json["status"] != nil {

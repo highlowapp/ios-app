@@ -7,8 +7,37 @@
 //
 
 import UIKit
+import Aztec
 
-class HLSectionView: UIView {
+class HLSectionView: UIView, HLImageViewDelegate, TextViewAttachmentDelegate {
+    func textView(_ textView: TextView, attachment: NSTextAttachment, imageAt url: URL, onSuccess success: @escaping (UIImage) -> Void, onFailure failure: @escaping () -> Void) {
+        
+    }
+    
+    func textView(_ textView: TextView, urlFor imageAttachment: ImageAttachment) -> URL? {
+        return nil
+    }
+    
+    func textView(_ textView: TextView, placeholderFor attachment: NSTextAttachment) -> UIImage {
+        return UIImage()
+    }
+    
+    func textView(_ textView: TextView, deletedAttachment attachment: MediaAttachment) {
+        
+    }
+    
+    func textView(_ textView: TextView, selected attachment: NSTextAttachment, atPosition position: CGPoint) {
+        
+    }
+    
+    func textView(_ textView: TextView, deselected attachment: NSTextAttachment, atPosition position: CGPoint) {
+        
+    }
+    
+    
+    func openImageFullScreen(viewController: ImageFullScreenViewController) {
+        self.delegate?.openImageFullScreen(viewController: viewController)
+    }
     
     weak var delegate: HLSectionViewDelegate?
     
@@ -37,6 +66,13 @@ class HLSectionView: UIView {
         setup()
     }
     
+    override func updateColors() {
+        contentView.backgroundColor = getColor("White2Black")
+        contentView.textColor = getColor("BlackText")
+        addButton.updateColors()
+    }
+    
+    let contentView = Aztec.TextView(defaultFont: .systemFont(ofSize: 20), defaultMissingImage: UIImage())
     
     func setup() {
         subviews.forEach({ $0.removeFromSuperview() })
@@ -78,7 +114,6 @@ class HLSectionView: UIView {
                 label.text = "No content provided"
                 label.sizeToFit()
                 label.textColor = .gray
-                label.backgroundColor = .white
                 
                 self.addSubview(label)
                 
@@ -91,8 +126,7 @@ class HLSectionView: UIView {
         
         else {
             //Otherwise, we need a UIImageView for the image, and a TextView for the content
-            let imageView = UIImageView()
-            let contentView = UITextView()
+            let imageView = HLImageView(frame: .zero)
             
             if image != "" {
                 
@@ -106,9 +140,24 @@ class HLSectionView: UIView {
                 imageView.clipsToBounds = true
                 imageView.layer.cornerRadius = 10
                 imageView.contentMode = .scaleAspectFill
+                imageView.doesOpenFullScreen()
                 
-                self.addSubview(imageView)
+                imageView.delegate = self
                 
+                let imageContainer = UIView()
+                imageContainer.layer.cornerRadius = 10
+                imageContainer.layer.shadowColor = UIColor.black.cgColor
+                imageContainer.layer.shadowRadius = 5
+                imageContainer.layer.shadowOffset = CGSize(width: 0, height: 3)
+                imageContainer.layer.shadowOpacity = 0.3
+                
+                imageContainer.addSubview(imageView)
+                
+                imageView.eqWidth(imageContainer).eqHeight(imageContainer).centerX(imageContainer).centerY(imageContainer)
+                
+                self.addSubview(imageContainer)
+                
+                /*
                 //A simple ActivityIndicator
                 let imageIndicator = UIActivityIndicatorView()
                 imageView.addSubview(imageIndicator)
@@ -118,10 +167,12 @@ class HLSectionView: UIView {
                 
                 imageIndicator.startAnimating()
                 imageIndicator.hidesWhenStopped = true
+                */
                 
-                
+                imageView.loadImageFromURL("https://storage.googleapis.com/highlowfiles/" + type + "s/" + image)
+                /*
                 //imageView
-                ImageCache.getImage("https://storage.googleapis.com/highlowfiles/" + type + "s/" + image, onSuccess: { headerImg in
+                ImageCache.getImage(, onSuccess: { headerImg in
                     imageView.image = headerImg
                     
                     imageIndicator.stopAnimating()
@@ -129,24 +180,24 @@ class HLSectionView: UIView {
                 }, onError: {
                     
                 })
+                  */
                 
                 //Constraints
-                imageView.centerX(self).eqTop(self, 10).eqWidth(self, 0.0, 0.9)
-                imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
+                imageContainer.centerX(self).eqTop(self, 10).eqWidth(self, 0.0, 0.9)
+                imageContainer.heightAnchor.constraint(equalTo: imageContainer.widthAnchor).isActive = true
                 
             }
             
             
             if content != "" {
             
-                //contentView
-                contentView.text = content
+                contentView.registerAttachmentImageProvider(HTMLAttachmentRenderer(font: .systemFont(ofSize: 20)))
+                contentView.textAttachmentDelegate = self
+                contentView.setHTML(content)
                 contentView.isEditable = false
                 contentView.isScrollEnabled = false
-                contentView.font = UIFont(name: (contentView.font?.fontName)!, size: 20)
                 contentView.textAlignment = .left
-                contentView.backgroundColor = .white
-                contentView.textColor = .black
+                
                 
                 //Constraints
                 self.addSubview(contentView)
@@ -215,4 +266,5 @@ class HLSectionView: UIView {
 protocol HLSectionViewDelegate: AnyObject {
     func addButtonPressed(sender: HLSectionView)
     func didFinishUpdating(sender: HLSectionView)
+    func openImageFullScreen(viewController: ImageFullScreenViewController)
 }

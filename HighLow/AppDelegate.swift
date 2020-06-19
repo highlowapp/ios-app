@@ -14,40 +14,85 @@ import Alamofire
 import AuthenticationServices
 import Firebase
 import FirebaseMessaging
+import PopupDialog
+import Crisp
 
+var quotes: [Quote] = []
 
 @UIApplicationMain
+
 class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, MessagingDelegate {
     
     let reachability = try! Reachability()
-    
-    
-    
+        
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
         let params: [String: Any] = [
             "platform": 0,
             "device_id": fcmToken
         ]
         
-        UIApplication.shared.registerForRemoteNotifications()
+        //UIApplication.shared.registerForRemoteNotifications()
+        if UserDefaults.standard.object(forKey: "com.gethighlow.DailyNotifTime") == nil {
+            registerForDailyNotification()
+        }
         
-        authenticatedRequest(url: "https://api.gethighlow.com/notifications/register", method: .post, parameters: params, onFinish: { json in
+        
+        authenticatedRequest(url: "/notifications/register", method: .post, parameters: params, onFinish: { json in
         }, onError: { error in
         })
     }
     
+    func registerForDailyNotification() {
+        //Register for daily notification
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Your Daily Reminder"
+        content.body = "Reflect on today and enter a High/Low!"
+        
+        content.sound = .default
+        
+        let date = Date()
+        
+        UserDefaults.standard.set(date, forKey: "com.gethighlow.DailyNotifTime")
+        
+        var dateComponents = DateComponents()
+        
+        dateComponents.hour = Calendar.current.component(.hour, from: date)
+        dateComponents.minute = Calendar.current.component(.minute, from: date)
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        
+        let uuidString = UUID().uuidString
+        let request = UNNotificationRequest(identifier: uuidString,
+                    content: content, trigger: trigger)
+        
+        
+
+        // Schedule the request with the system.
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.add(request) { (error) in
+           if error != nil {
+              return
+           } else {
+            UserDefaults.standard.set(true, forKey: "com.gethighlow.DailyNotif")
+            }
+        }
+
+    }
+    
+    
+    
     func notReachable(_ reachability: Reachability) {
-        let alert = UIAlertController(title: "Internet Error", message: "Can't connect to the internet. Please try again later.", preferredStyle: .alert)
-        alert.addAction(
-            UIAlertAction(title: "OK", style: .default, handler: nil)
-        )
+        let popup = PopupDialog(title: "Internet Error", message: "Can't connect to the internet. Please try again later.")
+        popup.addButton(DefaultButton(title: "OK", action: nil))
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
             
-            topController.present(alert, animated: true)
+            topController.present(popup, animated: true)
         }
     }
     
@@ -93,10 +138,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             params["profileimage"] = profileimage?.absoluteString
         }
         
-        Alamofire.request("https://api.gethighlow.com/auth/oauth/sign_in", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
+        AF.request(getHostName() + "/auth/oauth/sign_in", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
             
-            if let result = response.result.value {
-                
+            switch response.result {
+            case .success(let result):
                 let json = result as! NSDictionary
                 if (json["error"] as? String) != nil {
                     alert("Something went wrong", "We were unable to sign you in")
@@ -118,6 +163,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
                     self.switchToMain()
                     
                 }
+            case .failure(_):
+                return
             }
             
         }
@@ -158,8 +205,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         self.window?.makeKeyAndVisible()
     }
     
-    func switchToMain() {
+    func switchToMain() {        
         let hasPassedInterestsScreen = UserDefaults.standard.bool(forKey: "com.gethighlow.hasPassedInterestsScreen")
+        let hasAgreedToTerms = UserDefaults.standard.bool(forKey: "com.gethighlow.hasAgreedToTerms")
+        
+        if !hasAgreedToTerms {
+            
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let mainViewController = TermsAndConditionsViewController()
+            
+            self.window?.rootViewController = mainViewController
+            self.window?.makeKeyAndVisible()
+            
+        } else
         
         if !hasPassedInterestsScreen {
             
@@ -176,8 +235,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Tabs", bundle: nil)
-            let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController")
-            
+            let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController") as! UITabBarController
+            mainViewController.tabBar.barTintColor = getColor("White2Black")
             self.window?.rootViewController = mainViewController
             self.window?.makeKeyAndVisible()
         }
@@ -233,9 +292,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         
         return nil
     }
+    
+    
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        //UserDefaults.standard.set(false, forKey: "com.gethighlow.hasReceivedTutorial")
+        CrispSDK.configure(websiteID: "d8e451b1-53f6-4306-aef1-babe2e1b36e9")
+        
+        if #available(iOS 13.0, *) {
+            let standard = UINavigationBarAppearance()
+            standard.backgroundColor = AppColors.primary
+            standard.titleTextAttributes = [.foregroundColor: UIColor.white]
+        
+            UINavigationBar.appearance().standardAppearance = standard
+            
+        } else {
+            // Fallback on earlier versions
+        }
+            
         reachability.whenUnreachable = notReachable
         
         do {
@@ -244,8 +319,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         }
         
         
+        if let path = Bundle.main.path(forResource: "quotes", ofType: "json") {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+                let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+                if let jsonResult = jsonResult as? Dictionary<String, AnyObject>, let fileQuotes = jsonResult["quotes"] as? [[String: String]] {
+                    
+                    for quote in fileQuotes {
+                        quotes.append(Quote(author: quote["author"]!, quote: quote["quote"]!))
+                    }
+                        
+                }
+              } catch {
+              }
+        }
         
-        UserDefaults.standard.setValue(true, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
+        UserDefaults.standard.setValue(false, forKey: "_UIConstraintBasedLayoutLogUnsatisfiable")
         
         FirebaseApp.configure()
         application.registerForRemoteNotifications()
@@ -259,8 +348,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         
         GIDSignIn.sharedInstance()?.delegate = self
         
-        if let _: String = KeychainWrapper.standard.string(forKey: "access") {
-            
+        if let access = KeychainWrapper.standard.string(forKey: "access") as? String {
             if let notificationInfo = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? NSDictionary {
                 
                 switchToMain()
@@ -272,6 +360,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
                     let friendsVC = FriendsTableViewController()
                     friendsVC.uid = uid
                     let navCon = UINavigationController(rootViewController: friendsVC)
+                    navCon.navigationBar.barStyle = .black
+                    navCon.navigationBar.isTranslucent = false
+                    navCon.navigationBar.barTintColor = AppColors.primary
+                    window?.rootViewController?.present(navCon, animated: true, completion: nil)
+                } else if notificationInfo["isBugReport"] != nil {
+                    let bugReport = ReportBugViewController()
+                    let navCon = UINavigationController(rootViewController: bugReport)
                     navCon.navigationBar.barStyle = .black
                     navCon.navigationBar.isTranslucent = false
                     navCon.navigationBar.barTintColor = AppColors.primary
@@ -327,7 +422,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
     
@@ -339,6 +433,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             let friendsVC = FriendsTableViewController()
             friendsVC.uid = uid
             let navCon = UINavigationController(rootViewController: friendsVC)
+            navCon.navigationBar.barStyle = .black
+            navCon.navigationBar.isTranslucent = false
+            navCon.navigationBar.barTintColor = AppColors.primary
+            window?.rootViewController?.present(navCon, animated: true, completion: nil)
+        } else if userInfo["isBugReport"] != nil {
+            let bugReport = ReportBugViewController()
+            let navCon = UINavigationController(rootViewController: bugReport)
             navCon.navigationBar.barStyle = .black
             navCon.navigationBar.isTranslucent = false
             navCon.navigationBar.barTintColor = AppColors.primary

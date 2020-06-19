@@ -13,6 +13,163 @@ import Alamofire
 import Firebase
 import UserNotifications
 import GoogleSignIn
+import PopupDialog
+
+func getRandomQuote() -> Quote? {
+    
+    return quotes.randomElement()
+    
+}
+
+struct DynamicColor {
+    let lightColor: UIColor
+    let darkColor: UIColor
+}
+
+struct DynamicImage {
+    let lightImage: String
+    let darkImage: String
+}
+
+
+
+let dynamicColors: [String:DynamicColor] = [
+    "Pink2White": DynamicColor(lightColor: AppColors.primary, darkColor: .white),
+    "White2Pink": DynamicColor(lightColor: .white, darkColor: AppColors.primary),
+    "White2Gray": DynamicColor(lightColor: .white, darkColor: UIColor.init(displayP3Red: 0.15, green: 0.15, blue: 0.15, alpha: 1)),
+    "White2Black": DynamicColor(lightColor: .white, darkColor: .black),
+    "Separator": DynamicColor(lightColor: UIColor.init(displayP3Red: 0.9, green: 0.9, blue: 0.9, alpha: 1), darkColor: UIColor.init(displayP3Red: 0.17, green: 0.17, blue: 0.17, alpha: 1)),
+    "GrayText": DynamicColor(lightColor: UIColor(displayP3Red: 0.6, green: 0.6, blue: 0.6, alpha: 1), darkColor: UIColor(displayP3Red: 0.8, green: 0.8, blue: 0.8, alpha: 1)),
+    "BlackText": DynamicColor(lightColor: .black, darkColor: .white),
+    "Black2White": DynamicColor(lightColor: .black, darkColor: .white)
+]
+
+let dynamicImages: [String: DynamicImage] = [
+    "logo": DynamicImage(lightImage: "logo-light-triangles", darkImage: "logo-triangles"),
+    "more": DynamicImage(lightImage: "more", darkImage: "more-light")
+]
+
+func getImage(_ name: String) -> UIImage? {
+    let dynamicImage = dynamicImages[name]
+    
+    switch themeOverride() {
+    case "dark":
+        return UIImage(named: dynamicImage!.darkImage)
+    case "light":
+        return UIImage(named: dynamicImage!.lightImage)
+    default:
+        return UIImage(named: dynamicImage!.lightImage)
+    }
+}
+
+extension UIView {
+    @objc func updateColors() {}
+}
+
+
+extension UIViewController {
+    @objc func updateViewColors() {}
+    
+    func handleDarkMode() {
+        themeSwitch(onDark: {
+            if #available(iOS 13.0, *) {
+                overrideUserInterfaceStyle = .dark
+            } else {
+                // Fallback on earlier versions
+            }
+        }, onLight: {
+            if #available(iOS 13.0, *) {
+                overrideUserInterfaceStyle = .light
+            } else {
+                // Fallback on earlier versions
+            }
+        }, onAuto: {
+            if #available(iOS 13.0, *) {
+                overrideUserInterfaceStyle = .unspecified
+            } else {
+                // Fallback on earlier versions
+            }
+        })
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onThemeChange), name: Notification.Name("com.gethighlow.themeChanged"), object: nil)
+    }
+    
+    @objc func onThemeChange(notification: Notification) {
+        if #available(iOS 13, *) {
+            let prevTraitCollection = traitCollection
+            if notification.userInfo?["theme"] as! String == "dark" {
+                overrideUserInterfaceStyle = .dark
+            } else if notification.userInfo?["theme"] as! String == "light" {
+                overrideUserInterfaceStyle = .light
+            } else {
+                overrideUserInterfaceStyle = .unspecified
+            }
+            self.traitCollectionDidChange(prevTraitCollection)
+        }
+        self.updateViewColors()
+        
+    }
+}
+
+
+func getColor(_ name: String) -> UIColor? {
+    let dynamicColor = dynamicColors[name]
+    
+    switch themeOverride() {
+    case "dark":
+        return dynamicColor?.darkColor
+    case "light":
+        return dynamicColor?.lightColor
+    default:
+        if #available(iOS 13.0, *) {
+            return UIColor { traits -> UIColor in
+                if traits.userInterfaceStyle == .dark {
+                    return dynamicColor!.darkColor
+                }
+                return dynamicColor!.lightColor
+            }
+        }
+        return dynamicColor?.lightColor
+    }
+}
+
+func getHostName() -> String {
+    var nsDict: NSDictionary?
+    if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
+        nsDict = NSDictionary(contentsOfFile: path)
+        
+        return nsDict?.object(forKey: "host") as! String
+    }
+    
+    return "https://api.gethighlow.com"
+}
+
+
+
+func themeOverride() -> String {
+    if let interfaceStyle = UserDefaults.standard.string(forKey: "com.gethighlow.interfaceStyle") {
+        if interfaceStyle == "dark" {
+            return "dark"
+        }
+        else if interfaceStyle == "light" {
+            return "light"
+        }
+    }
+    return "auto"
+}
+func themeSwitch(onDark: () -> Void, onLight: () -> Void, onAuto: () -> Void) {
+    switch themeOverride() {
+    case "dark":
+        onDark()
+        break
+    case "light":
+        onLight()
+        break
+    default:
+        onAuto()
+    }
+}
+
 
 //Stores primary and secondary colors
 struct AppColors {
@@ -34,7 +191,16 @@ func rgba(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor {
 //Switch between tab and authentication screens
 func switchToMain() {
     let hasPassedInterestsScreen = UserDefaults.standard.bool(forKey: "com.gethighlow.hasPassedInterestsScreen")
-    let hasReceivedTutorial = UserDefaults.standard.bool(forKey: "com.gethighlow.hasReceivedTutorial")
+    
+    let hasAgreedToTerms = UserDefaults.standard.bool(forKey: "com.gethighlow.hasAgreedToTerms")
+    
+    if !hasAgreedToTerms {
+        let mainViewController = TermsAndConditionsViewController()
+        
+        UIApplication.shared.keyWindow?.rootViewController = mainViewController
+        UIApplication.shared.keyWindow?.makeKeyAndVisible()
+        
+    } else
     
     if !hasPassedInterestsScreen {
             
@@ -45,23 +211,15 @@ func switchToMain() {
         
     }
     
-    else if hasReceivedTutorial {
+    else {
         
         let storyboard = UIStoryboard(name: "Tabs", bundle: nil)
-        let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController")
+        let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController") as! UITabBarController
+        mainViewController.tabBar.barTintColor = getColor("White2Black")
         
         UIApplication.shared.keyWindow?.rootViewController = mainViewController
         UIApplication.shared.keyWindow?.makeKeyAndVisible()
        
-    }
-    else {
-        
-        let storyboard = UIStoryboard(name: "Tutorials", bundle: nil)
-        let mainViewController = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! TutorialPageViewController
-        
-        UIApplication.shared.keyWindow?.rootViewController = mainViewController
-        UIApplication.shared.keyWindow?.makeKeyAndVisible()
-        
     }
 }
 
@@ -79,7 +237,6 @@ func switchToAuth() {
 
 
 
-
 //Attempt to refresh access token
 func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void) {
     
@@ -88,10 +245,10 @@ func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void
             "refresh": refresh_token
         ]
     
-        Alamofire.request("https://api.gethighlow.com/auth/refresh_access", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
+        AF.request(getHostName() + "/auth/refresh_access", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
             
-            if let result = response.result.value {
-                
+            switch response.result {
+            case .success(let result):
                 let json = result as! NSDictionary
                 
                 if let error = json["error"] as? String {
@@ -109,7 +266,7 @@ func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void
                                 
                                     if let result = result {
                                         let token = result.token
-                                        authenticatedRequest(url: "https://api.gethighlow.com/notifications/deregister/" + token, method: .post, parameters: [:], onFinish: { json in
+                                        authenticatedRequest(url: "/notifications/deregister/" + token, method: .post, parameters: [:], onFinish: { json in
                                             
                                             if json["error"] != nil {
                                                 return
@@ -164,7 +321,8 @@ func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void
                     }
                     
                 }
-                
+            case .failure(let _):
+                return
             }
             
         }
@@ -183,93 +341,94 @@ func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void
 
 //For making authenticated request
 func authenticatedRequest(url:String, method: HTTPMethod, parameters:[String:Any], file: UIImage? = nil, onFinish callback: @escaping (_ json: NSDictionary) -> Void, onError fail: @escaping (_ error: String) -> Void){
+    let oldUrl = url
+    let url = getHostName() + url
     
     if let token = KeychainWrapper.standard.string(forKey: "access") {
         
-        let headers: [String: String] = [
+        let headers: HTTPHeaders = [
             "Authorization": "Bearer " + token
         ]
         
         if file != nil {
             
             let imgData = file!.jpegData(compressionQuality: 0.7)!
-            
-            Alamofire.upload(multipartFormData: { multiPartFormData in
+            AF.upload(multipartFormData: { multiPartFormData in
                 
                 multiPartFormData.append(imgData , withName: "file", fileName: "high-image.JPEG", mimeType: "image/jpeg")
                 
                 for (key, value) in parameters {
-                    multiPartFormData.append((value as! String).data(using: String.Encoding.utf8)!, withName: key )
+                    if value is String {
+                        multiPartFormData.append((value as! String).data(using: String.Encoding.utf8)!, withName: key )
+                    }
+                    else if value is Bool {
+                        multiPartFormData.append((value as! Bool).description.data(using: String.Encoding.utf8)!, withName: key )
+                    }
                 }
                 
-            }, usingThreshold:UInt64.init(), to: url, method: method, headers: headers, encodingCompletion: { (result) in
+            }, to: url, headers: headers).uploadProgress(queue: .main, closure: { progress in
                 
-                switch result {
-                case .success(let upload, _, _):
+                }).responseJSON { response in
                     
-                    upload.uploadProgress(closure: { (progress) in
+                    switch response.result {
+                    case .success(let uploadResult):
+                        let json = uploadResult as! NSDictionary
                         
-                    })
-                    
-                    upload.responseJSON { response in
-                        
-                        if let uploadResult = response.result.value {
+                        if let error = json["error"] as? String {
                             
-                            let json = uploadResult as! NSDictionary
-                            
-                            if let error = json["error"] as? String {
+                            if error == "ERROR-INVALID-TOKEN" {
+                                //Remove token and ask for a refresh
+                                KeychainWrapper.standard.removeObject(forKey: "access")
                                 
-                                if error == "ERROR-INVALID-TOKEN" {
-                                    //Remove token and ask for a refresh
-                                    KeychainWrapper.standard.removeObject(forKey: "access")
-                                    
-                                    //Refresh token
-                                    attemptTokenRefresh(onFinish: {result in
-                                        if result == "invalid-refresh-token" {
-                                            fail("invalid-refresh-token")
-                                            switchToAuth()
-                                        } else if result == "not-saved" {
-                                            fail("refresh-token-not-saved")
-                                            switchToAuth()
-                                        } else {
-                                            
-                                            //Try again recursively
-                                            authenticatedRequest(url: url, method: method, parameters: parameters, file: file, onFinish: callback, onError: fail)
-                                            
-                                        }
-                                    })
-                                    
-                                    
-                                }
+                                //Refresh token
+                                attemptTokenRefresh(onFinish: {result in
+                                    if result == "invalid-refresh-token" {
+                                        fail("invalid-refresh-token")
+                                        switchToAuth()
+                                    } else if result == "not-saved" {
+                                        fail("refresh-token-not-saved")
+                                        switchToAuth()
+                                    } else {
+                                        
+                                        //Try again recursively
+                                        authenticatedRequest(url: oldUrl, method: method, parameters: parameters, file: file, onFinish: callback, onError: fail)
+                                        
+                                    }
+                                })
                                 
-                                else {
-                                    fail(error)
-                                }
-                                
-                            } else {
-                                
-                                //The JSON is clean, and we can callback with the data
-                                callback(json)
                                 
                             }
                             
+                            else {
+                                fail(error)
+                            }
+                            
+                        } else {
+                            
+                            //The JSON is clean, and we can callback with the data
+                            callback(json)
+                            
                         }
-                        
+                    case .failure(_):
+                        return
                     }
-                    break
-                case .failure(let encodingError):
-                    fail(encodingError.localizedDescription)
-                    break
+                    
                 }
-                
-            })
+        
         } else {
             
+            //Support headers
+            var finalParams: [String: Any] = [
+                "supports_html": true
+            ]
+            
+            finalParams.merge(parameters, uniquingKeysWith: { (current, _) in current })
+            
             //Regular HTTP request, with no file
-            Alamofire.request(url, method: method, parameters: parameters as Parameters, encoding: URLEncoding.httpBody, headers: headers).responseJSON { response in
+            AF.request(url, method: method, parameters: finalParams, encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseJSON { response in
                
-                if let result = response.result.value {
-                    
+                switch response.result {
+                case .success(let result):
                     let json = result as! NSDictionary
                     
                     if let error = json["error"] as? String {
@@ -291,7 +450,7 @@ func authenticatedRequest(url:String, method: HTTPMethod, parameters:[String:Any
                                 } else {
                                     
                                     //Try again recursively
-                                    authenticatedRequest(url: url, method: method, parameters: parameters, onFinish: callback, onError: fail)
+                                    authenticatedRequest(url: oldUrl, method: method, parameters: parameters, onFinish: callback, onError: fail)
                                     
                                 }
                             })
@@ -302,11 +461,11 @@ func authenticatedRequest(url:String, method: HTTPMethod, parameters:[String:Any
                         }
                         
                     } else {
-                        
                         callback(json)
                         
                     }
-                    
+                case .failure(let error):
+                    fail(error.errorDescription!)
                 }
              }
         }
@@ -325,16 +484,20 @@ func authenticatedRequest(url:String, method: HTTPMethod, parameters:[String:Any
 
 
 //Display alert
-func alert(_ title: String, _ message: String) {
-    let alertViewController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+func alert(_ title: String, _ message: String, handler: (() -> Void)? = nil) {
     
-    alertViewController.addAction( UIAlertAction(title: "OK", style: .default, handler: nil) )
+    let popup = PopupDialog(title: title, message: message)
+    
+    let button = CancelButton(title: "OK", action: handler)
+    
+    popup.addButton(button)
+        
     if var topController = UIApplication.shared.keyWindow?.rootViewController {
         while let presentedViewController = topController.presentedViewController {
             topController = presentedViewController
         }
         
-        topController.present(alertViewController, animated: true)
+        topController.present(popup, animated: true)
     }
 }
 
@@ -383,7 +546,7 @@ func getUid(callback: @escaping (_ uid: String) -> Void) {
         callback(uid)
     } else {
         
-        authenticatedRequest(url: "https://api.gethighlow.com/user/get/uid", method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/get/uid", method: .post, parameters: [:], onFinish: { json in
             
             if json["error"] != nil {
                 alert("An error occurred", "Try closing the app and opening it again")
@@ -405,4 +568,12 @@ func getUid(callback: @escaping (_ uid: String) -> Void) {
         
     }
     
+}
+
+
+
+
+func openURL(_ url: String) {
+    guard let url = URL(string: url) else {return}
+    UIApplication.shared.open(url, options: [:], completionHandler: nil)
 }

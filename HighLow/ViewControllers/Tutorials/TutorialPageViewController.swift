@@ -8,64 +8,53 @@
 
 import UIKit
 
-class TutorialPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+class TutorialPageViewController: UIViewController, UIScrollViewDelegate {
     
-    private var gradient: CAGradientLayer?
-    var angle: CGFloat = -45
-    var startColor = AppColors.primary
-    var endColor = AppColors.secondary
+    let scrollView = UIScrollView()
     
-    let tutorialViewControllers: [UIViewController] = [
-        GifTutorialViewController().loadGif(named: "HomeScreen"),
-        ImageTutorialViewController().with(title: "Connect with Friends based on your Interests", image: "connect_with_friends"),
-        ImageTutorialViewController().with(title: "Get a Daily Reminder to Reflect", image: "get_daily_reminder")
+    let tutorialViews: [ImageTutorialView] = [
+        ImageTutorialView().with(title: "Reflect every day by entering a High/Low", image: "TutorialImg3"),
+        ImageTutorialView().with(title: "Connect with Friends based on your Interests", image: "Connect2"),
+        ImageTutorialView().with(title: "View their High/Lows in your feed", image: "TutorialImg2", button: true)
     ]
     
-    
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        let index = tutorialViewControllers.firstIndex(of: viewController)
+    func addTutorialViewControllers(_ tutorialViews: [ImageTutorialView]) {
+        scrollView.contentSize = CGSize(width: CGFloat(tutorialViews.count) * view.frame.width, height: view.frame.height)
         
-        if index == nil || index! == 0 {
-            return nil
+        var prev: UIView? = nil
+                
+        for i in 0..<tutorialViews.count {
+            scrollView.addSubview(tutorialViews[i])
+            tutorialViews[i].centerY(view).eqWidth(view)
+            
+            if prev == nil {
+                tutorialViews[i].eqLeading(scrollView)
+            } else {
+                tutorialViews[i].leadingToTrailing(prev!)
+            }
+            
+            prev = tutorialViews[i]
         }
-        return tutorialViewControllers[index! - 1]
-    }
-    
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        let index = tutorialViewControllers.firstIndex(of: viewController)
-        if index == nil || index! == tutorialViewControllers.count - 1 {
-            return nil
-        }
-        return tutorialViewControllers[index! + 1]
-    }
-    
-    func presentationCount(for pageViewController: UIPageViewController) -> Int {
-        return tutorialViewControllers.count
-    }
-    
-    func presentationIndex(for pageViewController: UIPageViewController) -> Int {
-        return 0
+        
+        pageControl.numberOfPages = tutorialViews.count
+        pageControl.currentPage = 0
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        gradient?.frame = self.view.bounds
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
+    let pageControl = UIPageControl()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        dataSource = self
-        delegate = self
-        
-        installGradient()
-        updateGradient()
+        self.view.backgroundColor = .white
         
         let skip = UIButton()
         skip.translatesAutoresizingMaskIntoConstraints = false
@@ -77,10 +66,70 @@ class TutorialPageViewController: UIPageViewController, UIPageViewControllerData
         skip.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         skip.setTitle("SKIP", for: .normal)
+        skip.setTitleColor(.black, for: .normal)
         
         skip.addTarget(self, action: #selector(skipTutorial), for: .touchUpInside)
         
-        setViewControllers([tutorialViewControllers.first!], direction: .forward, animated: false, completion: nil)
+        
+        
+        UIPageControl.appearance().pageIndicatorTintColor = UIColor(hexString: "#55FB2A57")
+        UIPageControl.appearance().currentPageIndicatorTintColor = AppColors.primary
+        
+        self.view.addSubview(scrollView)
+        
+        scrollView.eqLeading(self.view).eqTrailing(self.view).eqTop(self.view).eqBottom(self.view)
+        
+        scrollView.isPagingEnabled = true
+        
+        scrollView.delegate = self
+        
+        self.view.addSubview(pageControl)
+        
+        addTutorialViewControllers(tutorialViews)
+        
+        
+        pageControl.centerX(self.view).eqBottom(self.view, -25)
+        
+        view.bringSubviewToFront(skip)
+        
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let pageIndex = round(scrollView.contentOffset.x/view.frame.width)
+        pageControl.currentPage = Int(pageIndex)
+                
+        let maximumHorizontalOffset: CGFloat = scrollView.contentSize.width - scrollView.frame.width
+        let currentHorizontalOffset: CGFloat = scrollView.contentOffset.x
+        
+        // vertical
+        let maximumVerticalOffset: CGFloat = scrollView.contentSize.height - scrollView.frame.height
+        let currentVerticalOffset: CGFloat = scrollView.contentOffset.y
+        
+        let percentageHorizontalOffset: CGFloat = currentHorizontalOffset / maximumHorizontalOffset
+        let percentageVerticalOffset: CGFloat = currentVerticalOffset / maximumVerticalOffset
+        
+        
+        /*
+         * below code changes the background color of view on paging the scrollview
+         */
+//        self.scrollView(scrollView, didScrollToPercentageOffset: percentageHorizontalOffset)
+        
+    
+        /*
+         * below code scales the imageview on paging the scrollview
+         */
+        let percentOffset: CGPoint = CGPoint(x: percentageHorizontalOffset, y: percentageVerticalOffset)
+        
+        if(percentOffset.x > 0 && percentOffset.x <= 0.50) {
+            
+            tutorialViews[0].imageView.transform = CGAffineTransform(scaleX: (0.50-percentOffset.x)/0.50, y: (0.50-percentOffset.x)/0.50)
+            tutorialViews[1].imageView.transform = CGAffineTransform(scaleX: percentOffset.x/0.50, y: percentOffset.x/0.50)
+            
+        } else if(percentOffset.x > 0.50 && percentOffset.x <= 1) {
+            tutorialViews[1].imageView.transform = CGAffineTransform(scaleX: (1-percentOffset.x)/0.50, y: (1-percentOffset.x)/0.50)
+            tutorialViews[2].imageView.transform = CGAffineTransform(scaleX: percentOffset.x/1, y: percentOffset.x/1)
+            
+        }
         
     }
     
@@ -92,94 +141,3 @@ class TutorialPageViewController: UIPageViewController, UIPageViewControllerData
 
 }
 
-extension TutorialPageViewController {
-    
-      
-      
-      
-      
-      private func installGradient() {
-
-          if let gradient = self.gradient {
-              gradient.removeFromSuperlayer()
-          }
-          
-          let gradient = createGradient()
-          
-          self.view.layer.insertSublayer(gradient, at: 0)
-          self.gradient = gradient
-      }
-      
-     
-      func updateGradient() {
-          
-          if let gradient = self.gradient {
-              
-              let startColor = self.startColor ?? UIColor.clear
-              let endColor = self.endColor ?? UIColor.clear
-              
-              gradient.colors = [startColor.cgColor, endColor.cgColor]
-              
-              let (start, end) = gradientPointsForAngle(self.angle)
-              gradient.startPoint = start
-              gradient.endPoint = end
-          }
-      }
-      
-     
-      private func createGradient() -> CAGradientLayer {
-          let gradient = CAGradientLayer()
-        gradient.frame = self.view.bounds
-          return gradient
-      }
-      
-      
-      private func gradientPointsForAngle(_ angle: CGFloat) -> (CGPoint, CGPoint) {
-
-          let end = pointForAngle(angle)
-     
-          let start = oppositePoint(end)
-      
-          let p0 = transformToGradientSpace(start)
-          let p1 = transformToGradientSpace(end)
-          
-          return (p0, p1)
-      }
-      
-      
-      
-
-      private func pointForAngle(_ angle: CGFloat) -> CGPoint {
-    
-          let radians = angle * .pi / 180.0
-          var x = cos(radians)
-          var y = sin(radians)
-
-          if (abs(x) > abs(y)) {
-         
-              x = x > 0 ? 1 : -1
-              y = x * tan(radians)
-          } else {
-             
-              y = y > 0 ? 1 : -1
-              x = y / tan(radians)
-          }
-          return CGPoint(x: x, y: y)
-      }
-      
-      
-      private func transformToGradientSpace(_ point: CGPoint) -> CGPoint {
-          return CGPoint(x: (point.x + 1) * 0.5, y: 1.0 - (point.y + 1) * 0.5)
-      }
-      
-      private func oppositePoint(_ point: CGPoint) -> CGPoint {
-          return CGPoint(x: -point.x, y: -point.y)
-      }
-      
-     
-      override func prepareForInterfaceBuilder() {
-          super.prepareForInterfaceBuilder()
-          installGradient()
-          updateGradient()
-      }
-}

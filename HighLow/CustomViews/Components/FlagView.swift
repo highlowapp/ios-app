@@ -63,14 +63,15 @@ class FlagView: UIImageView {
     
     static func flag(highlowid: String, callback: @escaping (_ error: String?) -> Void) {
         
-        authenticatedRequest(url: "https://api.gethighlow.com/highlow/flag/" + highlowid, method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/highlow/flag/" + highlowid, method: .post, parameters: [:], onFinish: { json in
             
             if let error = json["error"] as? String {
                 callback(error)
             } else {
                 NotificationCenter.default.post(name: Notification.Name("highLowUpdate"), object: nil, userInfo: [
                     "highlowid": highlowid,
-                    "flagged": 1
+                    "flagged": 1,
+                    "blocked": true
                 ])
                 
                 callback(nil)
@@ -84,14 +85,15 @@ class FlagView: UIImageView {
     
     static func unflag(highlowid: String, callback: @escaping (_ error: String?) -> Void) {
         
-        authenticatedRequest(url: "https://api.gethighlow.com/highlow/unflag/" + highlowid, method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/highlow/unflag/" + highlowid, method: .post, parameters: [:], onFinish: { json in
             
             if let error = json["error"] as? String {
                 callback(error)
             } else {
                 NotificationCenter.default.post(name: Notification.Name("highLowUpdate"), object: nil, userInfo: [
                     "highlowid": highlowid,
-                    "flagged": 0
+                    "flagged": 0,
+                    "blocked": false
                 ])
                 
                 callback(nil)

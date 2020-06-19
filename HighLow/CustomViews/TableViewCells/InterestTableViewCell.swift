@@ -18,13 +18,15 @@ class InterestTableViewCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-                
+        self.backgroundColor = getColor("White2Black")
+        
         button.setTitle("Add", for: .normal)
         button.setTitleColor(AppColors.primary, for: .normal)
         
         button.addTarget(self, action: #selector(willAdd), for: .touchUpInside)
         
         self.textLabel?.text = name
+        self.textLabel?.textColor = getColor("BlackText")!
         
         self.contentView.addSubview(button)
         

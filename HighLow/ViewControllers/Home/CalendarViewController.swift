@@ -136,7 +136,7 @@ class CalendarViewController: UIViewController, JTACMonthViewDataSource, JTACMon
     
     func loadCalendar() {
         
-        authenticatedRequest(url: "https://api.gethighlow.com/user/calendar", method: .get, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/calendar", method: .get, parameters: [:], onFinish: { json in
             
             if let highlows = json["calendar"] as? [NSDictionary] {
                 for i in highlows.indices {

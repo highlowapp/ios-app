@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -25,21 +25,27 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.496637459735-r063kh2as7amvrjklak9482jhof95u70</string>
+				<string>com.googleusercontent.apps.496637459735-v3gfv15dfu4ctevrjrjgrql593faafr5</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>We use photos to add images to your High/Lows and profile</string>
+	<string>We use the camera to add images to your High/Lows and profile, and to upload images in the chat</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We use photos to add images to your High/Lows and profile</string>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string></string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -60,9 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>host</key>
+	<string>https://api.gethighlow.com</string>
 </dict>
 </plist>

@@ -22,10 +22,15 @@ class EditCommentViewController: UIViewController, UITextViewDelegate {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        handleDarkMode()
         
         //Register for keyboard notifications
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -34,6 +39,18 @@ class EditCommentViewController: UIViewController, UITextViewDelegate {
         
         
         self.view.backgroundColor = .white
+        
+        themeSwitch(onDark: {
+            self.view.backgroundColor = .black
+            self.textView.backgroundColor = .none
+        }, onLight: {
+        }, onAuto: {
+            if #available(iOS 12.0, *), traitCollection.userInterfaceStyle == .dark {
+                self.view.backgroundColor = .black
+                self.textView.backgroundColor = .none
+            }
+        })
+        
 
         //Filler view, to protect content on devices such as iPhone X with a notch
         let fillerView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 0))
@@ -98,6 +115,7 @@ class EditCommentViewController: UIViewController, UITextViewDelegate {
         textView.font = UIFont.systemFont(ofSize: 20)
         textView.keyboardDismissMode = .onDrag
         textView.delegate = self
+        textView.textColor = getColor("BlackText")
         
         if let msg = message {
             textView.text = msg

@@ -37,7 +37,7 @@ class LikeView: UIView {
     
     static func like(highlowid: String, callback: @escaping (_ error: String?) -> Void ) {
 
-        authenticatedRequest(url: "https://api.gethighlow.com/highlow/like/" + highlowid, method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/highlow/like/" + highlowid, method: .post, parameters: [:], onFinish: { json in
             if let error = json["error"] as? String {
                 callback(error)
             }
@@ -68,7 +68,7 @@ class LikeView: UIView {
     
     static func unlike(highlowid: String, callback: @escaping (_ error: String?) -> Void ) {
         
-        authenticatedRequest(url: "https://api.gethighlow.com/highlow/unlike/" + highlowid, method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/highlow/unlike/" + highlowid, method: .post, parameters: [:], onFinish: { json in
             
             if let error = json["error"] as? String {
                 callback(error)

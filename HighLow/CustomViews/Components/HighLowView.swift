@@ -7,9 +7,14 @@
 //
 
 import UIKit
+import PopupDialog
 
 @IBDesignable
 class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDelegate {
+    
+    func openImageFullScreen(viewController: ImageFullScreenViewController) {
+        self.delegate?.openImageFullScreen(viewController: viewController)
+    }
     
     weak var delegate: HighLowViewDelegate?
     
@@ -18,12 +23,21 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
     let lowSection: HLSectionView = HLSectionView()
     var likeView: LikeView = LikeView()
     var flagView = FlagView()
+    let likeFlag: UIStackView = UIStackView()
+    let prvtCont: UIView = UIView()
+    let prvt: UISwitch = UISwitch()
     
     var callbackForLikeFlag: ((_ likeNum: Int?, _ liked: Int?, _ flagged: Int?) -> Void)?
     var editable: Bool = false {
         didSet {
             highSection.editable = editable
             lowSection.editable = editable
+            
+            if editable && lowSection.isDescendant(of: self) {
+                self.addSubview(prvtCont)
+                prvtCont.eqLeading(self, 20).topToBottom(lowSection, 25).height(40)
+                likeFlag.topToBottom(prvtCont, 20)
+            }
         }
     }
     
@@ -74,7 +88,19 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
         }
     }
     
+    override func updateColors() {
+        highLabel.textColor = getColor("Black2White")
+        logo.image = getImage("logo")
+        lowLabel.textColor = getColor("Black2White")
+        lbl.textColor = getColor("Black2White")
+        highSection.updateColors()
+        lowSection.updateColors()
+    }
     
+    let highLabel: UILabel = UILabel()
+    let logo: UIImageView = UIImageView()
+    let lowLabel = UILabel()
+    let lbl = UILabel()
     
     func setup() {
         
@@ -82,15 +108,14 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
         NotificationCenter.default.addObserver(forName: Notification.Name("highLowUpdate"), object: nil, queue: nil, using: onHighLowUpdate)
         
         subviews.forEach({ $0.removeFromSuperview() })
-        self.backgroundColor = .white
         self.accessibilityIdentifier = "highLowView"
 
         //High Label
-        let highLabel = UILabel()
         highLabel.text = "High"
         highLabel.font = UIFont(name: "Chalkboard SE", size: 20.0)
         highLabel.accessibilityIdentifier = "highLabel"
-        highLabel.textColor = .black
+        
+        updateColors()
         
         self.addSubview(highLabel)
         
@@ -111,9 +136,6 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
         
         
         //Separating logo
-        let logo = UIImageView()
-        
-        logo.image = UIImage(named: "logo-light-triangles")
         logo.accessibilityIdentifier = "logo"
         
         self.addSubview(logo)
@@ -122,11 +144,9 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
         
         
         //Low label
-        let lowLabel = UILabel()
         lowLabel.text = "Low"
         lowLabel.font = UIFont(name: "Chalkboard SE", size: 20.0)
         lowLabel.accessibilityIdentifier = "lowLabel"
-        lowLabel.textColor = .black
             
         self.addSubview(lowLabel)
         
@@ -145,9 +165,30 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
         
         lowSection.centerX(self).eqWidth(self).topToBottom(lowLabel)
         
+        
+        
+        
+        
+        lbl.text = "Private"
+        lbl.font = UIFont(name: "Chalkboard SE", size: 20)
+        
+        
+        prvt.setOn(false, animated: true)
+        prvt.onTintColor = AppColors.primary
+        prvt.addTarget(self, action: #selector(togglePrivate), for: .valueChanged)
+        
+        prvtCont.addSubview(lbl)
+        prvtCont.addSubview(prvt)
+        
+        lbl.eqLeading(prvtCont).centerY(prvtCont)
+        prvt.centerY(prvtCont).leadingToTrailing(lbl, 10)
+        prvtCont.eqTrailing(prvt)
+        prvtCont.eqBottom(prvt)
+                                
+    
+        
         if includesLikeFlag {
             //Like and flag section
-            let likeFlag = UIStackView()
             likeFlag.accessibilityIdentifier = "likeFlag"
             
             self.addSubview(likeFlag)
@@ -285,6 +326,9 @@ class HighLowView: UIView, HLSectionViewDelegate, LikeViewDelegate, FlagViewDele
         if let low = content["low"] as? String {
             lowSection.content = low
         }
+        if let isPrivate = content["private"] as? Bool {
+            prvt.isOn = isPrivate
+        }
         
         highCompleted = false
         lowCompleted = false
@@ -319,6 +363,7 @@ protocol HighLowViewDelegate: AnyObject {
     func willEditLow(sender: HighLowView)
     func didFinishUpdatingContent(sender: HighLowView)
     func updateHighLow(with: [String: Any])
+    func openImageFullScreen(viewController: ImageFullScreenViewController)
 }
 
 
@@ -332,25 +377,37 @@ extension HighLowView {
         if let hli = highlowid {
             LikeView.like(highlowid: hli, callback: { error in
                 if error != nil {
-                    
+                    sender.reverse()
                     switch(error) {
                     case "already-liked":
-                        alert("Whoops!", "It looks like you've already liked this High/Low!")
+                        sender.isUserInteractionEnabled = false
+                        alert("Whoops!", "It looks like you've already liked this High/Low!", handler: {
+                            sender.isUserInteractionEnabled = true
+                        })
                         break
                     case "not-allowed":
-                        alert("Whoops!", "You can't like your own High/Lows!")
+                        sender.isUserInteractionEnabled = false
+                        alert("Whoops!", "You can't like your own High/Lows!", handler: {
+                            sender.isUserInteractionEnabled = true
+                        })
                         break
                     default:
-                        alert("An error occurred", "Please try again")
+                        sender.isUserInteractionEnabled = false
+                        alert("An error occurred", "Please try again", handler: {
+                            sender.isUserInteractionEnabled = true
+                        })
                         break
                     }
-                    sender.reverse()
                     
                 }
                 else {
                     //Update the number of likes
-                    let prevLikes = Int(sender.numLikesView.text ?? "0")
+                    var prevLikes = Int(sender.numLikesView.text ?? "0")
                     sender.numLikesView.text = String((prevLikes ?? 0) + 1)
+                    
+                    if prevLikes ?? 0 < 0 {
+                        prevLikes = 0
+                    }
                     //self.callbackForLikeFlag?((prevLikes ?? 0) + 1, 1, nil)
                     self.delegate?.updateHighLow(with: [
                         "liked": 1,
@@ -361,8 +418,11 @@ extension HighLowView {
             })
         }
         else {
-            alert("An error occurred", "Please try again")
             sender.reverse()
+            sender.isUserInteractionEnabled = false
+            alert("An error occurred", "Please try again", handler: {
+                sender.isUserInteractionEnabled = true
+            })
         }
     }
     
@@ -372,16 +432,23 @@ extension HighLowView {
             LikeView.unlike(highlowid: hli, callback: { error in
                 
                 if error != nil {
-                    alert("An error occurred", "Please try again")
                     sender.reverse()
+                    sender.isUserInteractionEnabled = false
+                    alert("An error occurred", "Please try again", handler: {
+                        sender.isUserInteractionEnabled = true
+                    })
                 }
                 else {
                     
                     //Update the number of likes
-                    let prevLikes = Int(sender.numLikesView.text ?? "0")
+                    var prevLikes = Int(sender.numLikesView.text ?? "0")
                     
                     sender.numLikesView.text = String((prevLikes ?? 1) - 1)
                     //self.callbackForLikeFlag?((prevLikes ?? 1) - 1, 0, nil)
+                    
+                    if prevLikes ?? 1 < 1 {
+                        prevLikes = 1
+                    }
                     
                     self.delegate?.updateHighLow(with: [
                         "liked": 0,
@@ -391,8 +458,11 @@ extension HighLowView {
                 
             })
         } else {
-            alert("An error occurred", "Please try again")
             sender.reverse()
+            sender.isUserInteractionEnabled = false
+            alert("An error occurred", "Please try again", handler: {
+                sender.isUserInteractionEnabled = true
+            })
         }
     }
 }
@@ -404,45 +474,50 @@ extension HighLowView {
     
     func didFlag(sender: FlagView) {
         //Confirm they want to flag the High/Low
-        let alertViewController = UIAlertController(title: "Confirm flag?", message: "Are you sure you want to flag this High/Low?", preferredStyle: .actionSheet)
-        
-        alertViewController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            sender.reverse()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Confirm", style: .destructive, handler: { action in
-            
-            if let hli = self.highlowid {
+        let popup = PopupDialog(title: "Confirm Flag?", message: "Are you sure you want to flag this High/Low?", image: UIImage(named: "FlagWarning"))
+        popup.addButtons([
+            DestructiveButton(title: "Confirm") {
                 
-                FlagView.flag(highlowid: hli, callback: { error in
+                if let hli = self.highlowid {
                     
-                    if error != nil {
-                        alert("An error occurred", "Please try again")
-                        sender.reverse()
-                    }
+                    FlagView.flag(highlowid: hli, callback: { error in
+                        
+                        if error != nil {
+                            sender.reverse()
+                            sender.isUserInteractionEnabled = false
+                            alert("An error occurred", "Please try again", handler: {
+                                sender.isUserInteractionEnabled = true
+                            })
+                        }
+                        
+                        else {
+                            self.delegate?.updateHighLow(with: [
+                                "flagged": 1
+                            ])
+                        }
+                        
+                    })
                     
-                    else {
-                        self.delegate?.updateHighLow(with: [
-                            "flagged": 1
-                        ])
-                    }
-                    
-                })
+                } else {
+                    sender.reverse()
+                    sender.isUserInteractionEnabled = false
+                    alert("An error occurred", "Please try again", handler:{
+                        sender.isUserInteractionEnabled = true
+                    })
+                }
                 
-            } else {
-                alert("An error occurred", "Please try again")
+            },
+            CancelButton(title: "Cancel") {
                 sender.reverse()
             }
-            
-        }))
-        
+        ])
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
-            alertViewController.popoverPresentationController?.sourceView = sender
-            alertViewController.popoverPresentationController?.sourceRect = sender.frame
-            topController.present(alertViewController, animated: true)
+            
+            topController.present(popup, animated: true)
         }
         
     }
@@ -453,46 +528,77 @@ extension HighLowView {
     func didUnflag(sender: FlagView) {
         
         //Confirm they want to flag the High/Low
-        let alertViewController = UIAlertController(title: "Confirm unflag?", message: "Are you sure you want to unflag this High/Low?", preferredStyle: .actionSheet)
-        
-        alertViewController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            sender.reverse()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Confirm", style: .destructive, handler: { action in
-            
-            if let hli = self.highlowid {
+        let popup = PopupDialog(title: "Confirm Unflag?", message: "Are you sure you want to unflag this High/Low?", image: UIImage(named: "FlagWarning"))
+        popup.addButtons([
+            DestructiveButton(title: "Confirm") {
                 
-                FlagView.unflag(highlowid: hli, callback: { error in
+                if let hli = self.highlowid {
                     
-                    if error != nil {
-                        alert("An error occurred", "Please try again")
-                        sender.reverse()
-                    } else {
-                        self.delegate?.updateHighLow(with: [
-                            "flagged": 0
-                        ])
-                    }
+                    FlagView.unflag(highlowid: hli, callback: { error in
+                        
+                        if error != nil {
+                            sender.reverse()
+                            sender.isUserInteractionEnabled = false
+                            alert("An error occurred", "Please try again", handler: {
+                                sender.isUserInteractionEnabled = true
+                            })
+                        } else {
+                            self.delegate?.updateHighLow(with: [
+                                "flagged": 0
+                            ])
+                        }
+                        
+                    })
                     
-                })
+                } else {
+                    sender.reverse()
+                    sender.isUserInteractionEnabled = false
+                    alert("An error occurred", "Please try again", handler: {
+                        sender.isUserInteractionEnabled = true
+                    })
+                }
                 
-            } else {
-                alert("An error occurred", "Please try again")
+            },
+            CancelButton(title: "Cancel") {
                 sender.reverse()
             }
-            
-        }))
+        ])
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
-            alertViewController.popoverPresentationController?.sourceView = sender
-            alertViewController.popoverPresentationController?.sourceRect = sender.frame
-            topController.present(alertViewController, animated: true)
+            
+            topController.present(popup, animated: true)
         }
         
     }
     
+    
+    @objc func togglePrivate() {
+        var url = "/highlow/"
+        url += highlowid ?? ""
+        url += "/private/"
+        url += prvt.isOn ? "1":"0"
+        
+        authenticatedRequest(url: url, method: .get, parameters: [:], onFinish: { json in
+            
+            if json["error"] != nil {
+                alert("An error occurred", "Please try again")
+                self.prvt.setOn(!self.prvt.isOn, animated: true)
+            }
+            
+            else {
+                
+            }
+            
+        }, onError: { error in
+            alert("An error occurred", "Please try again")
+            self.prvt.setOn(!self.prvt.isOn, animated: true)
+        })
+        
+        
+    }
 }
 
 

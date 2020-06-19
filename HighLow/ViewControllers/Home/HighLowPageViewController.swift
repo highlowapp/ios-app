@@ -42,10 +42,15 @@ class HighLowPageViewController: UIPageViewController, CalendarViewControllerDel
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        handleDarkMode()
         let calendarIcon = UIImageView(image: UIImage(named: "calendar"))
         calendarIcon.frame.size = CGSize(width: 25, height: 25)
         calendarIcon.isUserInteractionEnabled = true
@@ -58,13 +63,11 @@ class HighLowPageViewController: UIPageViewController, CalendarViewControllerDel
         barButtonItem.action = #selector(navigationBarTapped)
         
         self.navigationItem.rightBarButtonItem = barButtonItem
-        
+        self.navigationController?.navigationBar.barTintColor = .white
         
         // Instantiate gesture recognizer
         //tapGestureRecognizer = UITapGestureRecognizer(target:self, action: #selector(navigationBarTapped))
         
-        self.view.backgroundColor = .white
-
         dataSource = self
         delegate = self
         
@@ -84,7 +87,6 @@ class HighLowPageViewController: UIPageViewController, CalendarViewControllerDel
     
     // Action called when navigation bar is tapped anywhere
     @objc func navigationBarTapped(){
-        print("TAPPED")
         // Here, we know that the user wanted to tap the navigation bar and not a control inside it
         let calendarViewController = UIStoryboard(name: "Tabs", bundle: nil).instantiateViewController(withIdentifier: "CalendarViewController") as! CalendarViewController
         calendarViewController.delegate = self

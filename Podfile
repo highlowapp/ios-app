@@ -14,10 +14,11 @@ target 'HighLow' do
   pod 'Firebase/Messaging'
   pod 'SwiftGifOrigin'
   pod 'TagListView', '~> 1.0'
+  pod 'PopupDialog', '~> 1.1'
+  pod 'WordPress-Aztec-iOS'
+  pod 'Gridicons', :podspec => 'https://raw.github.com/Automattic/Gridicons-iOS/develop/Gridicons.podspec'
 
   target 'HighLowTests' do
-    inherit! :search_paths
-    # Pods for testing
   end
 
   target 'HighLowUITests' do

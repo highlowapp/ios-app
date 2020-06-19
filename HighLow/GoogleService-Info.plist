@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>496637459735-v3gfv15dfu4ctevrjrjgrql593faafr5.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.496637459735-v3gfv15dfu4ctevrjrjgrql593faafr5</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD0GJ5AhFGOEvPxRjFG5m1CjOeJJ221MWo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>496637459735</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.gethighlow.HighLowApp</string>
+	<key>PROJECT_ID</key>
+	<string>highlow</string>
+	<key>STORAGE_BUCKET</key>
+	<string>highlow.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:496637459735:ios:91abda33dca9bd5e89cb52</string>
+	<key>DATABASE_URL</key>
+	<string>https://highlow-84a00.firebaseio.com</string>
+</dict>
+</plist>

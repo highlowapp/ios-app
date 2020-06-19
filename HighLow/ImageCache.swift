@@ -25,19 +25,16 @@ public class ImageCache {
         }
         
         //If the image didn't exist, make a request to fetch it
-        Alamofire.request(url).responseImage { response in
+        AF.request(url).responseImage { response in
             
-            if let image = response.result.value {
-                
+            switch response.result {
+            case .success(let image):
                 //Cache the newly-requested image
                 self.cache.setObject(image as UIImage, forKey: url as NSString)
                 
                 //Run callback with image
                 success(image as UIImage)
-                
-            }
-            
-            else {
+            case .failure(_):
                 error()
             }
             

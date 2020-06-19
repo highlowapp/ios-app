@@ -11,7 +11,11 @@ import SwiftKeychainWrapper
 import Alamofire
 import TagListView
 
-class ProfileTableViewController: UITableViewController, EditProfileViewControllerDelegate, HighLowTableViewCellDelegate, HighLowDelegate, ShowAllCommentsViewCellDelegate {
+class ProfileTableViewController: UITableViewController, EditProfileViewControllerDelegate, HighLowTableViewCellDelegate, HighLowDelegate, ShowAllCommentsViewCellDelegate, HLImageViewDelegate {
+    
+    func openImageFullScreen(viewController: ImageFullScreenViewController) {
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
     
     let profileImage: HLImageView = HLImageView(frame: .zero)
     let nameLabel: UILabel = UILabel()
@@ -33,6 +37,8 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
     var sectionCommentsCollapseStates: [Bool] = []
     
     var page: Int = 0
+    
+    var restricted: Bool = false
     
     
     override func viewDidLayoutSubviews() {
@@ -59,21 +65,52 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         let userInfoDict = notification.userInfo as! [String: Any]
         
         if let hli = userInfoDict["highlowid"] as? String {
+            var toRemove: [Int] = []
             
             for i in highlows.indices {
                 if hli == highlows[i].highlowid {
                     highlows[i].update(with: notification.userInfo as! [String: Any])
+                    if highlows[i].blocked {
+                        toRemove.append(i)
+                    }
                 }
             }
+            
+            
+            for i in toRemove {
+                highlows.remove(at: i)
+            }
+            
+            let indices: IndexSet = IndexSet(toRemove)
+            tableView.deleteSections(indices, with: .none)
             
         }
         
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
+    
+    override func updateViewColors() {
+        tableView.visibleCells.forEach({ cell in
+            cell.updateColors()
+        })
+        
+        profileImage.showBorder(getColor("White2Pink")!, 3)
+        separator.backgroundColor = getColor("Separator")
+        
+        tagList.textColor = getColor("BlackText")!
+        tagList.tagBackgroundColor = getColor("White2Pink")!
+    }
 
+    let separator = UIView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        handleDarkMode()
+        updateViewColors()
         self.view.backgroundColor = .white
         
         editButton.translatesAutoresizingMaskIntoConstraints = false
@@ -97,8 +134,8 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         navigationController?.navigationBar.isTranslucent = false
         
         //Separator
-        let separator = UIView()
-        separator.backgroundColor = rgb(240, 240, 240)
+        
+        
         
         tableView.tableHeaderView?.addSubview(separator)
     separator.eqTop(tableView.tableHeaderView!).eqLeading(tableView.tableHeaderView!).eqTrailing(tableView.tableHeaderView!).height(1)
@@ -115,7 +152,9 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         
         //ProfileImage
         profileImage.layer.cornerRadius = 150 / 2
-        profileImage.showBorder(.white, 3)
+        
+        profileImage.doesOpenFullScreen()
+        profileImage.delegate = self
         
         header.addSubview(profileImage)
         
@@ -195,8 +234,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         
         bioLabel.topToBottom(nameLabel, 10).centerX(tableView.tableHeaderView!).width(200)
             
-        tagList.textColor = .black
-        tagList.tagBackgroundColor = .white
+        
         tagList.cornerRadius = 17
         tagList.textFont = .systemFont(ofSize: 15)
         tagList.paddingX = 10
@@ -235,6 +273,11 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         if highlows.count == 0 {
             return 1
         }
+        
+        if restricted {
+            return 1
+        }
+        
         return (sectionCommentsCollapseStates[section]) ? ( min(1, highlows[section].comments.count) + 3 ) : ( highlows[section].comments.count + 3 )
     }
     
@@ -242,6 +285,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         
         if highlows.count == 0 {
             let cell = MessageTableViewCell(style: .default, reuseIdentifier: "message")
+            cell.updateColors()
             return cell
         }
         
@@ -253,7 +297,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
             let cell = HighLowTableViewCell(style: .default, reuseIdentifier: "highlow")/*tableView.dequeueReusableCell(withIdentifier: "highlow") as! HighLowTableViewCell*/
             
             cell.delegate = self
-            
+            cell.updateColors()
             cell.loadData(profileImage: profileImage.url, name: self.nameLabel.text, highlow: highlows[indexPath.section])
             
             return cell
@@ -264,6 +308,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
             let cell = LikeFlagTableViewCell(style: .default, reuseIdentifier: "likeFlag")
             cell.highlowid = highlows[indexPath.section].highlowid
             cell.loadFromHighLow(highlow: highlows[indexPath.section])
+            cell.updateColors()
             return cell
         }
             
@@ -271,6 +316,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
             
             //let cell = ShowAllCommentsViewCell(style: .default, reuseIdentifier: "ShowComments")
             let cell = tableView.dequeueReusableCell(withIdentifier: "ShowComments", for: indexPath) as! ShowAllCommentsViewCell
+            cell.updateColors()
             cell.delegate = self
             cell.active = false
             cell.section = String(indexPath.section)//highlows[indexPath.section].date
@@ -280,6 +326,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         } else if !sectionCommentsCollapseStates[ indexPath.section ] && indexPath.row == highlows[indexPath.section].comments.count + 2 {
             //let cell = ShowAllCommentsViewCell(style: .default, reuseIdentifier: "ShowComments")
             let cell = tableView.dequeueReusableCell(withIdentifier: "ShowComments", for: indexPath) as! ShowAllCommentsViewCell
+            cell.updateColors()
             cell.section = highlows[indexPath.section].date
             cell.active = false
             cell.delegate = self
@@ -292,6 +339,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
             //Use a comment cell
             let cell = CommentViewCell(comment: highLow.comments[ indexPath.row - 2 ] )
             cell.indentationLevel = 1
+            cell.updateColors()
             return cell
             
         }
@@ -331,7 +379,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
     
     @objc func getProfile() {
         
-        var url = "https://api.gethighlow.com/user/get"
+        var url = "/user/get"
         if self.uid != nil {
             url += "?uid=" + self.uid!
         }
@@ -414,7 +462,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
     func loadHighLows(page: Int = 0, reset: Bool = false) {
         
         
-        var url = "https://api.gethighlow.com/highlow/get/user/page/" + String(page)
+        var url = "/highlow/get/user/page/" + String(page)
         if self.uid != nil {
             url += "?uid=" + self.uid!
         }
@@ -427,10 +475,12 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
                 }
                 
                 for i in highlows {
-                    let highLow = HighLow(data: i)
-                    highLow.delegate = self
-                    self.highlows.append( highLow )
-                    self.sectionCommentsCollapseStates.append(true)
+                    if i["flagged"] as! Int == 0 {
+                        let highLow = HighLow(data: i)
+                        highLow.delegate = self
+                        self.highlows.append( highLow )
+                        self.sectionCommentsCollapseStates.append(true)
+                    }
                 }
                 
                 self.tableView.reloadData()

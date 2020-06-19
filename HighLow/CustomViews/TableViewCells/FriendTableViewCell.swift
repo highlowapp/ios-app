@@ -27,11 +27,15 @@ class FriendTableViewCell: UITableViewCell {
         self.awakeFromNib()
     }
     
+    override func updateColors() {
+        self.backgroundColor = getColor("White2Black")
+        nameLabel.textColor = getColor("BlackText")
+    }
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        
+        updateColors()
         
         //Arrow
         self.accessoryType = .disclosureIndicator
@@ -47,7 +51,7 @@ class FriendTableViewCell: UITableViewCell {
         
         //Name label
         nameLabel.font = .systemFont(ofSize: 20)
-        nameLabel.textColor = .darkText
+        
         
         self.contentView.addSubview(nameLabel)
         

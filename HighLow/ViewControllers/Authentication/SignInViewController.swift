@@ -11,6 +11,7 @@ import Alamofire
 import SwiftKeychainWrapper
 import GoogleSignIn
 import AuthenticationServices
+import PopupDialog
 
 class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     @available(iOS 13.0, *)
@@ -55,16 +56,17 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
                 if let _ = KeychainWrapper.standard.string(forKey: "AppleIDEmail"), let _ = KeychainWrapper.standard.string(forKey: "AppleIDGivenName"), let _ = KeychainWrapper.standard.string(forKey: "AppleIDFamilyName") {
                     
                 } else {
-                    let alert = UIAlertController(title: "Something went wrong", message: "Sign in with apple isn't working", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "How do I fix it?", style: .default) { alertAction in
-                        let url = URL(string: "https://gethighlow.com/help/appleid.html")
-                        
-                        UIApplication.shared.open(url!, options: [:], completionHandler: nil)
-                    })
+                    let popup = PopupDialog(title: "Something went wrong", message: "Sign in with apple isn't working")
+                    popup.addButtons([
+                        DefaultButton(title: "How do I fix it?") {
+                            let url = URL(string: "https://gethighlow.com/help/appleid.html")
+                            
+                            UIApplication.shared.open(url!, options: [:], completionHandler: nil)
+                        },
+                        CancelButton(title: "Never Mind", action: nil)
+                    ])
                     
-                    alert.addAction(UIAlertAction(title: "Never Mind", style: .default, handler: nil))
-                    
-                    self.present(alert, animated: true)
+                    self.present(popup, animated: true)
                 }
                 
             }
@@ -74,8 +76,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
             
             
             
-            Alamofire.request("https://api.gethighlow.com/auth/oauth/sign_in", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
-                if let result = response.result.value {
+            AF.request(getHostName() + "/auth/oauth/sign_in", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
+                switch response.result {
+                case .success(let result):
                     let json = result as! NSDictionary
                     if (json["error"] as? String) != nil {
                         self.saveAppleIDCredentials(params: params)
@@ -96,7 +99,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
                         
                         switchToMain()
                     }
-                } else {
+                case .failure(_):
                     self.saveAppleIDCredentials(params: params)
                     alert("Something went wrong", "Please try again")
                 }
@@ -173,12 +176,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
         SubmitButton.startLoading()
         
         
-        Alamofire.request("https://api.gethighlow.com/auth/sign_in", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
+        AF.request(getHostName() + "/auth/sign_in", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
             
             //Hide activity indicator
             self.SubmitButton.stopLoading()
             
-            if let result = response.result.value {
+            switch response.result {
+            case .success(let result):
                 let JSON = result as! NSDictionary
                 
                 let errorExists = JSON["error"] != nil
@@ -214,10 +218,12 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
                     let uidSaveSuccessful: Bool = KeychainWrapper.standard.set(uid, forKey: "uid")
                     
                     guard accessSaveSuccessful == true && refreshSaveSuccessful && uidSaveSuccessful else {
-                        let alert = UIAlertController(title: "Error", message: "Something went wrong when signing you in. Please try again.", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        let popup = PopupDialog(title: "Error", message: "Something went wrong when signing you in. Please try again.")
+                        popup.addButton(
+                            CancelButton(title: "OK", action: nil)
+                        )
                         
-                        self.present(alert, animated: true, completion: nil)
+                        self.present(popup, animated: true, completion: nil)
                         
                         return
                     }
@@ -229,7 +235,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
                     
                     
                 }
-                
+            case .failure(_):
+                return
             }
             
             
@@ -257,10 +264,16 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
+    
+    override func updateViewColors() {
+        self.view.backgroundColor = getColor("White2Black")
+        Container.backgroundColor = getColor("White2Black")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        handleDarkMode()
+        updateViewColors()
         //Register for keyboard notifications
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -271,7 +284,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
         
         //If the user is running iOS 13, add "Sign in with Apple"
         if #available(iOS 13, *) {
-            let signInWithAppleButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: .black)
+            var style = ASAuthorizationAppleIDButton.Style.black
+            
+            if traitCollection.userInterfaceStyle == .dark {
+                style = ASAuthorizationAppleIDButton.Style.white
+            }
+            
+            let signInWithAppleButton = ASAuthorizationAppleIDButton(authorizationButtonType: .signIn, authorizationButtonStyle: style)
             Container.addSubview(signInWithAppleButton)
             
             signInWithAppleButton.topToBottom(CreateAccountButton, 20).width(230).height(45).centerX(Container)
@@ -279,6 +298,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
             gidSignInButton.topToBottom(signInWithAppleButton, 20)
             
             signInWithAppleButton.addTarget(self, action: #selector(handleAuthorizationAppleId), for: .touchUpInside)
+        } else {
+            gidSignInButton.topToBottom(CreateAccountButton, 8)
         }
         
         scrollView.contentSize = Container.frame.size

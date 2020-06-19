@@ -9,9 +9,14 @@
 import UIKit
 import UserNotifications
 import Firebase
+import FirebaseMessaging
 
 
 class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDelegate, UITextViewDelegate, ShowAllCommentsViewCellDelegate, CommentViewCellDelegate, EditCommentViewControllerDelegate {
+    
+    func openImageFullScreen(viewController: ImageFullScreenViewController) {
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
     
     let loader: HLLoaderView = HLLoaderView()
     
@@ -58,19 +63,6 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        /*
-        guard let headerView = tableView.tableHeaderView else {
-            return
-        }
-        
-        let size = headerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-        
-        if headerView.frame.size.height != size.height {
-            headerView.frame.size.height = size.height
-            tableView.tableHeaderView = headerView
-            tableView.layoutIfNeeded()
-        }
-        */
  
         guard let footerView = tableView.tableFooterView else {
             return
@@ -134,7 +126,7 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
                             "device_id": fcmToken
                         ]
                         
-                        authenticatedRequest(url: "https://api.gethighlow.com/notifications/register", method: .post, parameters: params, onFinish: { json in
+                        authenticatedRequest(url: "/notifications/register", method: .post, parameters: params, onFinish: { json in
                         }, onError: { error in
                             
                         })
@@ -153,12 +145,26 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
         return .none
     }
     
+    override func updateViewColors() {
+        self.view.backgroundColor = getColor("White2Black")
+        inputWrapper.backgroundColor = getColor("White2Gray")
+        commentInput.textColor = getColor("GrayText")
+        highLowView.updateColors()
+        tableView.visibleCells.forEach({ cell in
+            cell.updateColors()
+        })
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
+    
     override func viewDidLoad() {
         self.view.subviews.forEach({ $0.removeFromSuperview() })
         super.viewDidLoad()
-        
-        self.view.backgroundColor = .white
-        
+        handleDarkMode()
+                
         tableView.tableHeaderView = UIView()
         tableView.tableHeaderView?.accessibilityIdentifier = "tableHeaderView"
         shouldBeEditable()
@@ -208,20 +214,31 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
         commentView.translatesAutoresizingMaskIntoConstraints = false
         commentView.accessibilityIdentifier = "commentView"
         
+        let profileContainerView = UIView()
+        profileContainerView.layer.cornerRadius = 25
+        profileContainerView.layer.shadowColor = UIColor.black.cgColor
+        profileContainerView.layer.shadowRadius = 1
+        profileContainerView.layer.shadowOffset = CGSize(width: 0, height: 0)
+        profileContainerView.layer.shadowOpacity = 0.2
+        
         let profileImage = HLImageView(frame: .zero)
         profileImage.layer.cornerRadius = 25
         profileImage.accessibilityIdentifier = "profileImage"
         
-        profileImage.translatesAutoresizingMaskIntoConstraints = false
-        commentView.addSubview(profileImage)
+        profileContainerView.translatesAutoresizingMaskIntoConstraints = false
         
-        profileImage.leadingAnchor.constraint(equalTo: commentView.leadingAnchor, constant: 10).isActive = true
-        profileImage.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        profileImage.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        profileContainerView.addSubview(profileImage)
+        commentView.addSubview(profileContainerView)
         
+        profileContainerView.leadingAnchor.constraint(equalTo: commentView.leadingAnchor, constant: 10).isActive = true
+        profileContainerView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        profileContainerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        
+        profileImage.eqWidth(profileContainerView).eqHeight(profileContainerView).centerX(profileContainerView).centerY(profileContainerView)
         
         //Get the profile image
-        authenticatedRequest(url: "https://api.gethighlow.com/user/get/profileimage", method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/get/profileimage", method: .post, parameters: [:], onFinish: { json in
             
             //All we want is the UID
             if let imageURL = json["profileimage"] as? String {
@@ -257,6 +274,7 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
         inputWrapper.clipsToBounds = true
         inputWrapper.accessibilityIdentifier = "inputWrapper"
         
+        
         commentView.addSubview(inputWrapper)
         
         inputWrapper.eqTop(commentView, 20).leadingToTrailing(profileImage, 10).eqTrailing(commentView, -10)
@@ -266,9 +284,9 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
         commentInput.isEditable = true
         commentInput.delegate = self
         commentInput.font = UIFont.systemFont(ofSize: 15)
-        commentInput.textColor = .darkGray
+        
         commentInput.accessibilityIdentifier = "commentInput"
-        commentInput.backgroundColor = .white
+        commentInput.backgroundColor = .none
         
         inputWrapper.addSubview(commentInput)
         
@@ -308,6 +326,12 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
         
         let commentContainer = UIView()
         commentContainer.accessibilityIdentifier = "commentContainer"
+        commentContainer.layer.cornerRadius = 25
+        commentContainer.layer.shadowColor = UIColor.black.cgColor
+        commentContainer.layer.shadowRadius = 2
+        commentContainer.layer.shadowOffset = CGSize(width: 0, height: 3)
+        commentContainer.layer.shadowOpacity = 0.2
+        
         
         
         //Footer
@@ -332,8 +356,22 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
         
         highLowView.updateContent(highlow.asJson())
         
+        updateViewColors()
+        
         getHighLow()
         
+        
+        let hasSeenDarkMode = UserDefaults.standard.bool(forKey: "com.gethighlow.hasSeenDarkMode")
+        
+        if !hasSeenDarkMode {
+            perform(#selector(presentDarkMode), with: nil, afterDelay: 1)
+        }
+        
+    }
+    
+    @objc func presentDarkMode() {
+        let viewController = DarkModeViewController()
+        self.present(viewController, animated: true)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -397,14 +435,12 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
     func textViewDidBeginEditing(_ textView: UITextView) {
         if !commentTextViewHasChanged {
             commentInput.text = ""
-            commentInput.textColor = .darkText
         }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if !commentTextViewHasChanged {
             commentInput.text = "Leave a comment..."
-            commentInput.textColor = .darkGray
         }
     }
     
@@ -458,7 +494,7 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
                     "date": getTodayDateStr()
                 ]
                 
-                authenticatedRequest(url: "https://api.gethighlow.com/highlow/get/date", method: .post, parameters: parameters, onFinish: { (JSON) in
+                authenticatedRequest(url: "/highlow/get/date", method: .post, parameters: parameters, onFinish: { (JSON) in
                     //The request was successful! Now get the data from the High/Low and fill out the High/Low view
                     if let hli = JSON["highlowid"] as? String {
                         self.highlow.highlowid = hli
@@ -494,8 +530,7 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
                 let params: [String: String] = [
                     "date": highlow.date!
                 ]
-                
-                authenticatedRequest(url: "https://api.gethighlow.com/highlow/get/date", method: .post, parameters: params, onFinish: { (JSON) in
+                authenticatedRequest(url: "/highlow/get/date", method: .post, parameters: params, onFinish: { (JSON) in
                     //The request was successful! Now get the data from the High/Low and fill out the High/Low view
                     if let hli = JSON["highlowid"] as? String {
                         self.highlow.highlowid = hli
@@ -531,7 +566,7 @@ class HomeViewController: UITableViewController, HighLowViewDelegate, EditHLDele
             }
         } else {
 
-            authenticatedRequest(url: "https://api.gethighlow.com/highlow/" + self.highlow.highlowid!, method: .get, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/highlow/" + self.highlow.highlowid!, method: .get, parameters: [:], onFinish: { json in
                 
                 if (json["error"] as? String) != nil {
                     alert("An error occurred", "Please try closing the app and opening it again.")
@@ -602,12 +637,13 @@ extension HomeViewController {
             let text = commentInput.text
             
             let parameters: [String: String] = [
-                "message": text ?? ""
+                "message": text ?? "",
+                "request_id": UUID().uuidString
             ]
             
             if let hli = highlow.highlowid {
             
-                authenticatedRequest(url: "https://api.gethighlow.com/highlow/comment/" + hli, method: .post, parameters: parameters, onFinish: { json in
+                authenticatedRequest(url: "/highlow/comment/" + hli, method: .post, parameters: parameters, onFinish: { json in
                     
                     //Do something with the response
                     loader.stopAnimating()
@@ -721,7 +757,7 @@ extension HomeViewController {
         if let hli = highlow.highlowid {
             
             //Let's go get those comments
-            authenticatedRequest(url: "https://api.gethighlow.com/highlow/get_comments/" + hli, method: .get, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/highlow/get_comments/" + hli, method: .get, parameters: [:], onFinish: { json in
                 
                 if (json["error"] as? String) != nil {
                     //Do something with the error

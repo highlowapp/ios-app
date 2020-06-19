@@ -13,21 +13,29 @@ class ImageTutorialViewController: UIViewController {
     let imageView: UIImageView = UIImageView()
     let label: UILabel = UILabel()
     
+    convenience init(title: String) {
+        self.init(nibName: nil, bundle: nil)
+        
+        label.text = title
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.addSubview(imageView)
         
-        imageView.eqTop(self.view.safeAreaLayoutGuide).eqWidth(self.view).eqHeight(self.view, 0.0, 0.6)
+        imageView.eqTop(self.view.safeAreaLayoutGuide, 50).eqWidth(self.view)
+        imageView.contentMode = .scaleAspectFit
+        imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1.14).isActive = true
         
         self.view.addSubview(label)
         
-        label.topToBottom(imageView, 10).centerX(self.view).eqWidth(self.view)
+        label.topToBottom(imageView, 10).centerX(self.view).eqWidth(self.view, 0.0, 0.9)
         
-        label.text = "Image Slide"
         label.numberOfLines = 0
-        label.textColor = .white
-        label.font = .systemFont(ofSize: 25)
+        label.textColor = AppColors.primary
+        label.font = UIFont(name: "Chalkboard SE", size: 25.0)
+        label.textAlignment = .center
          
     }
     
@@ -36,10 +44,28 @@ class ImageTutorialViewController: UIViewController {
         return self
     }
     
-    public func with(title: String, image: String) -> ImageTutorialViewController {
+    public func with(title: String, image: String, button: Bool = false) -> ImageTutorialViewController {
         imageView.image = UIImage(named: image)
         label.text = title
+        
+        if button {
+            let btn = HLButton(frame: CGRect(x: 0, y: 0, width: 0, height: 45))
+            btn.colorStyle = "white"
+            btn.title = "Get Started!"
+            
+            self.view.addSubview(btn)
+            
+            btn.topToBottom(label, 10).eqWidth(self.view, 0.0, 0.6).height(45).centerX(self.view)
+            
+            btn.addTarget(self, action: #selector(skipTutorial), for: .touchUpInside)
+        }
+        
         return self
+    }
+    
+    @objc func skipTutorial() {
+        UserDefaults.standard.set(true, forKey: "com.gethighlow.hasReceivedTutorial")
+        switchToAuth()
     }
 
 }

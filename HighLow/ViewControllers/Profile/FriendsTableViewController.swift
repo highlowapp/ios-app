@@ -31,10 +31,23 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
             }
         }
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
+    
+    override func updateViewColors() {
+        self.view.backgroundColor = getColor("White2Black")
+        tableView.visibleCells.forEach({ cell in
+            cell.updateColors()
+        })
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        handleDarkMode()
+        updateViewColors()
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(reloadData), for: .valueChanged)
         
@@ -75,7 +88,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
         
         addFriends.addTarget(self, action: #selector(openAddFriendsViewController), for: .touchUpInside)
         
-        tableView.tableHeaderView?.backgroundColor = rgb(240, 240, 240)
+        tableView.tableHeaderView?.backgroundColor = getColor("Separator")
         tableView.tableHeaderView?.addSubview(addFriends)
         
         addFriends.centerX(tableView.tableHeaderView!).eqTop(tableView.tableHeaderView!, 10).width(150).height(50)
@@ -86,7 +99,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
     
     func getPendingRequests() {
 
-        authenticatedRequest(url: "https://api.gethighlow.com/user/get_pending_friendships", method: .get, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/get_pending_friendships", method: .get, parameters: [:], onFinish: { json in
             if let requests = json["requests"] as? [NSDictionary] {
                 self.pendingRequests = []
                 for i in requests {
@@ -105,7 +118,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
     
     func getFriends(callback: @escaping () -> Void) {
 
-        var url = "https://api.gethighlow.com/user/friends"
+        var url = "/user/friends"
         
         if uid != nil {
             url += "?uid=" + uid!
@@ -186,7 +199,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
         
         let uid = friends[indexPath.row].uid!
         
-        authenticatedRequest(url: "https://api.gethighlow.com/user/" + uid + "/unfriend", method: .post, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/" + uid + "/unfriend", method: .post, parameters: [:], onFinish: { json in
             if json["status"] != nil {
                 self.friends.remove(at: indexPath.row)
                 tableView.deleteRows(at: [indexPath], with: .bottom)

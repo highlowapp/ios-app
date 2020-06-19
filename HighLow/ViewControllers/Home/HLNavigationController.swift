@@ -12,8 +12,13 @@ class HLNavigationController: UINavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        handleDarkMode()
         NotificationCenter.default.addObserver(forName: NSNotification.Name("com.gethighlow.highlowidFromNotification"), object: nil, queue: nil, using: highlowidFromNotification)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
     }
     
     func highlowidFromNotification(notification: Notification) {

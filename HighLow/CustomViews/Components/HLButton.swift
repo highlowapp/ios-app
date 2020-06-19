@@ -10,6 +10,21 @@ import UIKit
 
 @IBDesignable
 class HLButton: UIButton {
+    var gradientOn: Bool = true {
+        didSet {
+            self.layer.shadowColor = UIColor.black.cgColor
+            self.layer.shadowRadius = 0
+            self.layer.shadowOffset = .zero
+            self.layer.shadowOpacity = 0
+            
+            if gradientOn {
+                self.layer.shadowColor = UIColor.black.cgColor
+                self.layer.shadowRadius = 5
+                self.layer.shadowOffset = CGSize(width: 0, height: 5)
+                self.layer.shadowOpacity = 0.2
+            }
+        }
+    }
     
     var gradientLayer: CAGradientLayer = CAGradientLayer()
     
@@ -84,7 +99,7 @@ class HLButton: UIButton {
         
         self.addSubview(activityIndicator)
         
-        self.centerX(activityIndicator).centerY(activityIndicator)
+        activityIndicator.centerX(self).centerY(self)
         
         self.isEnabled = false
         
@@ -105,12 +120,23 @@ class HLButton: UIButton {
         
         gradientLayer.frame = self.bounds
         gradientLayer.cornerRadius = 0.5 * self.bounds.height
+        
+        gradientLayer.removeFromSuperlayer()
+        
+        conditionalGradSetup()
     }
     
     
     private func setup() {
-        
         self.layer.cornerRadius = 0.5 * self.bounds.height
+        
+        if gradientOn {
+            self.layer.shadowColor = UIColor.black.cgColor
+            self.layer.shadowRadius = 5
+            self.layer.shadowOffset = CGSize(width: 0, height: 5)
+            self.layer.shadowOpacity = 0.2
+        }
+        
         self.setTitleColor(UIColor.white, for: .normal)
         
         gradientLayer = CAGradientLayer()
@@ -124,7 +150,33 @@ class HLButton: UIButton {
         
         gradientLayer.cornerRadius = 0.5 * self.bounds.height
         
-        self.layer.insertSublayer(gradientLayer, at: 0)
+        conditionalGradSetup()
+    }
+    
+    private func conditionalGradSetup() {
+        themeSwitch(onDark: {
+            if colorStyle == "default" {
+                setStyle(style: "pink")
+            }
+        }, onLight: {
+            if colorStyle == "default" {
+                self.layer.insertSublayer(gradientLayer, at: 0)
+            }
+        }, onAuto: {
+            if #available(iOS 12.0, *), traitCollection.userInterfaceStyle == .dark {
+                if colorStyle == "default" {
+                    setStyle(style: "pink")
+                }
+            } else {
+                if colorStyle == "default" {
+                    self.layer.insertSublayer(gradientLayer, at: 0)
+                }
+            }
+        })
+    }
+    
+    override func updateColors() {
+        layoutSubviews()
     }
 
 }

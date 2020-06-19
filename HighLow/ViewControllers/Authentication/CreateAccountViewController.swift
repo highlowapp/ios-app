@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import SwiftKeychainWrapper
+import PopupDialog
 
 class CreateAccountViewController: UIViewController, UITextFieldDelegate {
     
@@ -39,6 +40,19 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var ConfirmPassword: HLTextField!
     @IBOutlet weak var Error: UILabel!
     
+    @IBAction func PrivacyPolicy(_ sender: Any) {
+        openURL("https://gethighlow.com/privacy")
+    }
+    
+    @IBAction func TermsOfService(_ sender: Any) {
+        openURL("https://gethighlow.com/eula")
+    }
+    
+    func openURL(_ url: String) {
+        guard let url = URL(string: url) else {return}
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+    
     
     @IBOutlet weak var SubmitButton: HLButton!
     @IBAction func SignUp(_ sender: Any) {
@@ -63,13 +77,13 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
         
         
         //Make the request
-        Alamofire.request("https://api.gethighlow.com/auth/sign_up", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
+        AF.request(getHostName() + "/auth/sign_up", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
             
             //Hide the activity indicator
             self.SubmitButton.stopLoading()
             
-            if let result = response.result.value {
-                
+            switch response.result {
+            case .success(let result):
                 //Convert to JSON
                 let JSON = result as! NSDictionary
                 
@@ -100,11 +114,12 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
                     guard accessSaveSuccessful == true && refreshSaveSuccessful == true && uidSaveSuccessful == true else {
                         
                         //Display an alert
-                        let alert = UIAlertController(title: "Error", message: "Something went wrong when signing you in. Please try again.", preferredStyle: .alert)
+                        let popup = PopupDialog(title: "Error", message: "Something went wrong when signing you in. Please try again.")
+                        popup.addButton(
+                            CancelButton(title: "OK", action: nil)
+                        )
                         
-                    alert.addAction(UIAlertAction( title: "OK", style: .default, handler: nil ))
-                        
-                        self.present(alert, animated: true, completion: nil)
+                        self.present(popup, animated: true, completion: nil)
                         
                         return
                         
@@ -117,8 +132,8 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
                     
                     
                 }
-                
-                
+            case .failure(_):
+                return
                 
             }
             
@@ -153,6 +168,8 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
         //Secure text entry
         Password.isPassword = true
         ConfirmPassword.isPassword = true
+        
+        SubmitButton.gradientOn = false
         
         //No errors at first!
         Error.text = ""

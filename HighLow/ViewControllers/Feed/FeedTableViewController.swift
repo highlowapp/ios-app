@@ -18,22 +18,43 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
     var activeHighLow: Int = 0
     
     func highLowHasBeenUdpated(notification: Notification) {
-        
         let userInfoDict = notification.userInfo as! [String: Any]
         
         if let hli = userInfoDict["highlowid"] as? String {
-            
+            var toRemove: [Int] = []
             for i in highlows.indices {
                 if hli == highlows[i].highlowid {
                     highlows[i].update(with: notification.userInfo as! [String: Any])
+                    if highlows[i].flagged == 1 {
+                        toRemove.append(i)
+                    }
                 }
             }
+            
+            for i in toRemove {
+                highlows.remove(at: i)
+            }
+            
+            let indices: IndexSet = IndexSet(toRemove)
+            tableView.deleteSections(indices, with: .none)
             
         }
         
     }
+    
+    override func updateViewColors() {
+        tableView.visibleCells.forEach({ cell in
+            cell.updateColors()
+        })
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
 
     override func viewDidLoad() {
+        handleDarkMode()
         
         NotificationCenter.default.addObserver(forName: Notification.Name("highLowUpdate"), object: nil, queue: nil, using: highLowHasBeenUdpated)
         
@@ -72,7 +93,7 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
             
             //Use a HighLowView
             let cell = tableView.dequeueReusableCell(withIdentifier: "highlow") as! HighLowTableViewCell
-            
+            cell.updateColors()
             cell.delegate = self
             
             cell.loadData(profileImage: users[indexPath.section].profileimage, name: users[indexPath.section].firstname! + " " + users[indexPath.section].lastname!, highlow: highlows[indexPath.section])
@@ -93,6 +114,7 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
             
             //let cell = ShowAllCommentsViewCell(style: .default, reuseIdentifier: "ShowComments")
             let cell = tableView.dequeueReusableCell(withIdentifier: "ShowComments", for: indexPath) as! ShowAllCommentsViewCell
+            cell.updateColors()
             cell.delegate = self
             cell.active = false
             cell.section = String(indexPath.section)
@@ -102,6 +124,7 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
         } else if !sectionCommentsCollapseStates[ indexPath.section ] && indexPath.row == highlows[indexPath.section].comments.count + 2 {
             //let cell = ShowAllCommentsViewCell(style: .default, reuseIdentifier: "ShowComments")
             let cell = tableView.dequeueReusableCell(withIdentifier: "ShowComments", for: indexPath) as! ShowAllCommentsViewCell
+            cell.updateColors()
             cell.section = String(indexPath.section)
             cell.active = false
             cell.delegate = self
@@ -117,6 +140,10 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
             
         }
     }
+    
+    @objc func reloadFeed() {
+        loadFeedItems(page: 0, reset: true )
+    }
 
     @objc func loadFeedItems(page: Int = 0, reset: Bool = false) {
         let loader = HLLoaderView()
@@ -131,7 +158,7 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
         
         loader.startLoading()
         
-        authenticatedRequest(url: "https://api.gethighlow.com/user/feed/page/" + String(page), method: .get, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/feed/page/" + String(page), method: .get, parameters: [:], onFinish: { json in
             loader.stopLoading()
             loader.removeFromSuperview()
             self.tableView.refreshControl?.endRefreshing()
@@ -147,9 +174,11 @@ class FeedTableViewController: UITableViewController, ShowAllCommentsViewCellDel
                     let user = item["user"] as! NSDictionary
                     let highlow = item["highlow"] as! NSDictionary
                     
-                    self.highlows.append( HighLow(data: highlow) )
-                    self.users.append( User(data: user) )
-                    self.sectionCommentsCollapseStates.append(true)
+                    if highlow["flagged"] as! Int == 0 {
+                        self.highlows.append( HighLow(data: highlow) )
+                        self.users.append( User(data: user) )
+                        self.sectionCommentsCollapseStates.append(true)
+                    }
                 }
                 
                 self.tableView.reloadData()
@@ -178,6 +207,10 @@ extension FeedTableViewController {
     func openHomeViewController(homeViewController: HomeViewController) {
         homeViewController.delegate = self
         self.navigationController?.pushViewController(homeViewController, animated: true)
+    }
+    
+    func openImageFullScreen(viewController: ImageFullScreenViewController) {
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     func showAll(sender: ShowAllCommentsViewCell) {

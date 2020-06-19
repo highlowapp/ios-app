@@ -36,6 +36,7 @@ class MessageTableViewCell: UITableViewCell {
         messageLabel.textColor = .gray
         messageLabel.textAlignment = .center
         messageLabel.numberOfLines = 0
+        messageLabel.font = UIFont(name: "Chalkboard SE", size: 20)
             
         self.contentView.addSubview(messageLabel)
         

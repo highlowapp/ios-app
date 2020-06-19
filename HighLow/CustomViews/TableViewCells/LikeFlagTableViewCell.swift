@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PopupDialog
 
 class LikeFlagTableViewCell: UITableViewCell, LikeViewDelegate, FlagViewDelegate {
 
@@ -49,7 +50,7 @@ class LikeFlagTableViewCell: UITableViewCell, LikeViewDelegate, FlagViewDelegate
     
     func getTotalLikes() {
         if highlowid != nil {
-            authenticatedRequest(url: "https://api.gethighlow.com/highlow/" + highlowid!, method: .get, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/highlow/" + highlowid!, method: .get, parameters: [:], onFinish: { json in
                 
                 if let total_likes = json["total_likes"] as? Int {
                     self.likeView.numLikesView.text = String(total_likes)
@@ -93,11 +94,13 @@ class LikeFlagTableViewCell: UITableViewCell, LikeViewDelegate, FlagViewDelegate
         }
     }
     
+    override func updateColors() {
+        self.backgroundColor = getColor("White2Black")
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        
-        self.backgroundColor = .white
-        
+        updateColors()
         NotificationCenter.default.addObserver(forName: Notification.Name("highLowUpdate"), object: nil, queue: nil, using: loadFromHighLowUpdateNotification)
         
         self.addSubview(likeView)
@@ -124,32 +127,46 @@ class LikeFlagTableViewCell: UITableViewCell, LikeViewDelegate, FlagViewDelegate
         if let hli = highlowid {
             LikeView.like(highlowid: hli, callback: { error in
                 if error != nil {
-                    
+                    sender.reverse()
                     switch(error) {
                     case "already-liked":
-                        alert("Whoops!", "It looks like you've already liked this High/Low!")
+                        sender.isUserInteractionEnabled = false
+                        alert("Whoops!", "It looks like you've already liked this High/Low!", handler: {
+                            sender.isUserInteractionEnabled = true
+                        })
                         break
                     case "not-allowed":
-                        alert("Whoops!", "You can't like your own High/Lows!")
+                        sender.isUserInteractionEnabled = false
+                        alert("Whoops!", "You can't like your own High/Lows!", handler: {
+                            sender.isUserInteractionEnabled = true
+                        })
                         break
                     default:
-                        alert("An error occurred", "Please try again")
+                        sender.isUserInteractionEnabled = false
+                        alert("An error occurred", "Please try again", handler: {
+                            sender.isUserInteractionEnabled = true
+                        })
                         break
                     }
-                    sender.reverse()
                     
                 }
                 else {
                     //Update the number of likes
-                    let prevLikes = Int(sender.numLikesView.text ?? "0")
+                    var prevLikes = Int(sender.numLikesView.text ?? "0")
+                    if prevLikes ?? 0 < 0 {
+                        prevLikes = 0
+                    }
                     sender.numLikesView.text = String((prevLikes ?? 0) + 1)
                     
                 }
             })
         }
         else {
-            alert("An error occurred", "Please try again")
             sender.reverse()
+            sender.isUserInteractionEnabled = false
+            alert("An error occurred", "Please try again", handler: {
+                sender.isUserInteractionEnabled = true
+            })
         }
     }
     
@@ -158,60 +175,73 @@ class LikeFlagTableViewCell: UITableViewCell, LikeViewDelegate, FlagViewDelegate
             LikeView.unlike(highlowid: hli, callback: { error in
                 
                 if error != nil {
-                    alert("An error occurred", "Please try again")
                     sender.reverse()
+                    sender.isUserInteractionEnabled = false
+                    alert("An error occurred", "Please try again", handler: {
+                        sender.isUserInteractionEnabled = true
+                    })
                 }
                 else {
                     
                     //Update the number of likes
-                    let prevLikes = Int(sender.numLikesView.text ?? "0")
+                    var prevLikes = Int(sender.numLikesView.text ?? "0")
+                    if prevLikes ?? 1 < 1 {
+                        prevLikes = 1
+                    }
                     sender.numLikesView.text = String((prevLikes ?? 1) - 1)
                     
                 }
                 
             })
         } else {
-            alert("An error occurred", "Please try again")
             sender.reverse()
+            sender.isUserInteractionEnabled = false
+            alert("An error occurred", "Please try again", handler: {
+                sender.isUserInteractionEnabled = true
+            })
         }
     }
     
     func didFlag(sender: FlagView) {
         //Confirm they want to flag the High/Low
-        let alertViewController = UIAlertController(title: "Confirm flag?", message: "Are you sure you want to flag this High/Low?", preferredStyle: .actionSheet)
-        
-        alertViewController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            sender.reverse()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Confirm", style: .destructive, handler: { action in
-            
-            if let hli = self.highlowid {
+        let popup = PopupDialog(title: "Confirm Flag?", message: "Are you sure you want to flag this High/Low?", image: UIImage(named: "FlagWarning"))
+        popup.addButtons([
+            DestructiveButton(title: "Confirm") {
                 
-                FlagView.flag(highlowid: hli, callback: { error in
+                if let hli = self.highlowid {
+
+                    FlagView.flag(highlowid: hli, callback: { error in
+                        
+                        if error != nil {
+                            sender.reverse()
+                            sender.isUserInteractionEnabled = false
+                            alert("An error occurred", "Please try again", handler: {
+                                sender.isUserInteractionEnabled = true
+                            })
+                        }
+                        
+                    })
                     
-                    if error != nil {
-                        alert("An error occurred", "Please try again")
-                        sender.reverse()
-                    }
-                    
-                })
+                } else {
+                    sender.reverse()
+                    sender.isUserInteractionEnabled = false
+                    alert("An error occurred", "Please try again", handler: {
+                        sender.isUserInteractionEnabled = true
+                    })
+                }
                 
-            } else {
-                alert("An error occurred", "Please try again")
+            },
+            CancelButton(title: "Cancel") {
                 sender.reverse()
             }
-            
-        }))
-        
+        ])
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
             
-            alertViewController.popoverPresentationController?.sourceView = sender
-            alertViewController.popoverPresentationController?.sourceRect = sender.frame
-            topController.present(alertViewController, animated: true)
+            topController.present(popup, animated: true)
         }
         
     }
@@ -219,39 +249,44 @@ class LikeFlagTableViewCell: UITableViewCell, LikeViewDelegate, FlagViewDelegate
     func didUnflag(sender: FlagView) {
         
         //Confirm they want to flag the High/Low
-        let alertViewController = UIAlertController(title: "Confirm unflag?", message: "Are you sure you want to unflag this High/Low?", preferredStyle: .actionSheet)
-        
-        alertViewController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            sender.reverse()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Confirm", style: .destructive, handler: { action in
-            
-            if let hli = self.highlowid {
+        let popup = PopupDialog(title: "Confirm Unflag?", message: "Are you sure you want to unflag this High/Low?", image: UIImage(named: "FlagWarning"))
+        popup.addButtons([
+            DestructiveButton(title: "Confirm") {
                 
-                FlagView.unflag(highlowid: hli, callback: { error in
+                if let hli = self.highlowid {
                     
-                    if error != nil {
-                        alert("An error occurred", "Please try again")
-                        sender.reverse()
-                    }
+                    FlagView.unflag(highlowid: hli, callback: { error in
+                        
+                        if error != nil {
+                            sender.reverse()
+                            sender.isUserInteractionEnabled = false
+                            alert("An error occurred", "Please try again", handler: {
+                                sender.isUserInteractionEnabled = true
+                            })
+                        }
+                        
+                    })
                     
-                })
+                } else {
+                    sender.reverse()
+                    sender.isUserInteractionEnabled = false
+                    alert("An error occurred", "Please try again", handler: {
+                        sender.isUserInteractionEnabled = true
+                    })
+                }
                 
-            } else {
-                alert("An error occurred", "Please try again")
+            },
+            CancelButton(title: "Cancel") {
                 sender.reverse()
             }
-            
-        }))
+        ])
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
             
-            alertViewController.popoverPresentationController?.sourceView = sender
-            alertViewController.popoverPresentationController?.sourceRect = sender.frame
-            topController.present(alertViewController, animated: true)
+            topController.present(popup, animated: true)
         }
         
     }

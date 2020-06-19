@@ -47,8 +47,15 @@ class EditInterestsViewController: UITableViewController, UISearchBarDelegate, I
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateViewColors()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
+        self.view.backgroundColor = getColor("White2Black")
         self.title = "Your Interests"
 
         tableView.tableHeaderView = UIView()
@@ -90,11 +97,13 @@ class EditInterestsViewController: UITableViewController, UISearchBarDelegate, I
     }
     
     @objc func cancel() {
-        self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true, completion: {
+            self.delegate?.didDisappear?()
+        })
     }
     
     func getMyTags() {
-        authenticatedRequest(url: "https://api.gethighlow.com/user/interests", method: .get, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/interests", method: .get, parameters: [:], onFinish: { json in
             
             if let interests = json["interests"] as? [[String: String]] {
                 self.tagList.removeAllTags()
@@ -117,7 +126,7 @@ class EditInterestsViewController: UITableViewController, UISearchBarDelegate, I
     }
     
     func getAllTags() {
-        authenticatedRequest(url: "https://api.gethighlow.com/user/interests/all", method: .get, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/user/interests/all", method: .get, parameters: [:], onFinish: { json in
             if let interests = json["interests"] as? [[String: String]] {
                 self.allTags = []
 
@@ -148,8 +157,7 @@ class EditInterestsViewController: UITableViewController, UISearchBarDelegate, I
  
     func willAdd(id: String, name: String) {
         if id == "" {
-            print(name)
-            authenticatedRequest(url: "https://api.gethighlow.com/user/interests/create", method: .post, parameters: ["name": name], onFinish: { json in
+            authenticatedRequest(url: "/user/interests/create", method: .post, parameters: ["name": name], onFinish: { json in
                 let tagView = self.tagList.addTag(name)
                 self.tableView.layoutIfNeeded()
                 self.idMap[tagView] = json["interest_id"] as? String ?? ""
@@ -161,7 +169,7 @@ class EditInterestsViewController: UITableViewController, UISearchBarDelegate, I
             })
             
         } else {
-            authenticatedRequest(url: "https://api.gethighlow.com/user/interests/add", method: .post, parameters: [ "interests": [id] ], onFinish: { json in
+            authenticatedRequest(url: "/user/interests/add", method: .post, parameters: [ "interests": [id] ], onFinish: { json in
                 let tagView = self.tagList.addTag(name)
                 self.tableView.layoutIfNeeded()
                 self.idMap[tagView] = id
@@ -217,9 +225,8 @@ class EditInterestsViewController: UITableViewController, UISearchBarDelegate, I
             
             reloadSearchTags()
             
-            authenticatedRequest(url: "https://api.gethighlow.com/user/interests/remove", method: .post, parameters: params, onFinish: { json in
+            authenticatedRequest(url: "/user/interests/remove", method: .post, parameters: params, onFinish: { json in
             }, onError: { error in
-                print(error)
                 alert("An error occurred", "Please try again")
             })
         }

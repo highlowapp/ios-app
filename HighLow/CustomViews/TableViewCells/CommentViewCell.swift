@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftKeychainWrapper
+import PopupDialog
 
 class CommentViewCell: UITableViewCell {
     
@@ -62,10 +63,21 @@ class CommentViewCell: UITableViewCell {
         self.awakeFromNib()
     }
     
+    override func updateColors() {
+        self.backgroundColor = getColor("White2Black")
+        messageLabel.textColor = getColor("BlackText")
+        messageLabel.backgroundColor = getColor("White2Black")
+        
+        nameLabel.textColor = getColor("BlackText")
+        nameLabel.backgroundColor = getColor("White2Black")
+        
+        menuButton.image = getImage("more")
+    }
+    
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        updateColors()
         //Add subviews
         self.addSubview(profileImage)
         self.addSubview(nameLabel)
@@ -86,6 +98,7 @@ class CommentViewCell: UITableViewCell {
         messageLabel.eqLeading(nameLabel).topToBottom(timestampLabel, 5).eqTrailing(self, -20)
         
         messageLabel.numberOfLines = 0
+        
         
         
         
@@ -117,7 +130,7 @@ class CommentViewCell: UITableViewCell {
         
         if commentid != nil {
         
-            authenticatedRequest(url: "https://api.gethighlow.com/comment/delete/" + commentid!, method: .post, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/comment/delete/" + commentid!, method: .post, parameters: [:], onFinish: { json in
                 
                 if (json["error"] as? String) != nil {
                     alert("An error occurred", "Please try again.")
@@ -149,7 +162,7 @@ class CommentViewCell: UITableViewCell {
         
         loader.startLoading()
         
-        authenticatedRequest(url: "https://api.gethighlow.com/comment/update/" + commentid, method: .post, parameters: params, onFinish: { json in
+        authenticatedRequest(url: "/comment/update/" + commentid, method: .post, parameters: params, onFinish: { json in
             
             loader.stopLoading()
             loader.removeFromSuperview()
@@ -176,9 +189,11 @@ class CommentViewCell: UITableViewCell {
         
     }
     
+    let menuButton = UIImageView(image: getImage("more"))
+    
     func addEditOptions() {
         //If the uid is that of the current user, add a "more" button
-        let menuButton = UIImageView(image: UIImage(named: "more"))
+        
         
         self.addSubview(menuButton)
         
@@ -203,7 +218,7 @@ class CommentViewCell: UITableViewCell {
         }
         
         else {
-            authenticatedRequest(url: "https://api.gethighlow.com/user/get/uid", method: .post, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/user/get/uid", method: .post, parameters: [:], onFinish: { json in
                 
                 if (json["error"] as? String) != nil {
                     alert("An error has occurred", "Try closing the app and opening it back up.")
@@ -232,22 +247,24 @@ class CommentViewCell: UITableViewCell {
     
     
     @objc func more() {
+        let popup = PopupDialog(title: "Action", message: "Choose an action to perform on this comment")
         
-        let alertViewController = UIAlertController(title: "Action", message: "Choose an action to perform on this comment", preferredStyle: .actionSheet)
-        alertViewController.addAction(UIAlertAction(title: "Edit", style: .default, handler: { action in
-            self.edit()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { action in
-            self.deleteComment()
-        }))
-        alertViewController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil ))
+        popup.addButtons([
+            DefaultButton(title: "Edit") {
+                self.edit()
+            },
+            DestructiveButton(title: "Delete") {
+                self.deleteComment()
+            },
+            CancelButton(title: "Cancel", action: nil)
+        ])
         
         if var topController = UIApplication.shared.keyWindow?.rootViewController {
             while let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
             }
             
-            topController.present(alertViewController, animated: true)
+            topController.present(popup, animated: true)
         }
         
     }
@@ -270,7 +287,7 @@ class CommentViewCell: UITableViewCell {
         messageLabel.text = message
         
         //Now for the image request
-    profileImage.loadImageFromURL("https://storage.googleapis.com/highlowfiles/" + imageURL)
+        profileImage.loadImageFromURL("https://storage.googleapis.com/highlowfiles/" + imageURL)
         
     }
 

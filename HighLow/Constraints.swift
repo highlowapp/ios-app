@@ -101,6 +101,20 @@ extension UIView {
         return self
     }
     
+    @discardableResult
+    func aspectRatioFromWidth(_ constant: CGFloat) -> UIView {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: constant).isActive = true
+        return self
+    }
+    
+    @discardableResult
+    func aspectRatioFromHeight(_ constant: CGFloat) -> UIView {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.widthAnchor.constraint(equalTo: self.heightAnchor, multiplier: constant).isActive = true
+        return self
+    }
+    
     
     
     

@@ -13,6 +13,7 @@ class HLLoaderView: UIView {
     var loader = UIImageView()
     var widthConstraint: NSLayoutConstraint?
     var heightConstraint: NSLayoutConstraint?
+    var activityIndicator = UIActivityIndicatorView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,8 +28,8 @@ class HLLoaderView: UIView {
     }
     
     private func setup() {
-        self.backgroundColor = rgba(255, 255, 255, 0.8)
-        
+        self.backgroundColor = rgba(255, 255, 255, 0.9)
+        /*
         let img = UIImage(named: "logo-light-triangles")
         
         loader = UIImageView(image: img)
@@ -44,20 +45,31 @@ class HLLoaderView: UIView {
         
         widthConstraint?.isActive = true
         heightConstraint?.isActive = true
+         */
+                
+        activityIndicator.color = AppColors.primary
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .gray
         
+        self.addSubview(activityIndicator)
+        
+        activityIndicator.centerX(self).centerY(self)
         
     }
     
     func startLoading() {
-        UIView.animate(withDuration: 1.0, delay: 0, options: [.repeat, .autoreverse], animations: {
+        /*UIView.animate(withDuration: 1.0, delay: 0, options: [.repeat, .autoreverse], animations: {
             self.widthConstraint?.constant = 150
             self.heightConstraint?.constant = 150
             self.loader.layoutIfNeeded()
-        }, completion: nil)
+        }, completion: nil)*/
+        
+        activityIndicator.startAnimating()
     }
     
     func stopLoading() {
-        self.loader.layer.removeAllAnimations()
+        //self.loader.layer.removeAllAnimations()
+        activityIndicator.stopAnimating()
     }
     
 }

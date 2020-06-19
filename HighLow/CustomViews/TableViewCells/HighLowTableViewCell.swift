@@ -8,7 +8,23 @@
 
 import UIKit
 
-class HighLowTableViewCell: UITableViewCell {
+class HighLowTableViewCell: UITableViewCell, HighLowViewDelegate {
+    func willEditHigh(sender: HighLowView) {
+    }
+    
+    func willEditLow(sender: HighLowView) {
+    }
+    
+    func didFinishUpdatingContent(sender: HighLowView) {
+    }
+    
+    func updateHighLow(with: [String : Any]) {
+    }
+    
+    func openImageFullScreen(viewController: ImageFullScreenViewController) {
+        self.delegate?.openImageFullScreen(viewController: viewController)
+    }
+    
     
     var profileImageView: HLImageView = HLImageView(frame: .zero)
     var nameView: UILabel = UILabel()
@@ -31,25 +47,46 @@ class HighLowTableViewCell: UITableViewCell {
         
         self.awakeFromNib()
     }
+    
+    override func updateColors() {
+        highLowView.updateColors()
+        self.backgroundColor = getColor("White2Black")
+        separator.backgroundColor = getColor("Separator")
+        bottomSeparator.backgroundColor = getColor("Separator")
+    }
+    
+    let separator = UIView()
+    let bottomSeparator = UIView()
 
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        self.backgroundColor = .white
+        updateColors()
+                
         
-        let separator = UIView()
-        separator.backgroundColor = rgb(240, 240, 240)
+        
         
         self.addSubview(separator)
         
         separator.eqTop(self).eqLeading(self).eqTrailing(self).height(25)
         
         //profileImageView
+        let imageContainer = UIView()
+        imageContainer.layer.cornerRadius = 20
+        imageContainer.layer.shadowColor = UIColor.black.cgColor
+        imageContainer.layer.shadowRadius = 1
+        imageContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
+        imageContainer.layer.shadowOpacity = 0.3
+        
+        imageContainer.addSubview(profileImageView)
+        profileImageView.eqWidth(imageContainer).eqHeight(imageContainer).centerX(imageContainer).centerY(imageContainer)
+        
         profileImageView.layer.cornerRadius = 20
         
-        self.addSubview(profileImageView)
         
-        profileImageView.topToBottom(separator, 20).centerX(self).width(40).height(40)
+        self.addSubview(imageContainer)
+        
+        imageContainer.topToBottom(separator, 20).centerX(self).width(40).height(40)
         
         //nameView
         nameView.font = .systemFont(ofSize: 15)
@@ -71,6 +108,7 @@ class HighLowTableViewCell: UITableViewCell {
         
         //highLowView
         highLowView.includesLikeFlag = false
+        highLowView.delegate = self
         
         self.isUserInteractionEnabled = false
         
@@ -78,8 +116,8 @@ class HighLowTableViewCell: UITableViewCell {
         
         highLowView.topToBottom(dateView, 10).centerX(self).eqWidth(self, 0.0, 0.9)
         
-        let bottomSeparator = UIView()
-        bottomSeparator.backgroundColor = rgb(240, 240, 240)
+        
+        
         
         self.addSubview(bottomSeparator)
         
@@ -138,5 +176,6 @@ class HighLowTableViewCell: UITableViewCell {
 protocol HighLowTableViewCellDelegate: AnyObject {
     
     func openHomeViewController(homeViewController: HomeViewController)
+    func openImageFullScreen(viewController: ImageFullScreenViewController)
     
 }

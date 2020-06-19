@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="D34-6H-Rc9">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="D34-6H-Rc9">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -239,33 +239,20 @@
             <point key="canvasLocation" x="854" y="-42"/>
         </scene>
         <!--About-->
-        <scene sceneID="kJ4-t8-vSD">
+        <scene sceneID="UkL-xK-Ll4">
             <objects>
-                <tableViewController title="About" id="FcO-7L-ZhK" customClass="AboutTableViewController" customModule="HighLow" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="0ca-qd-GRO">
+                <viewController id="pDe-IG-0GY" customClass="AboutTableViewController" customModule="HighLow" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="eWo-h4-oWW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="aboutOption" id="Yx9-Nr-MiU">
-                                <rect key="frame" x="0.0" y="28" width="375" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Yx9-Nr-MiU" id="ZN6-tA-7AE">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="FcO-7L-ZhK" id="Hs5-gZ-OZY"/>
-                            <outlet property="delegate" destination="FcO-7L-ZhK" id="agy-K2-6Q5"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="About" id="cl1-OW-SWd"/>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="kLD-s2-pmQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="sQl-bS-Zzr"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="About" id="7GR-Vz-bEC"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uGf-fG-ltV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1792.8" y="708.39580209895053"/>
+            <point key="canvasLocation" x="1874" y="690"/>
         </scene>
         <!--Report A Bug-->
         <scene sceneID="XDM-F6-FqZ">
@@ -463,7 +450,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="FcO-7L-ZhK" kind="relationship" relationship="rootViewController" id="bOt-T1-IRq"/>
+                        <segue destination="pDe-IG-0GY" kind="relationship" relationship="rootViewController" id="Zo7-55-Y7I"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kxa-fn-3bP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

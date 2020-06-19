@@ -55,8 +55,28 @@ class GradientUIView: UIView {
         
         let gradient = createGradient()
         
-        self.layer.insertSublayer(gradient, at: 0)
+        conditionalGradSetup()
         self.gradient = gradient
+    }
+    
+    private func conditionalGradSetup() {
+        switch themeOverride() {
+        case "dark":
+            self.backgroundColor = .black
+        break
+        case "light":
+            let gradient = createGradient()
+            self.layer.insertSublayer(gradient, at: 0)
+        break
+        default:
+            if #available(iOS 12.0, *), traitCollection.userInterfaceStyle == .dark {
+                self.backgroundColor = .black
+            } else {
+                let gradient = createGradient()
+                self.layer.insertSublayer(gradient, at: 0)
+            }
+        break
+        }
     }
     
    
@@ -95,10 +115,30 @@ class GradientUIView: UIView {
         return (p0, p1)
     }
     
+    override func updateColors() {
+        layoutSubviews()
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+        gradient?.removeFromSuperlayer()
         gradient!.frame = self.bounds
+        
+        switch themeOverride() {
+        case "dark":
+            self.backgroundColor = .black
+        break
+        case "light":
+            self.layer.insertSublayer(gradient!, at: 0)
+        break
+        default:
+            if #available(iOS 12.0, *), traitCollection.userInterfaceStyle == .dark {
+                self.backgroundColor = .black
+            } else {
+                self.layer.insertSublayer(gradient!, at: 0)
+            }
+        break
+        }
     }
     
 

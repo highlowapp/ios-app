@@ -34,10 +34,18 @@ class NotificationsSettingsViewController: UITableViewController, DailyNotificat
     
     var datePickerExists = false
     var timePickerDate = Date()
+    
+    override func updateViewColors() {
+        self.view.backgroundColor = getColor("Separator")
+        tableView.visibleCells.forEach({ cell in
+            cell.backgroundColor = getColor("White2Black")
+            cell.textLabel?.textColor = getColor("BlackText")
+        })
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        handleDarkMode()
         self.title = "Notification Settings"
         
         tableView.register(DailyNotificationSwitchCell.self, forCellReuseIdentifier: "dailyNotifier")
@@ -52,10 +60,11 @@ class NotificationsSettingsViewController: UITableViewController, DailyNotificat
         //    - A list of switches for various notifications
         getNotifSettings()
         
+        updateViewColors()
     }
     
     func getNotifSettings() {
-        authenticatedRequest(url: "https://api.gethighlow.com/notifications/settings", method: .get, parameters: [:], onFinish: { json in
+        authenticatedRequest(url: "/notifications/settings", method: .get, parameters: [:], onFinish: { json in
             if json["error"] != nil {
                 alert("An error occurred", "Please try again")
                 return
@@ -92,6 +101,9 @@ class NotificationsSettingsViewController: UITableViewController, DailyNotificat
                 setting = cellInfo[1],
                 state = cellInfo[2]
             
+            cell.backgroundColor = getColor("White2Black")
+            cell.textLabel?.textColor = getColor("BlackText")
+            
             cell.initialize(label: label as! String, setting: setting as! String, state: state as! Bool)
             
             return cell
@@ -101,11 +113,16 @@ class NotificationsSettingsViewController: UITableViewController, DailyNotificat
             let cell = tableView.dequeueReusableCell(withIdentifier: "dailyNotifier", for: indexPath) as! DailyNotificationSwitchCell
             cell.delegate = self
             cell.setSwitch(toState: datePickerExists)
+            cell.backgroundColor = getColor("White2Black")
+            cell.textLabel?.textColor = getColor("BlackText")
             return cell
         }
         
         let cell = TimePickerCell(style: .default, reuseIdentifier: "timePicker")
         cell.timePicker.date = timePickerDate
+        cell.backgroundColor = getColor("White2Black")
+        cell.textLabel?.textColor = getColor("BlackText")
+        
         return cell
     }
     
@@ -160,7 +177,7 @@ class NotificationOptionCell: UITableViewCell {
     
     @objc private func toggle() {
         if self.switchView.isOn {
-            authenticatedRequest(url: "https://api.gethighlow.com/notifications/" + self.setting + "/on", method: .post, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/notifications/" + self.setting + "/on", method: .post, parameters: [:], onFinish: { json in
                 if json["error"] != nil {
                     self.switchView.setOn(true, animated: true)
                     alert("An error occurred", "Please try again")
@@ -170,7 +187,7 @@ class NotificationOptionCell: UITableViewCell {
                 alert("An error occurred", "Please try again")
             })
         } else {
-            authenticatedRequest(url: "https://api.gethighlow.com/notifications/" + self.setting + "/off", method: .post, parameters: [:], onFinish: { json in
+            authenticatedRequest(url: "/notifications/" + self.setting + "/off", method: .post, parameters: [:], onFinish: { json in
                 if json["error"] != nil {
                     self.switchView.setOn(false, animated: true)
                     alert("An error occurred", "Please try again")
@@ -242,6 +259,8 @@ class TimePickerCell: UITableViewCell {
         
         timePicker.eqTop(contentView, 5).centerX(contentView)
         
+        timePicker.setValue(getColor("Black2White"), forKeyPath: "textColor")
+        
         contentView.bottomAnchor.constraint(equalTo: timePicker.bottomAnchor, constant: 5).isActive = true
     }
     
@@ -251,7 +270,7 @@ class TimePickerCell: UITableViewCell {
         
         let content = UNMutableNotificationContent()
         content.title = "Your Daily Reminder"
-        content.body = "🌝 Reflect on today and enter a High/Low!"
+        content.body = "Reflect on today and enter a High/Low!"
         
         content.sound = .default
         
