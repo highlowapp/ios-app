@@ -9,7 +9,7 @@
 import Foundation
 
 
-class Activity {
+class Activity: DataObject {
     var activityId: String?
     var uid: String?
     var type: Int?
@@ -32,7 +32,16 @@ class Activity {
         }
     }
     
-    
+    func updateData(with data: Activity) {
+        activityId = data.activityId ?? activityId
+        uid = data.uid ?? uid
+        type = data.type ?? type
+        timestamp = data.timestamp ?? timestamp
+        self.data = data.data ?? self.data
+        self.date = data.date ?? date
+        flagged = data.flagged ?? flagged
+        comments = data.comments ?? comments
+    }
 }
 
 

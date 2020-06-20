@@ -45,6 +45,12 @@
 		436A0B8F249D5221007C7A2C /* ActivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B8E249D5221007C7A2C /* ActivityService.swift */; };
 		436A0B91249D52FA007C7A2C /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B90249D52FA007C7A2C /* Activity.swift */; };
 		436A0B93249D5525007C7A2C /* ActivityComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B92249D5525007C7A2C /* ActivityComment.swift */; };
+		436A0B97249D61B1007C7A2C /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B96249D61B1007C7A2C /* UserManager.swift */; };
+		436A0B99249E509F007C7A2C /* ActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B98249E509F007C7A2C /* ActivityManager.swift */; };
+		436A0B9B249E52F7007C7A2C /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B9A249E52F7007C7A2C /* Resource.swift */; };
+		436A0B9D249E539E007C7A2C /* Receiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B9C249E539E007C7A2C /* Receiver.swift */; };
+		436A0BA0249E6A3A007C7A2C /* UserResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B9F249E6A3A007C7A2C /* UserResource.swift */; };
+		436A0BA2249E73C2007C7A2C /* ActivityResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0BA1249E73C2007C7A2C /* ActivityResource.swift */; };
 		436C17F722D378E800C3D7A9 /* LikeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436C17F622D378E800C3D7A9 /* LikeView.swift */; };
 		436C17F922D378F400C3D7A9 /* FlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436C17F822D378F400C3D7A9 /* FlagView.swift */; };
 		436F9BD222AF57F90047D56F /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436F9BD122AF57F90047D56F /* HomeViewController.swift */; };
@@ -166,6 +172,12 @@
 		436A0B8E249D5221007C7A2C /* ActivityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityService.swift; sourceTree = "<group>"; };
 		436A0B90249D52FA007C7A2C /* Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 		436A0B92249D5525007C7A2C /* ActivityComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityComment.swift; sourceTree = "<group>"; };
+		436A0B96249D61B1007C7A2C /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		436A0B98249E509F007C7A2C /* ActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityManager.swift; sourceTree = "<group>"; };
+		436A0B9A249E52F7007C7A2C /* Resource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
+		436A0B9C249E539E007C7A2C /* Receiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receiver.swift; sourceTree = "<group>"; };
+		436A0B9F249E6A3A007C7A2C /* UserResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserResource.swift; sourceTree = "<group>"; };
+		436A0BA1249E73C2007C7A2C /* ActivityResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityResource.swift; sourceTree = "<group>"; };
 		436C17F622D378E800C3D7A9 /* LikeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeView.swift; sourceTree = "<group>"; };
 		436C17F822D378F400C3D7A9 /* FlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlagView.swift; sourceTree = "<group>"; };
 		436F9BD122AF57F90047D56F /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -335,12 +347,39 @@
 		436A0B87249D213D007C7A2C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				436A0B95249D6199007C7A2C /* Managers */,
+				436A0B94249D617E007C7A2C /* Services */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		436A0B94249D617E007C7A2C /* Services */ = {
+			isa = PBXGroup;
+			children = (
 				436A0B88249D2358007C7A2C /* APIService.swift */,
 				436A0B8A249D2FA8007C7A2C /* AuthService.swift */,
 				436A0B8C249D386D007C7A2C /* UserService.swift */,
 				436A0B8E249D5221007C7A2C /* ActivityService.swift */,
 			);
-			path = Model;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		436A0B95249D6199007C7A2C /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				436A0B96249D61B1007C7A2C /* UserManager.swift */,
+				436A0B98249E509F007C7A2C /* ActivityManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		436A0B9E249E6A07007C7A2C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				436A0B9F249E6A3A007C7A2C /* UserResource.swift */,
+				436A0BA1249E73C2007C7A2C /* ActivityResource.swift */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		438D5697238043E000639E71 /* Gifs */ = {
@@ -396,6 +435,8 @@
 				43D25054233FD99200B6F9CA /* AboutOption.swift */,
 				4352FB3C231209300005F00E /* User.swift */,
 				436A0B90249D52FA007C7A2C /* Activity.swift */,
+				436A0B9A249E52F7007C7A2C /* Resource.swift */,
+				436A0B9C249E539E007C7A2C /* Receiver.swift */,
 			);
 			path = "Data Classes";
 			sourceTree = "<group>";
@@ -435,6 +476,7 @@
 				4358C93823DCEE6B00363CBF /* quotes.json */,
 				437F54D42379AEAC0036DBC2 /* Reachability.swift */,
 				4340802C22CE304C009778ED /* TODO.md */,
+				436A0B9E249E6A07007C7A2C /* Resources */,
 				43A958D322DA182500BCE75A /* Data Classes */,
 				43A1C7A22299F091000D625C /* CustomViews */,
 				43A1C7A12299F082000D625C /* ViewControllers */,
@@ -822,11 +864,13 @@
 				43103CE923D5DEA500FD0EF3 /* TermsAndConditionsViewController.swift in Sources */,
 				43D25057233FE0F600B6F9CA /* ReportBugViewController.swift in Sources */,
 				438D569923809FE300639E71 /* TutorialPageViewController.swift in Sources */,
+				436A0B9D249E539E007C7A2C /* Receiver.swift in Sources */,
 				436F9BD422B03CED0047D56F /* HighLowView.swift in Sources */,
 				430861012299884500C4B10F /* GradientUIView.swift in Sources */,
 				4352FB3D231209300005F00E /* User.swift in Sources */,
 				4352FB47231B030B0005F00E /* LikeFlagTableViewCell.swift in Sources */,
 				439BFB3622B556F8007341B6 /* HLLoaderView.swift in Sources */,
+				436A0B9B249E52F7007C7A2C /* Resource.swift in Sources */,
 				436C17F922D378F400C3D7A9 /* FlagView.swift in Sources */,
 				439F770A23AD562300B79518 /* InterestTableViewCell.swift in Sources */,
 				438B9DAD2299E28800A79783 /* HLTextField.swift in Sources */,
@@ -840,10 +884,12 @@
 				43A0935622D55E8300C134FD /* CommentViewCell.swift in Sources */,
 				43D25055233FD99200B6F9CA /* AboutOption.swift in Sources */,
 				435C939723ABEBC200328EBC /* Constraints.swift in Sources */,
+				436A0BA0249E6A3A007C7A2C /* UserResource.swift in Sources */,
 				43D5B44B22A7515E00AB1DBA /* ForgotPasswordViewController.swift in Sources */,
 				43BF8C342437EC82001A1B6B /* ImageTutorialView.swift in Sources */,
 				436A0B93249D5525007C7A2C /* ActivityComment.swift in Sources */,
 				436A0B89249D2358007C7A2C /* APIService.swift in Sources */,
+				436A0BA2249E73C2007C7A2C /* ActivityResource.swift in Sources */,
 				4352FB3F2314E7F60005F00E /* FriendTableViewCell.swift in Sources */,
 				4352FB3B231207FD0005F00E /* FriendsTableViewController.swift in Sources */,
 				438B9DAB2299D92200A79783 /* SignInViewController.swift in Sources */,
@@ -864,6 +910,7 @@
 				430BB46A233545F8001B48C7 /* DateCell.swift in Sources */,
 				4393CEDD2435353E00219591 /* DarkModeViewController.swift in Sources */,
 				439F770823AD4BBE00B79518 /* EditInterestsViewController.swift in Sources */,
+				436A0B97249D61B1007C7A2C /* UserManager.swift in Sources */,
 				438D568F237E293500639E71 /* HLNavigationController.swift in Sources */,
 				4393CEDB2433E5B900219591 /* ThemeControlTableViewCell.swift in Sources */,
 				436A0B8B249D2FA8007C7A2C /* AuthService.swift in Sources */,
@@ -881,6 +928,7 @@
 				4352FB452318A2AE0005F00E /* AddFriendsTableViewController.swift in Sources */,
 				4352FB49231D8AD80005F00E /* AddFriendTableViewCell.swift in Sources */,
 				43D25053233FD95100B6F9CA /* AboutSection.swift in Sources */,
+				436A0B99249E509F007C7A2C /* ActivityManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -39,7 +39,7 @@ class ActivityService {
         }, onError: onError)
     }
     
-    func getForUsers(uid: String, page: Int, onSuccess: @escaping (_ activities: [Activity]) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func getForUser(uid: String, page: Int, onSuccess: @escaping (_ activities: [Activity]) -> Void, onError: @escaping (_ error: String) -> Void) {
         let params = [
             "page": page
         ]

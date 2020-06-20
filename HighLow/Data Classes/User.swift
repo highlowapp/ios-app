@@ -8,7 +8,7 @@
 
 import Foundation
 
-class User {
+class User: DataObject {
     
     var firstname: String?
     var lastname: String?
@@ -30,6 +30,16 @@ class User {
         
     }
     
+    func updateData(with data: User) {
+        firstname = data.firstname ?? firstname
+        lastname = data.lastname ?? lastname
+        uid = data.uid ?? uid
+        email = data.email ?? email
+        profileimage = data.profileimage ?? profileimage
+        streak = data.streak ?? streak
+        bio = data.bio ?? bio
+    }
+    
     func asJson() -> NSDictionary {
         
         let json: NSDictionary = [
@@ -44,5 +54,5 @@ class User {
         return json
         
     }
-    
+        
 }
