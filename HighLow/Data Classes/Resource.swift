@@ -7,42 +7,47 @@
 //
 
 import Foundation
+import UIKit
 
-class Resource<T: DataObject> {
-    let item: T?
-    var associatedRecievers: [Receiver<T>] = []
+class Resource<ValueType: DataObject> {
+    private var value: ValueType
+    private var receivers: [UUID : (ValueType) -> Void] = [:]
     
-    init(_ item: T) {
-        self.item = item
+    init(_ value: ValueType) {
+        self.value = value
     }
     
-    @discardableResult func set(item: T) -> T {
-        self.item!.updateData(with: item)
+    func set(item: ValueType) {
+        self.value.updateData(with: item)
         
-        for receiver in associatedRecievers {
-            receiver.onDataUpdate(withData: self.item!)
+        for receiver in receivers {
+            receiver.value(self.value)
+        }
+    }
+    
+    func getItem() -> ValueType {
+        return value
+    }
+ 
+    func registerReceiver<Obj: AnyObject>(_ receiver: Obj, onDataUpdate: @escaping (Obj, ValueType) -> Void) {
+        let id = UUID()
+        receivers[id] = { [weak self, weak receiver] value in
+            guard let receiver = receiver else {
+                self?.receivers[id] = nil
+                return
+            }
+            
+            onDataUpdate(receiver,  value)
         }
         
-        return self.item!
-    }
-    
-    func getItem() -> T {
-        return item!
-    }
-    
-    func registerReceiver(_ receiver: Receiver<T>) {
-        if !associatedRecievers.contains(receiver) {
-            associatedRecievers.append(receiver)
+        guard let receiver = receivers[id] else {
+            return
         }
-        receiver.onDataUpdate(withData: self.item!)
-    }
-    
-    func deregisterReceiver(_ receiver: Receiver<T>) {
-        if let index = associatedRecievers.firstIndex(of: receiver) {
-            associatedRecievers.remove(at: index)
-        }
+        
+        receiver(self.value)
     }
 }
+
 
 protocol DataObject: AnyObject {
     func updateData(with data: Self)

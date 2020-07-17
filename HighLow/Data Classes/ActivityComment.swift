@@ -19,7 +19,7 @@ class ActivityComment {
     var profileimage: String?
     
     init(_ data: NSDictionary) {
-        _timestamp = data["_timestamp"] as? String
+        _timestamp = data["timestamp"] as? String
         commentid = data["commentid"] as? String
         uid = data["uid"] as? String
         message = data["message"] as? String

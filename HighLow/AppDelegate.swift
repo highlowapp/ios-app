@@ -16,8 +16,10 @@ import Firebase
 import FirebaseMessaging
 import PopupDialog
 import Crisp
+import Purchases
 
 var quotes: [Quote] = []
+var DEV_MODE: Bool = true
 
 @UIApplicationMain
 
@@ -237,6 +239,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             let storyboard = UIStoryboard(name: "Tabs", bundle: nil)
             let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController") as! UITabBarController
             mainViewController.tabBar.barTintColor = getColor("White2Black")
+            UINavigationBar.appearance().barTintColor = .white
             self.window?.rootViewController = mainViewController
             self.window?.makeKeyAndVisible()
         }
@@ -299,6 +302,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         
         //UserDefaults.standard.set(false, forKey: "com.gethighlow.hasReceivedTutorial")
         CrispSDK.configure(websiteID: "d8e451b1-53f6-4306-aef1-babe2e1b36e9")
+        Purchases.debugLogsEnabled = true
+        Purchases.configure(withAPIKey: getRevenueCatPublicKey())
         
         if #available(iOS 13.0, *) {
             let standard = UINavigationBarAppearance()

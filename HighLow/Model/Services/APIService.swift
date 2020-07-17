@@ -11,7 +11,7 @@ import Alamofire
 import SwiftKeychainWrapper
 
 class APIService {
-    let base_url = "https://api.gethighlow.com"
+    let base_url = DEV_MODE ? "http://calebs-mbp:5050":"https://api.gethighlow.com"
     
     var accessToken: String?
     var refreshToken: String?
@@ -55,7 +55,13 @@ class APIService {
                 completeUrl += "?"
             }
             
-            completeUrl += key + "=" + (value as! String)
+            if let val = value as? String {
+                completeUrl += key + "=" + val
+            } else if let val = value as? Bool {
+                completeUrl += key + "=" + String(val)
+            } else if let val = value as? Int {
+                completeUrl += key + "=" + String(val)
+            }
             
             i += 1
         }
@@ -67,21 +73,22 @@ class APIService {
         NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
         var completeUrl = ""
         
-        if method == .get {
-            completeUrl = urlFromMap(url, params)
-        } else {
-            completeUrl = base_url + url
-        }
-        
         var finalParams: [String: Any] = [
             "supports_html": true
         ]
         
-        if params == nil {
+        if params != nil {
             finalParams.merge(params!, uniquingKeysWith: { (current, _) in current })
         }
+        
+        if method == .get {
+            completeUrl = urlFromMap(url, finalParams)
+        } else {
+            completeUrl = base_url + url
+        }
             
-        AF.request(completeUrl, method: method, parameters: finalParams, encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody)).responseJSON { response in
+        
+        AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody)).responseJSON { response in
             switch response.result {
             case .success(let result):
                 let json = result as! NSDictionary
@@ -133,19 +140,22 @@ class APIService {
         NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
         var completeUrl = ""
         
-        if method == .get {
-            completeUrl = urlFromMap(url, params)
-        } else {
-            completeUrl = base_url + url
-        }
+        
         
         var finalParams: [String: Any] = [
             "supports_html": true
         ]
         
-        if params == nil {
+        if params != nil {
             finalParams.merge(params!, uniquingKeysWith: { (current, _) in current })
         }
+        
+        if method == .get {
+            completeUrl = urlFromMap(url, finalParams)
+        } else {
+            completeUrl = base_url + url
+        }
+        
         
         if accessToken == nil {
             refreshAccess { success in
@@ -161,12 +171,16 @@ class APIService {
         let headers: HTTPHeaders = [
             "Authorization": "Bearer " + accessToken!
         ]
-            
-        AF.request(completeUrl, method: method, parameters: finalParams, encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseJSON { response in
+        
+        /*
+        AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseString { response in
+            print(response)
+        }*/
+        
+        AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseJSON { response in
             switch response.result {
             case .success(let result):
                 let json = result as! NSDictionary
-                
                 if let error = json["error"] as? String {
                     
                     if error == "ERROR-INVALID-TOKEN" {
@@ -179,31 +193,33 @@ class APIService {
                     onError(error)
                     return
                 }
-                
                 onSuccess(json)
                 break
             case .failure(let error):
                 onError(error.errorDescription ?? "unknown-error")
             }
         }
+        
     }
     
     func authenticatedRequest(_ url: String, method: HTTPMethod, params: [String: Any]?, file: UIImage, onSuccess: @escaping (_ json:
         NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         var completeUrl = ""
         
-        if method == .get {
-            completeUrl = urlFromMap(url, params)
-        } else {
-            completeUrl = base_url + url
-        }
+        
         
         var finalParams: [String: Any] = [
             "supports_html": true
         ]
         
-        if params == nil {
+        if params != nil {
             finalParams.merge(params!, uniquingKeysWith: { (current, _) in current })
+        }
+        
+        if method == .get {
+            completeUrl = urlFromMap(url, params)
+        } else {
+            completeUrl = base_url + url
         }
         
         if accessToken == nil {
@@ -236,7 +252,7 @@ class APIService {
                 }
             }
             
-        }, to: url, headers: headers).uploadProgress(queue: .main, closure: onProgressUpdate).responseJSON { response in
+        }, to: completeUrl, headers: headers).uploadProgress(queue: .main, closure: onProgressUpdate).responseJSON { response in
                 
                 switch response.result {
                 case .success(let uploadResult):

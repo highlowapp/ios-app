@@ -9,11 +9,68 @@
 import Foundation
 
 class ActivityResource: Resource<Activity> {
-    func update(data: NSDictionary, onError: @escaping (_ error: String) -> Void) {
+    var activityId: String? {
+        get {
+            return getItem().activityId
+        }
+    }
+    
+    var uid: String? {
+        get {
+            return getItem().uid
+        }
+    }
+    
+    var type: String? {
+        get {
+            return getItem().type
+        }
+    }
+    
+    var title: String? {
+        get {
+            return getItem().title
+        }
+    }
+    
+    var timestamp: String? {
+        get {
+            return getItem().timestamp
+        }
+    }
+    
+    var data: NSDictionary? {
+        get {
+            return getItem().data
+        }
+    }
+    
+    var date: String? {
+        get {
+            return getItem().date
+        }
+    }
+    
+    var flagged: Bool? {
+        get {
+            return getItem().flagged
+        }
+    }
+    
+    var comments: [ActivityComment]? {
+        get {
+            return getItem().comments
+        }
+    }
+    
+    func update(data: NSDictionary, onSuccess: @escaping () -> Void, onError: @escaping (_ error: String) -> Void) {
         let activity = getItem()
-        ActivityService.shared.updateActivity(activity_id: activity.activityId!, data: data, onSuccess: { newActivity in
-            activity.data = data
-            self.set(item: activity)
+        activity.data = data
+        activity.updateTitle()
+        
+        ActivityService.shared.updateActivity(activity_id: activity.activityId!, data: activity.data!, onSuccess: { newActivity in
+            self.set(item: newActivity)
+            onSuccess()
         }, onError: onError)
     }
     

@@ -16,6 +16,7 @@ target 'HighLow' do
   pod 'TagListView', '~> 1.0'
   pod 'PopupDialog', '~> 1.1'
   pod 'WordPress-Aztec-iOS'
+  pod 'Purchases', '3.4.0'
   pod 'Gridicons', :podspec => 'https://raw.github.com/Automattic/Gridicons-iOS/develop/Gridicons.podspec'
 
   target 'HighLowTests' do

@@ -24,7 +24,7 @@ class User: DataObject {
         firstname = data["firstname"] as? String
         lastname = data["lastname"] as? String
         uid = data["uid"] as? String
-        profileimage = (data["profileimage"] as! String)
+        profileimage = (data["profileimage"] as? String)
         streak = data["streak"] as? Int
         bio = data["bio"] as? String
         

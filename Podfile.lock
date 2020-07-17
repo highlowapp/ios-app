@@ -89,6 +89,7 @@ PODS:
     - DynamicBlurView (~> 4.0)
   - PromisesObjC (1.2.8)
   - Protobuf (3.12.0)
+  - Purchases (3.4.0)
   - SwiftGifOrigin (1.7.0)
   - SwiftKeychainWrapper (3.4.0)
   - TagListView (1.4.0)
@@ -102,6 +103,7 @@ DEPENDENCIES:
   - Gridicons (from `https://raw.github.com/Automattic/Gridicons-iOS/develop/Gridicons.podspec`)
   - JTAppleCalendar (= 8.0.2)
   - PopupDialog (~> 1.1)
+  - Purchases (= 3.4.0)
   - SwiftGifOrigin
   - SwiftKeychainWrapper
   - TagListView (~> 1.0)
@@ -132,6 +134,7 @@ SPEC REPOS:
     - PopupDialog
     - PromisesObjC
     - Protobuf
+    - Purchases
     - SwiftGifOrigin
     - SwiftKeychainWrapper
     - TagListView
@@ -166,11 +169,12 @@ SPEC CHECKSUMS:
   PopupDialog: 720c92befd8bc23c13442254945213db5612f149
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
+  Purchases: b8cac232e403ca51541a425a65992b902cecc044
   SwiftGifOrigin: fbd6cf37afcfcf97a5c3db996ddc0492e5c5c145
   SwiftKeychainWrapper: 6fc49fbf7d4a6b0772917acb0e53a1639f6078d6
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
   WordPress-Aztec-iOS: 25a9cbe204a22dd6d540d66d90b8a889421e0b42
 
-PODFILE CHECKSUM: ae7180d2fae5674d2f5f95c8e2460ed5dc8f2daf
+PODFILE CHECKSUM: 4478fc56ec548eaad8d1d291d959a54504e85f8e
 
 COCOAPODS: 1.8.4

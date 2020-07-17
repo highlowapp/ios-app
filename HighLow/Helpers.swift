@@ -144,6 +144,18 @@ func getHostName() -> String {
     return "https://api.gethighlow.com"
 }
 
+func getRevenueCatPublicKey() -> String {
+    var nsDict: NSDictionary?
+    if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
+        nsDict = NSDictionary(contentsOfFile: path)
+        
+        return nsDict?.object(forKey: "revenuecatkey") as! String
+    }
+    else {
+        return ""
+    }
+}
+
 
 
 func themeOverride() -> String {
@@ -214,7 +226,7 @@ func switchToMain() {
     else {
         
         let storyboard = UIStoryboard(name: "Tabs", bundle: nil)
-        let mainViewController = storyboard.instantiateViewController(withIdentifier: "MainViewController") as! UITabBarController
+        let mainViewController = CustomTabBarController()
         mainViewController.tabBar.barTintColor = getColor("White2Black")
         
         UIApplication.shared.keyWindow?.rootViewController = mainViewController
@@ -321,7 +333,7 @@ func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void
                     }
                     
                 }
-            case .failure(let _):
+            case .failure( _):
                 return
             }
             

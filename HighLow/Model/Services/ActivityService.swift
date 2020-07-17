@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import UIKit
+import Alamofire
 
 class ActivityService {
     static let shared = ActivityService()
@@ -22,8 +24,9 @@ class ActivityService {
     func updateActivity(activity_id: String, data: NSDictionary, onSuccess: @escaping (_ activity: Activity) -> Void, onError: @escaping (_ error: String) -> Void) {
         do {
         let serializedData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+        let jsonStr = NSString(data: serializedData, encoding: String.Encoding.utf8.rawValue)! as String
         let params = [
-            "data": serializedData
+            "data": jsonStr
         ]
             APIService.shared.authenticatedRequest("/user/activities/" + activity_id, method: .post, params: params, onSuccess: { json in
                 onSuccess(Activity(data: json))
@@ -52,15 +55,27 @@ class ActivityService {
         }, onError: onError)
     }
     
-    func createActivity(type: Int, data: NSDictionary, onSuccess: @escaping (_ activity: Activity) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func createActivity(type: String, data: NSDictionary, onSuccess: @escaping (_ activity: ActivityResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         do {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            
+            let today = Date()
+            
+            let dateStr = dateFormatter.string(from: today)
+            
             let serializedData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+            let jsonStr = NSString(data: serializedData, encoding: String.Encoding.utf8.rawValue)! as String
+            
             let params: [String: Any] = [
                 "type": type,
-                "data": serializedData
+                "data": jsonStr,
+                "date": dateStr
             ]
+            
             APIService.shared.authenticatedRequest("/user/activities", method: .post, params: params, onSuccess: { json in
-                onSuccess(Activity(data: json))
+                let activity = ActivityManager.shared.saveActivity(Activity(data: json))
+                onSuccess(activity)
             }, onError: onError)
         } catch {
             onError(error.localizedDescription)
@@ -124,6 +139,27 @@ class ActivityService {
     func unFlagActivity(activity_id: String, onSuccess: @escaping (_ activity: Activity) -> Void, onError: @escaping (_ error: String) -> Void) {
         APIService.shared.authenticatedRequest("/user/activities/" + activity_id + "/flag", method: .delete, params: nil, onSuccess: { json in
             onSuccess(Activity(data: json))
+        }, onError: onError)
+    }
+
+    func addImage(img: UIImage, onSuccess: @escaping (_ url: String) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
+        APIService.shared.authenticatedRequest("/user/activities/addImage", method: .post, params: [:], file: img, onSuccess: { json in
+            let url = json["url"] as! String
+            onSuccess(url)
+        }, onError: onError, onProgressUpdate: onProgressUpdate)
+    }
+    
+    func getDiaryEntries(page: Int, onSuccess: @escaping (_ activities: [Activity]) -> Void, onError: @escaping (_ error: String) -> Void) {
+        let params = [
+            "page": page
+        ]
+        APIService.shared.authenticatedRequest("/user/diaryEntries", method: .get, params: params, onSuccess: { json in
+            let activitiesJson = json.value(forKey: "activities") as! [NSDictionary]
+            print(activitiesJson)
+            let activities = activitiesJson.map { item in
+                return Activity(data: item)
+            }
+            onSuccess(activities)
         }, onError: onError)
     }
 }

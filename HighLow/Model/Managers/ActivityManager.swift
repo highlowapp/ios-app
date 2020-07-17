@@ -13,21 +13,24 @@ class ActivityManager {
     
     private init() {}
     
-    var activityCache: [String: Resource<Activity>] = [:]
+    var activityCache: [String: ActivityResource] = [:]
     
-    func getActivity(activityId: String, onSuccess: @escaping (_ activity: Resource<Activity>) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func getActivity(activityId: String, onSuccess: @escaping (_ activity: ActivityResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         if let activity = activityCache[activityId] {
             onSuccess(activity)
         } else {
             ActivityService.shared.getActivity(activity_id: activityId, onSuccess: { activity in
-                self.activityCache[activityId] = Resource<Activity>(activity)
+                self.activityCache[activityId] = ActivityResource(activity)
                 onSuccess(self.activityCache[activityId]!)
             }, onError: onError)
         }
     }
     
-    func saveActivity(_ activity: Activity) -> Resource<Activity> {
-        activityCache[activity.activityId!] = Resource<Activity>(activity)
+    func saveActivity(_ activity: Activity) -> ActivityResource {
+        if activityCache[activity.activityId!] != nil {
+            return activityCache[activity.activityId!]!
+        }
+        activityCache[activity.activityId!] = ActivityResource(activity)
         return activityCache[activity.activityId!]!
     }
 }

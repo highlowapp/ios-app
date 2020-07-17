@@ -13,9 +13,9 @@ class UserManager {
     
     private init() {}
     
-    var usersCache: [String: Resource<User>] = [:]
+    var usersCache: [String: UserResource] = [:]
     
-    func getUser(uid: String? = nil, onSuccess: @escaping (_ user: Resource<User>) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func getUser(uid: String? = nil, onSuccess: @escaping (_ user: UserResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         let _uid = uid ?? AuthService.shared.uid
         if _uid == nil {
             AuthService.shared.logOut()
@@ -26,15 +26,26 @@ class UserManager {
         } else {
             
             UserService.shared.getUser(uid: _uid!, onSuccess: { user in
-                self.usersCache[_uid!] = Resource<User>(user)
+                self.usersCache[_uid!] = UserResource(user)
                 onSuccess(self.usersCache[_uid!]!)
             }, onError: onError)
             
         }
     }
     
-    func saveUser(user: User) -> Resource<User> {
-        usersCache[user.uid!] = Resource<User>(user)
+    func getCurrentUser() -> UserResource {
+        let _uid = AuthService.shared.uid
+        if let user = usersCache[_uid!] {
+            return user
+        }
+        return UserResource()
+    }
+    
+    func saveUser(user: User) -> UserResource {
+        if usersCache[user.uid!] != nil {
+            return usersCache[user.uid!]!
+        }
+        usersCache[user.uid!] = UserResource(user)
         return usersCache[user.uid!]!
     }
 }

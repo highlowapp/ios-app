@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+      <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+        <style>
+
+            [contenteditable=true]:empty:before {
+                content: 'Type here';
+                pointer-events: none;
+                display: block; /* For Firefox */
+                color: lightgray;
+            }
+
+            .block {
+                display: flex;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                width: 90%;
+                flex-direction: row;
+            }
+            
+            .block h1, h2, p {
+                margin: 0px;
+                width: 100%;
+            }
+
+            .block.h1 {
+                margin-top: 25px;
+            }
+
+            .img-placeholder {
+                width: 100%;
+                background: lightgray;
+                height: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                margin-top: 15px;
+                margin-bottom: 15px;
+            }
+
+            img {
+                width: 100%;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                border-radius: 3px;
+            }
+
+            .img-placeholder .material-icons {
+                font-size: 50px;
+            }
+
+            .ghost {
+                background-color: rgb(240, 240, 240);
+                visibility: hidden;
+            }
+
+            html, body {
+                font-family: 'Avenir';
+                max-width: 100%;
+                overflow-x: hidden;
+                background: white;
+                padding-bottom: 100px;
+            }
+
+            h1,h2,p,blockquote:focus {
+                outline: none;
+            }
+
+            h1,h2,p {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            blockquote {
+                background: #f9f9f9;
+                border-left: 10px solid #ccc;
+                padding: 0.5em 10px;
+                margin-left: 0px;
+                quotes: "\201C""\201D""\2018""\2019";
+                width: 100%;
+            }
+
+            .blockHandle {
+                cursor: grab;
+                margin-right: 10px;
+                align-items: center;
+                color: rgb(235, 235, 235);
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+            .blockHandle.locked {
+                cursor: not-allowed;
+            }
+
+            
+            @font-face {
+                font-family: 'Roboto';
+                font-style: normal;
+                src: local('Roboto'),
+                    url(./Roboto/Roboto-Regular.ttf) format('truetype');
+            }
+
+            @font-face {
+                font-family: 'Avenir';
+                src: local('Avenir'),
+                    url(./Avenir/AvenirLTStd-Medium.otf);
+            }
+
+            .material-icons {
+                font-family: 'Material Icons';
+                font-size: 24px;  /* Preferred icon size */
+                font-style: normal;
+                display: inline-flex;
+                vertical-align: middle;
+            }
+
+            #trash-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                text-align: center;
+                padding-bottom: 35%;
+            }
+
+            #trash {
+                background-color: red;
+                color: white;
+                text-align: center;
+                padding: 10px;
+                padding-left: 15px;
+                padding-right: 15px;
+                transition: 0.2s;
+                height: 25px;
+                display: inline-block;
+                border-radius: 40px;
+                align-items: center;
+                justify-content: center;
+                font-size: 17px;
+                transform: scale(0);
+            }
+
+            #trash :not(.deleteLabel) {
+                display: none;
+            }
+
+            #editor {
+                transition: 0.3s;
+            }
+            
+            i.deleteLabel {
+                font-size: 25px;
+            }
+
+            #newBlock {
+                margin-top: 20px;
+                width: 100%;
+                text-align: center;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                color: gray;
+            }
+
+            #newBlock span {
+                background-color: lightgray;
+                border-radius: 5px;
+                padding: 10px;
+                display: inline-flex;
+                align-items: center;
+                flex-direction: row;
+                justify-content: center;
+                width: auto;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div id='trash-container'>
+            <div id='trash'>
+                <i class="deleteLabel material-icons">delete</i> Drop to delete
+            </div>
+        </div>
+
+        <div id='editor'>
+
+        </div>
+
+        <div id='newBlock'><span><i class='material-icons'>add</i>New Block</span></div>
+        
+        <script src='./Sortable.js'></script>
+        <script src='./Block.js'></script>
+        <script src='./BlockManager.js'></script>
+        
+        <script>
+            const editor = document.getElementById('editor')
+            const trash = document.getElementById('trash')
+            const newBlock = document.getElementById('newBlock')
+            const blockManager = new BlockManager(editor)
+
+            let hasEdited = false
+
+            let timer = undefined
+
+            let templates = {
+                example: [
+                    {
+                        type: 'quote',
+                        content: 'Test',
+                        editable: true
+                    }
+                ],
+                highlow: [
+                    {
+                        type: 'h1', 
+                        content: 'High',
+                        editable: false
+                    },
+                    {
+                        type: 'img'
+                    },
+                    {
+                        type: 'p',
+                        content: '',
+                        editable: true
+                    },
+                    {
+                        type: 'h1',
+                        content: 'Low',
+                        editable: false
+                    },
+                    {
+                        type: 'img'
+                    },
+                    {
+                        type: 'p',
+                        content: '',
+                        editable: true
+                    }
+                ],
+                diary: [
+                    {
+                        type: 'h1',
+                        content: '',
+                        editable: true
+                    }
+                ]
+            }
+
+            new Sortable(editor, {
+                group: 'blocks',
+                animation: 150,
+                handle: '.blockHandle',
+                ghostClass: 'ghost',
+                filter: '.locked',
+                onStart: (event) => {
+                    trash.style.transform = 'scale(1)'
+                },
+                onEnd: (event) => {
+                    trash.style.transform = 'scale(0)'
+                    save()
+                }
+            });
+
+            new Sortable(trash, {
+                group: 'blocks',
+                animation: 0,
+                sort:  false,
+                ghostClass: 'ghost',
+                filter: '',
+                onEnd: function() {
+                    save()
+                }
+            })
+
+            editor.addEventListener('keydown', function(event) {
+                if (!hasEdited) {
+                    hasEdited = true
+
+                    if (window.webkit && window.webkit.messageHandlers) {
+                        window.webkit.messageHandlers.hasEdited.postMessage('hasEdited')
+                    } else {
+                        /*Show premium screen on web version*/
+                    }
+                }
+
+                clearTimeout(timer)
+                timer = setTimeout(save, 500)
+
+                if (event.key === 'Enter') {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    const currentBlock = getCurrentEditingIndex()
+                    const newBlock = new PBlock({
+                        editable: true,
+                        content: ''
+                    })
+                    const didWork = blockManager.addBlockAfter(newBlock, currentBlock)
+                    
+                    if (didWork) {
+                        const blockEl = newBlock.el,
+                        s = window.getSelection(),
+                        r = document.createRange()
+                        blockEl.innerHTML = '\u00a0'
+                        r.selectNodeContents(blockEl)
+                        s.removeAllRanges()
+                        s.addRange(r)
+                        document.execCommand('delete', false, null)
+                    }
+                    return false
+                }
+                else if (event.keyCode == 8 || event.keyCode == 46) {
+                    const currentBlock = getCurrentEditingIndex()
+                    const previousBlock = blockManager.getBlockBefore(currentBlock.id)
+
+                    if (document.activeElement.innerText.trim().length > 0) { return true }
+                    
+                    event.preventDefault()
+                    event.stopPropagation()
+                    if (previousBlock.id !== currentBlock.id && previousBlock.editable) {
+                        currentBlock.parentElement.removeChild(currentBlock)
+
+                        let blockEl = previousBlock.el,
+                        s = window.getSelection(),
+                        r = document.createRange()
+                        r.selectNodeContents(blockEl)
+                        r.collapse(false)
+                        s.removeAllRanges()
+                        s.addRange(r)
+                        return false
+                    }
+                } 
+            })
+            
+            function createImageBlock() {
+                const currentBlock = getCurrentEditingIndex()
+                const imgBlock = blockManager.addBlockAfter(new ImgBlock({editable: true}), currentBlock)
+                if (imgBlock) {
+                    const newBlock = blockManager.addBlockAfter(new PBlock({editable: true, content: ''}), imgBlock.el)
+                    const blockEl = newBlock.el,
+                        s = window.getSelection(),
+                        r = document.createRange()
+                        blockEl.innerHTML = '\u00a0'
+                        r.selectNodeContents(blockEl)
+                        s.removeAllRanges()
+                        s.addRange(r)
+                        document.execCommand('delete', false, null)
+                }
+            }
+
+            function createH1Block() {
+                const currentBlock = getCurrentEditingIndex()
+                const newBlock = blockManager.addBlockAfter(new H1Block({editable: true, content: ''}), currentBlock)
+                if (newBlock) {
+                    const blockEl = newBlock.el,
+                        s = window.getSelection(),
+                        r = document.createRange()
+                        blockEl.innerHTML = '\u00a0'
+                        r.selectNodeContents(blockEl)
+                        s.removeAllRanges()
+                        s.addRange(r)
+                        document.execCommand('delete', false, null)
+                }
+            }
+
+            function createH2Block() {
+                const currentBlock = getCurrentEditingIndex()
+                const newBlock = blockManager.addBlockAfter(new H2Block({editable: true, content: ''}), currentBlock)
+                if (newBlock) {
+                    const blockEl = newBlock.el,
+                        s = window.getSelection(),
+                        r = document.createRange()
+                        blockEl.innerHTML = '\u00a0'
+                        r.selectNodeContents(blockEl)
+                        s.removeAllRanges()
+                        s.addRange(r)
+                        document.execCommand('delete', false, null)
+                }
+            }
+
+            function createQuoteBlock() {
+                const currentBlock = getCurrentEditingIndex()
+                const newBlock = blockManager.addBlockAfter(new QuoteBlock({editable: true, content: ''}), currentBlock)
+                if (newBlock) {
+                    const blockEl = newBlock.el,
+                        s = window.getSelection(),
+                        r = document.createRange()
+                        blockEl.innerHTML = '\u00a0'
+                        r.selectNodeContents(blockEl)
+                        s.removeAllRanges()
+                        s.addRange(r)
+                        document.execCommand('delete', false, null)
+                }
+            }
+
+            function appendBlock() {
+                save()
+                blockManager.appendBlock(new PBlock({editable: true, content: ''}))
+            }
+
+            newBlock.onclick = appendBlock
+
+            function getCurrentEditingIndex() {
+                const focused = document.activeElement
+                let block = focused
+                while (!block.classList.contains('block')) {
+                    block = block.parentElement
+                }
+                return block
+            }
+
+            function updateBlock(blockId, data) {
+                blockManager.updateBlock(blockId, data)
+            }
+            
+            function enablePremiumFeatures() {
+                blockManager.unlockPremium()
+            }
+
+            function setType(type) {
+                let blocks = templates[type]
+                blockManager.loadBlocks(blocks)
+            }
+
+            function setBlocks(blocks) {
+                blockManager.loadBlocks(blocks)
+            }
+
+            function save() {
+                if (window.webkit && window.webkit.messageHandlers) {
+                    window.webkit.messageHandlers.save.postMessage({
+                        'blocks': blockManager.exportJson()
+                    })
+                } else {
+                    /*Show premium screen on web version*/
+                }
+            }
+        </script>
+    </body>
+</html>

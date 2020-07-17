@@ -11,6 +11,9 @@ import UIKit
 import Alamofire
 
 class UserResource: Resource<User> {
+    convenience init() {
+        self.init(User(data: ["uid":AuthService.shared.uid]))
+    }
     
     func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         let user = getItem()
@@ -31,7 +34,7 @@ class UserResource: Resource<User> {
         let user = getItem()
         UserService.shared.getFriendsForUser(uid: user.uid, onSuccess: { users in
             let userResources = users.map { user in
-                return UserManager.shared.saveUser(user: user) as! UserResource
+                return UserManager.shared.saveUser(user: user)
             }
             onSuccess(userResources)
         }, onError: onError)
@@ -61,7 +64,7 @@ class UserResource: Resource<User> {
     func getPendingFriendships(onSuccess: @escaping (_ pendingFriendships: [UserResource]) -> Void, onError: @escaping (_ error: String) -> Void) {
         UserService.shared.getPendingFriendships(onSuccess: { pendingFriendships in
             let userResources = pendingFriendships.map { user in
-                return UserManager.shared.saveUser(user: user) as! UserResource
+                return UserManager.shared.saveUser(user: user)
             }
             onSuccess(userResources)
         }, onError: onError)
@@ -71,7 +74,7 @@ class UserResource: Resource<User> {
         let user = getItem()
         ActivityService.shared.getForUser(uid: user.uid!, page: page, onSuccess: { activities in
             let activityResources = activities.map { activity in
-                return ActivityManager.shared.saveActivity(activity) as! ActivityResource
+                return ActivityManager.shared.saveActivity(activity)
             }
             onSuccess(activityResources)
         }, onError: onError)
@@ -80,7 +83,7 @@ class UserResource: Resource<User> {
     func searchUsers(search: String, onSuccess: @escaping (_ users: [UserResource]) -> Void, onError: @escaping (_ error: String) -> Void) {
         UserService.shared.searchUsers(search: search, onSuccess: { users in
             let userResources = users.map { user in
-                return UserManager.shared.saveUser(user: user) as! UserResource
+                return UserManager.shared.saveUser(user: user)
             }
             onSuccess(userResources)
         }, onError: onError)
@@ -90,6 +93,13 @@ class UserResource: Resource<User> {
         let user = getItem()
         ActivityService.shared.getActivityChart(uid: user.uid!, onSuccess: onSuccess, onError: onError)
     }
-    
-    //  FEED  //
+   
+    func getDiaryEntries(page: Int, onSuccess: @escaping (_ activities: [ActivityResource]) -> Void, onError: @escaping (_ error: String) -> Void) {
+        ActivityService.shared.getDiaryEntries(page: page, onSuccess: { activities in
+            let activityResources = activities.map { activity in
+                return ActivityManager.shared.saveActivity(activity)
+            }
+            onSuccess(activityResources)
+        }, onError: onError)
+    }
 }

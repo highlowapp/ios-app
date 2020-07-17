@@ -45,7 +45,7 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         
         //Navigation bar
         self.title = "Add Friends"
-        navigationController?.navigationBar.barTintColor = AppColors.primary
+        //navigationController?.navigationBar.barTintColor = AppColors.primary
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.isTranslucent = false

@@ -129,7 +129,7 @@ class ProfileTableViewController: UITableViewController, EditProfileViewControll
         
         navigationController?.navigationBar.barStyle = .black
         
-        navigationController?.navigationBar.barTintColor = AppColors.primary
+        //navigationController?.navigationBar.barTintColor = AppColors.primary
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.isTranslucent = false
         

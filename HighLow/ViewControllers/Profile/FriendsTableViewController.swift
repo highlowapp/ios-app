@@ -55,7 +55,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
         self.navigationController?.navigationBar.barStyle = .black
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.tintColor = .white
-        self.navigationController?.navigationBar.barTintColor = AppColors.primary
+        //self.navigationController?.navigationBar.barTintColor = AppColors.primary
         self.title = "Friends"
         
         //Edit button

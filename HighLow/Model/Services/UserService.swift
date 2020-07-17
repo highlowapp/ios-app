@@ -42,23 +42,42 @@ class UserService {
         }, onError: onError, onProgressUpdate: onProgressUpdate)
     }
     
-    //  ADD FEED  //
+    func getFeed(page: Int, onSuccess: @escaping (_ json: [NSDictionary]) -> Void, onError: @escaping (_ error: String) -> Void) {
+        APIService.shared.authenticatedRequest("/user/newFeed/page/" + String(page), method: .get, params: nil, onSuccess: { json in
+            let feedArr = json["feed"] as! [NSDictionary]
+            var feed: [NSDictionary] = []
+            for item in feedArr {
+                var newItem: [String: Any] = [
+                    "type": item["type"] as Any
+                ]
+                if item["type"] as! String == "activity" {
+                    newItem["activity"] = ActivityManager.shared.saveActivity(Activity(data: item["activity"] as! NSDictionary))
+                    newItem["user"] = UserManager.shared.saveUser(user: User(data: item["user"] as! NSDictionary))
+                }
+                
+                newItem.merge(item as! [String : Any]) { a, b in
+                    return a
+                }
+                
+                feed.append(newItem as NSDictionary)
+            }
+            onSuccess(feed)
+        }, onError: onError)
+    }
     
     func getFriendsForUser(uid: String?, onSuccess: @escaping (_ friends: [User]) -> Void, onError: @escaping (_ error: String) -> Void) {
-        let params = [
-            "uid": uid
+        let params: [String: Any] = [
+            "uid": uid as Any
         ]
         
         APIService.shared.authenticatedRequest("/user/friends", method: .get, params: params, onSuccess: { json in
-            do {
-                let friendsJson = try json.value(forKey: "friends") as! [NSDictionary]
-                let friends = try friendsJson.map { item in
-                    return User(data: item)
-                }
-                onSuccess(friends)
-            } catch {
-                onError(error.localizedDescription)
+            
+            let friendsJson = json.value(forKey: "friends") as! [NSDictionary]
+            let friends = friendsJson.map { item in
+                return User(data: item)
             }
+            onSuccess(friends)
+            
         }, onError: onError)
     }
     

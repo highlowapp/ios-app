@@ -14,6 +14,11 @@ class AuthService {
     static let shared = AuthService()
     
     var uid: String?
+    var currentUser: UserResource {
+        get {
+            return UserManager.shared.getCurrentUser()
+        }
+    }
     
     private init() {
         uid = KeychainWrapper.standard.string(forKey: "uid")
@@ -96,4 +101,5 @@ class AuthService {
             onSuccess(json)
         }, onError: onError)
     }
+    
 }

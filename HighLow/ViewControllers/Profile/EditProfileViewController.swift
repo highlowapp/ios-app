@@ -17,7 +17,7 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         
         navigationController.navigationBar.tintColor = .white
         navigationController.navigationBar.barStyle = .black
-        navigationController.navigationBar.barTintColor = AppColors.primary
+        //navigationController.navigationBar.barTintColor = AppColors.primary
         navigationController.navigationBar.isTranslucent = false
         
         editInterestsViewController.delegate = self
