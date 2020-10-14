@@ -9,6 +9,13 @@
 import Foundation
 import UIKit
 
+enum ActivityType: String {
+    case highlow
+    case diary
+    case audio
+    case meditation
+}
+
 class Activity: DataObject {
     var activityId: String?
     var uid: String?
@@ -58,7 +65,7 @@ class Activity: DataObject {
     static func getTitle(forActivity activity: Activity) -> String {
         let data = activity.data
         
-        if activity.type == "diary" {
+        if activity.type == "diary" || activity.type == "highlow" {
             if let blocks = data!["blocks"] as? [NSDictionary] {
                 for block in blocks {
                     if let type = block["type"] as? String {
@@ -80,7 +87,7 @@ class Activity: DataObject {
             }
         }
     
-        return "Untitled Entry"
+        return niceDate()
     }
 }
 

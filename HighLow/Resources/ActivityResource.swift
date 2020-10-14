@@ -88,10 +88,11 @@ class ActivityResource: Resource<Activity> {
         }, onError: onError)
     }
     
-    func setSharingPolicy(category: String, uids: [String]? = nil, onError: @escaping (_ error: String) -> Void) {
+    func setSharingPolicy(category: String, uids: [String]? = nil, onSuccess: @escaping () -> Void, onError: @escaping (_ error: String) -> Void) {
         let activity = getItem()
         ActivityService.shared.setSharingPolicy(activity_id: activity.activityId!, category: category, uids: uids, onSuccess: { otherActivity in
-            
+            ActivityManager.shared.saveActivity(otherActivity)
+            onSuccess()
         }, onError: onError)
     }
     

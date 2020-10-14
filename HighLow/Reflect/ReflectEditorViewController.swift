@@ -77,7 +77,7 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        configureNavBar()
         let config = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
         userContentController.add(self, name: "chooseImage")
@@ -103,6 +103,12 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         imagePicker.delegate = self
         imagePicker.allowsEditing = true
         imagePicker.mediaTypes = ["public.image"]
+        
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
     
     func saveDocument(_ blocks: NSDictionary) {
@@ -165,7 +171,6 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         
         if let img = info[.editedImage] {
             //Upload new image, get link, and add it to img block
-            print("Hi")
             uploadImage(img as! UIImage)
         }
         
@@ -195,7 +200,6 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         ActivityService.shared.addImage(img: img, onSuccess: { url in
             self.editor?.evaluateJavaScript("updateBlock('\(self.currentBlockId ?? "")', {'url': '\(url)'})", completionHandler: nil)
         }, onError: { error in
-            print(error)
         }, onProgressUpdate: { progress in
             print(progress.fractionCompleted)
         })

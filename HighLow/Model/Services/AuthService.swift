@@ -13,12 +13,7 @@ import GoogleSignIn
 class AuthService {
     static let shared = AuthService()
     
-    var uid: String?
-    var currentUser: UserResource {
-        get {
-            return UserManager.shared.getCurrentUser()
-        }
-    }
+    var uid: String? 
     
     private init() {
         uid = KeychainWrapper.standard.string(forKey: "uid")
@@ -102,4 +97,15 @@ class AuthService {
         }, onError: onError)
     }
     
+    func isLoggedIn(ifLoggedIn: @escaping (_ uid: String) -> Void, ifNotLoggedIn: @escaping () -> Void) {
+        APIService.shared.authenticatedRequest("/user/isLoggedIn", method: .get, params: nil, onSuccess: { result in
+            if let uid = result["uid"] as? String {
+                ifLoggedIn(uid)
+            } else {
+                ifNotLoggedIn()
+            }
+        }, onError: { error in
+            ifNotLoggedIn()
+        })
+    }
 }

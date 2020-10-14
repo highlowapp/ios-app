@@ -15,6 +15,54 @@ class UserResource: Resource<User> {
         self.init(User(data: ["uid":AuthService.shared.uid]))
     }
     
+    var firstname: String? {
+        get {
+            return getItem().firstname
+        }
+    }
+    
+    var lastname: String? {
+        get {
+            return getItem().lastname
+        }
+    }
+    
+    var uid: String? {
+        get {
+            return getItem().uid
+        }
+    }
+    
+    var email: String? {
+        get {
+            return getItem().email
+        }
+    }
+    
+    var profileimage: String? {
+        get {
+            return getItem().profileimage
+        }
+    }
+    
+    var streak: Int? {
+        get {
+            return getItem().streak
+        }
+    }
+    
+    var bio: String? {
+        get {
+            return getItem().bio
+        }
+    }
+    
+    var fullName: String? {
+        get {
+            return getItem().fullName()
+        }
+    }
+    
     func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         let user = getItem()
         

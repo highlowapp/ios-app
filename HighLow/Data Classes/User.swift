@@ -30,6 +30,13 @@ class User: DataObject {
         
     }
     
+    func fullName() -> String? {
+        guard let first = firstname, let last = lastname else {
+            return nil
+        }
+        return first + " " + last
+    }
+    
     func updateData(with data: User) {
         firstname = data.firstname ?? firstname
         lastname = data.lastname ?? lastname

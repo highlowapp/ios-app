@@ -33,18 +33,12 @@ class UserManager {
         }
     }
     
-    func getCurrentUser() -> UserResource {
+    func getCurrentUser(onSuccess: @escaping (_ user: UserResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         let _uid = AuthService.shared.uid
-        if let user = usersCache[_uid!] {
-            return user
-        }
-        return UserResource()
+        getUser(onSuccess: onSuccess, onError: onError)
     }
     
-    func saveUser(user: User) -> UserResource {
-        if usersCache[user.uid!] != nil {
-            return usersCache[user.uid!]!
-        }
+    @discardableResult func saveUser(user: User) -> UserResource {
         usersCache[user.uid!] = UserResource(user)
         return usersCache[user.uid!]!
     }

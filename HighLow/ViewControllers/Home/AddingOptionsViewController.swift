@@ -12,10 +12,14 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
     weak var delegate: AddingOptionsViewControllerDelegate?
     
     let items: [[AddOption]] = [
-        [AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)), AddOption(image: "HighLowSmallIcon", title: "High/Low", action: #selector(createHighLow)), AddOption(image: "AudioDiarySmallIcon", title: "Audio Diary", action: #selector(createDiaryEntry)),
-            AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry))],
-        [AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)), AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)), AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
-            AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry))]
+        [AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
+         AddOption(image: "HighLowSmallIcon", title: "High/Low", action: #selector(createHighLow)),
+         AddOption(image: "AudioDiarySmallIcon", title: "Audio Diary", action: #selector(createAudioEntry)),
+         AddOption(image: "Meditation", title: "Meditation", action: #selector(startMeditationSession))],
+        [AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
+         AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
+         AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
+         AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry))]
     ]
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -86,7 +90,7 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
                         ]
                     ]
                 ]
-                ActivityService.shared.createActivity(type: "diary", data: data, onSuccess: { activity in
+                ActivityService.shared.createActivity(type: .diary, data: data, onSuccess: { activity in
                     
                     NotificationCenter.default.post(name: NSNotification.Name("updatedDiary"), object: nil)
                     
@@ -95,7 +99,6 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
                     navController.pushViewController(editor, animated: true)
                     
                 }, onError: { error in
-                    print(error)
                 })
             }
         }
@@ -136,7 +139,7 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
                         ],
                     ]
                 ]
-                ActivityService.shared.createActivity(type: "highlow", data: data, onSuccess: { activity in
+                ActivityService.shared.createActivity(type: .highlow, data: data, onSuccess: { activity in
                     
                     let editor = DiaryEditorViewController()
                     editor.activity = activity
@@ -149,6 +152,16 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
         }
     }
 
+    @objc func createAudioEntry() {
+        let recordAudioViewController = RecordAudioDiaryViewController()
+        self.present(recordAudioViewController, animated: true)
+    }
+    
+    @objc func startMeditationSession() {
+        let startMeditationSessionViewController = StartMeditationSessionViewController()
+        startMeditationSessionViewController.modalPresentationStyle = .fullScreen
+        self.present(startMeditationSessionViewController, animated: true)
+    }
 }
 
 

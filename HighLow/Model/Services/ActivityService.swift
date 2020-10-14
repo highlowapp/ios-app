@@ -55,7 +55,7 @@ class ActivityService {
         }, onError: onError)
     }
     
-    func createActivity(type: String, data: NSDictionary, onSuccess: @escaping (_ activity: ActivityResource) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func createActivity(type: ActivityType, data: NSDictionary, onSuccess: @escaping (_ activity: ActivityResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         do {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -89,9 +89,8 @@ class ActivityService {
     }
     
     func setSharingPolicy(activity_id: String, category: String, uids: [String]? = nil, onSuccess: @escaping (_ activity: Activity) -> Void, onError: @escaping (_ error: String) -> Void) {
-        var params: [String: Any] = [
-            "category": category
-        ]
+        var params: [String: Any] = [:]
+        params["category"] = category
         if uids != nil {
             params["uids"] = uids!
         }
@@ -149,13 +148,20 @@ class ActivityService {
         }, onError: onError, onProgressUpdate: onProgressUpdate)
     }
     
+    func uploadAudio(audioFile: AudioFile, onSuccess: @escaping (_ url: String) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
+        
+        APIService.shared.authenticatedRequest("/user/activities/uploadAudio", method: .post, params: [:], file: audioFile, onSuccess: { json in
+            let url = json["url"] as! String
+            onSuccess(url)
+        }, onError: onError, onProgressUpdate: onProgressUpdate)
+    }
+    
     func getDiaryEntries(page: Int, onSuccess: @escaping (_ activities: [Activity]) -> Void, onError: @escaping (_ error: String) -> Void) {
         let params = [
             "page": page
         ]
         APIService.shared.authenticatedRequest("/user/diaryEntries", method: .get, params: params, onSuccess: { json in
             let activitiesJson = json.value(forKey: "activities") as! [NSDictionary]
-            print(activitiesJson)
             let activities = activitiesJson.map { item in
                 return Activity(data: item)
             }

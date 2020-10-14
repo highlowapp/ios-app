@@ -11,6 +11,8 @@
 		43030042229F81260030C61C /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43030041229F81260030C61C /* Helpers.swift */; };
 		43030044229F88D50030C61C /* HLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43030043229F88D50030C61C /* HLButton.swift */; };
 		4303004622A089470030C61C /* CreateAccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4303004522A089470030C61C /* CreateAccountViewController.swift */; };
+		4304BD95251651CD00FA5566 /* UserActivitiesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4304BD94251651CD00FA5566 /* UserActivitiesTableViewController.swift */; };
+		4304BD992516550700FA5566 /* DiaryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4304BD982516550700FA5566 /* DiaryTableViewCell.swift */; };
 		4307AB5522B059290013044C /* EditHLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4307AB5422B059290013044C /* EditHLViewController.swift */; };
 		4307AB5922B2F24D0013044C /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4307AB5822B2F24D0013044C /* ImageCache.swift */; };
 		430860FF229986E700C4B10F /* Authentication.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 430860FE229986E700C4B10F /* Authentication.storyboard */; };
@@ -21,10 +23,19 @@
 		430B6F5C22E1320800046897 /* StreakView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430B6F5B22E1320700046897 /* StreakView.swift */; };
 		430BB46A233545F8001B48C7 /* DateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430BB469233545F8001B48C7 /* DateCell.swift */; };
 		43103CE923D5DEA500FD0EF3 /* TermsAndConditionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43103CE823D5DEA500FD0EF3 /* TermsAndConditionsViewController.swift */; };
+		4314A98F24D9C5B10094DB2D /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A98E24D9C5B10094DB2D /* AudioFile.swift */; };
+		4314A99124DC71DD0094DB2D /* AudioStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99024DC71DD0094DB2D /* AudioStreamer.swift */; };
+		4314A99424DC7D330094DB2D /* AudioStreamDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99324DC7D330094DB2D /* AudioStreamDownloadManager.swift */; };
+		4314A99624DC87A90094DB2D /* AudioStreamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99524DC87A90094DB2D /* AudioStreamParser.swift */; };
+		4314A99824DCC5B10094DB2D /* AudioStreamReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99724DCC5B10094DB2D /* AudioStreamReader.swift */; };
+		4314A99A24DDFE190094DB2D /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99924DDFE190094DB2D /* AudioPlayer.swift */; };
 		4318C0B622E6334600E393C9 /* HighLowTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4318C0B522E6334600E393C9 /* HighLowTableViewCell.swift */; };
 		43244D922388BE0E00B7B551 /* Calendar.gif in Resources */ = {isa = PBXBuildFile; fileRef = 43244D912388BE0E00B7B551 /* Calendar.gif */; };
 		43287A4622DD48BF004A2F52 /* ShowAllCommentsViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43287A4522DD48BF004A2F52 /* ShowAllCommentsViewCell.swift */; };
 		4329E3A822E7C1B8004D0735 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329E3A722E7C1B8004D0735 /* EditProfileViewController.swift */; };
+		433A662724FEFC53008AECCB /* ChooseBibleVerseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662624FEFC53008AECCB /* ChooseBibleVerseViewController.swift */; };
+		433A662924FF0715008AECCB /* SimpleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */; };
+		433A662C2501EBCD008AECCB /* MeditationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662B2501EBCD008AECCB /* MeditationViewController.swift */; };
 		4352FB3B231207FD0005F00E /* FriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */; };
 		4352FB3D231209300005F00E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3C231209300005F00E /* User.swift */; };
 		4352FB3F2314E7F60005F00E /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3E2314E7F50005F00E /* FriendTableViewCell.swift */; };
@@ -49,6 +60,14 @@
 		4358C93D23DCEF5800363CBF /* Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4358C93C23DCEF5800363CBF /* Quote.swift */; };
 		435C939723ABEBC200328EBC /* Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435C939623ABEBC100328EBC /* Constraints.swift */; };
 		435C93A023AC4CEC00328EBC /* ImageTutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435C939F23AC4CEC00328EBC /* ImageTutorialViewController.swift */; };
+		4363493324D8BB9E0055719F /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4363493224D8BB9E0055719F /* RecordButton.swift */; };
+		4363493524D8D0D50055719F /* PlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4363493424D8D0D50055719F /* PlayButton.swift */; };
+		4363493724D9BD010055719F /* ProgressLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4363493624D9BD010055719F /* ProgressLoaderView.swift */; };
+		4365B0C824D22F1B004B45D9 /* Printer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365B0C724D22F1B004B45D9 /* Printer.swift */; };
+		4365B0CA24D242DC004B45D9 /* ChooseIndividuallyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365B0C924D242DC004B45D9 /* ChooseIndividuallyTableViewController.swift */; };
+		4365B0CC24D3A1A0004B45D9 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365B0CB24D3A1A0004B45D9 /* Extensions.swift */; };
+		4365B0CE24D4A309004B45D9 /* RecordAudioDiaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365B0CD24D4A309004B45D9 /* RecordAudioDiaryViewController.swift */; };
+		4365B0D024D5B064004B45D9 /* AudioVisualizerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4365B0CF24D5B064004B45D9 /* AudioVisualizerView.swift */; };
 		436A0B89249D2358007C7A2C /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B88249D2358007C7A2C /* APIService.swift */; };
 		436A0B8B249D2FA8007C7A2C /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B8A249D2FA8007C7A2C /* AuthService.swift */; };
 		436A0B8D249D386D007C7A2C /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436A0B8C249D386D007C7A2C /* UserService.swift */; };
@@ -69,8 +88,13 @@
 		437C22A522D55A3100DB6997 /* HLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437C22A422D55A3100DB6997 /* HLImageView.swift */; };
 		437F54D12376FF560036DBC2 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437F54D02376FF560036DBC2 /* MessageTableViewCell.swift */; };
 		437F54D52379AEAD0036DBC2 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437F54D42379AEAC0036DBC2 /* Reachability.swift */; };
+		43854315250BE757005869CA /* NewProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43854314250BE757005869CA /* NewProfileViewController.swift */; };
+		438AD2F1251C257A0067CE90 /* view.html in Resources */ = {isa = PBXBuildFile; fileRef = 438AD2F0251C257A0067CE90 /* view.html */; };
 		438B9DAB2299D92200A79783 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438B9DAA2299D92200A79783 /* SignInViewController.swift */; };
 		438B9DAD2299E28800A79783 /* HLTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438B9DAC2299E28800A79783 /* HLTextField.swift */; };
+		438BFE1B24EDD2E200187110 /* ChooseMeditationFocusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438BFE1A24EDD2E100187110 /* ChooseMeditationFocusViewController.swift */; };
+		438BFE1D24F072D200187110 /* BibleAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438BFE1C24F072D200187110 /* BibleAPIService.swift */; };
+		438BFE1F24F075D900187110 /* BibleAPITypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438BFE1E24F075D900187110 /* BibleAPITypes.swift */; };
 		438D568D237AEB5600639E71 /* NotificationsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438D568C237AEB5600639E71 /* NotificationsSettingsViewController.swift */; };
 		438D568F237E293500639E71 /* HLNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438D568E237E293500639E71 /* HLNavigationController.swift */; };
 		438D5693237EEB7800639E71 /* GifTutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438D5692237EEB7800639E71 /* GifTutorialViewController.swift */; };
@@ -79,6 +103,11 @@
 		438D569923809FE300639E71 /* TutorialPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438D569823809FE300639E71 /* TutorialPageViewController.swift */; };
 		4393CEDB2433E5B900219591 /* ThemeControlTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4393CEDA2433E5B900219591 /* ThemeControlTableViewCell.swift */; };
 		4393CEDD2435353E00219591 /* DarkModeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4393CEDC2435353E00219591 /* DarkModeViewController.swift */; };
+		4396A8532502AC9E00CA1498 /* EndChimes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396A8522502AC9E00CA1498 /* EndChimes.swift */; };
+		4396A85A2502B2B400CA1498 /* End Chime 3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4396A8572502B2B300CA1498 /* End Chime 3.mp3 */; };
+		4396A85B2502B2B400CA1498 /* End Chime 2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4396A8582502B2B400CA1498 /* End Chime 2.mp3 */; };
+		4396A85C2502B2B400CA1498 /* End Chime 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4396A8592502B2B400CA1498 /* End Chime 1.mp3 */; };
+		4396A85E2502BC6A00CA1498 /* ChooseEndChimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4396A85D2502BC6A00CA1498 /* ChooseEndChimeViewController.swift */; };
 		439B869A23B0FB4F006FC018 /* InterestsPitchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439B869923B0FB4F006FC018 /* InterestsPitchViewController.swift */; };
 		439BFB3622B556F8007341B6 /* HLLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439BFB3522B556F8007341B6 /* HLLoaderView.swift */; };
 		439F770823AD4BBE00B79518 /* EditInterestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439F770723AD4BBE00B79518 /* EditInterestsViewController.swift */; };
@@ -91,7 +120,6 @@
 		43A8484C249E906A00C29952 /* NewFeedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484B249E906A00C29952 /* NewFeedTableViewController.swift */; };
 		43A8484E249EB30100C29952 /* CustomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484D249EB30100C29952 /* CustomTabBarController.swift */; };
 		43A84850249EB3E600C29952 /* TabItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484F249EB3E600C29952 /* TabItems.swift */; };
-		43A84852249EB4DB00C29952 /* NewProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A84851249EB4DB00C29952 /* NewProfileViewController.swift */; };
 		43A84855249EB50800C29952 /* NewDiaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A84854249EB50800C29952 /* NewDiaryViewController.swift */; };
 		43A84858249EB52500C29952 /* NewSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A84857249EB52500C29952 /* NewSettingsViewController.swift */; };
 		43A8485A249EC9EF00C29952 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A84859249EC9EF00C29952 /* CustomTabBar.swift */; };
@@ -101,6 +129,7 @@
 		43AF93182235FBF8004B89BA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 43AF93162235FBF8004B89BA /* LaunchScreen.storyboard */; };
 		43AF93232235FBF9004B89BA /* HighLowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43AF93222235FBF9004B89BA /* HighLowTests.swift */; };
 		43AF932E2235FBF9004B89BA /* HighLowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43AF932D2235FBF9004B89BA /* HighLowUITests.swift */; };
+		43B55A6424CA4D1A00E0B253 /* SharingPolicyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B55A6324CA4D1A00E0B253 /* SharingPolicyCollectionViewCell.swift */; };
 		43BF8C322437EB3A001A1B6B /* GifTutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BF8C312437EB3A001A1B6B /* GifTutorialView.swift */; };
 		43BF8C342437EC82001A1B6B /* ImageTutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BF8C332437EC82001A1B6B /* ImageTutorialView.swift */; };
 		43C7FAC1244A46E700266FE1 /* Crisp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43C7FABF244A46CB00266FE1 /* Crisp.xcframework */; };
@@ -114,6 +143,12 @@
 		43D5B44922A1AD6200AB1DBA /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D5B44822A1AD6200AB1DBA /* MainViewController.swift */; };
 		43D5B44B22A7515E00AB1DBA /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D5B44A22A7515E00AB1DBA /* ForgotPasswordViewController.swift */; };
 		43D6CF0D232DF1B700398565 /* AboutTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43D6CF0C232DF1B700398565 /* AboutTableViewController.swift */; };
+		43E47FC824F0876C00A9A698 /* TextFieldTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E47FC724F0876B00A9A698 /* TextFieldTableViewCell.swift */; };
+		43E47FCA24F0892300A9A698 /* HolyBibleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E47FC924F0892300A9A698 /* HolyBibleTableViewCell.swift */; };
+		43F161DB24E75C0800DDF3EC /* AudioPremiumWarningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F161DA24E75C0800DDF3EC /* AudioPremiumWarningView.swift */; };
+		43F161DD24EC68BC00DDF3EC /* StartMeditationSessionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F161DC24EC68BC00DDF3EC /* StartMeditationSessionViewController.swift */; };
+		43F161DF24EC8D9F00DDF3EC /* MeditationOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F161DE24EC8D9F00DDF3EC /* MeditationOptionView.swift */; };
+		43F161E124ECAB1500DDF3EC /* MTCircularSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F161E024ECAB1500DDF3EC /* MTCircularSlider.swift */; };
 		43F688872333AE9800B35715 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F688862333AE9800B35715 /* CalendarViewController.swift */; };
 		43F85DE724A7C6CE002EBF8A /* Sortable.js in Resources */ = {isa = PBXBuildFile; fileRef = 43F85DE624A7C6CE002EBF8A /* Sortable.js */; };
 		43F85DEA24A7C735002EBF8A /* ReflectEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F85DE924A7C735002EBF8A /* ReflectEditor.swift */; };
@@ -164,6 +199,8 @@
 		43030041229F81260030C61C /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		43030043229F88D50030C61C /* HLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLButton.swift; sourceTree = "<group>"; };
 		4303004522A089470030C61C /* CreateAccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountViewController.swift; sourceTree = "<group>"; };
+		4304BD94251651CD00FA5566 /* UserActivitiesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserActivitiesTableViewController.swift; sourceTree = "<group>"; };
+		4304BD982516550700FA5566 /* DiaryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryTableViewCell.swift; sourceTree = "<group>"; };
 		4307AB5422B059290013044C /* EditHLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHLViewController.swift; sourceTree = "<group>"; };
 		4307AB5822B2F24D0013044C /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		430860FE229986E700C4B10F /* Authentication.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Authentication.storyboard; sourceTree = "<group>"; };
@@ -174,10 +211,19 @@
 		430B6F5B22E1320700046897 /* StreakView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakView.swift; sourceTree = "<group>"; };
 		430BB469233545F8001B48C7 /* DateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateCell.swift; sourceTree = "<group>"; };
 		43103CE823D5DEA500FD0EF3 /* TermsAndConditionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsAndConditionsViewController.swift; sourceTree = "<group>"; };
+		4314A98E24D9C5B10094DB2D /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
+		4314A99024DC71DD0094DB2D /* AudioStreamer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamer.swift; sourceTree = "<group>"; };
+		4314A99324DC7D330094DB2D /* AudioStreamDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamDownloadManager.swift; sourceTree = "<group>"; };
+		4314A99524DC87A90094DB2D /* AudioStreamParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamParser.swift; sourceTree = "<group>"; };
+		4314A99724DCC5B10094DB2D /* AudioStreamReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamReader.swift; sourceTree = "<group>"; };
+		4314A99924DDFE190094DB2D /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		4318C0B522E6334600E393C9 /* HighLowTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighLowTableViewCell.swift; sourceTree = "<group>"; };
 		43244D912388BE0E00B7B551 /* Calendar.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Calendar.gif; sourceTree = "<group>"; };
 		43287A4522DD48BF004A2F52 /* ShowAllCommentsViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAllCommentsViewCell.swift; sourceTree = "<group>"; };
 		4329E3A722E7C1B8004D0735 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
+		433A662624FEFC53008AECCB /* ChooseBibleVerseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseBibleVerseViewController.swift; sourceTree = "<group>"; };
+		433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCollectionViewCell.swift; sourceTree = "<group>"; };
+		433A662B2501EBCD008AECCB /* MeditationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationViewController.swift; sourceTree = "<group>"; };
 		4340802C22CE304C009778ED /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
 		4352FB3C231209300005F00E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -203,6 +249,14 @@
 		4358C93C23DCEF5800363CBF /* Quote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quote.swift; sourceTree = "<group>"; };
 		435C939623ABEBC100328EBC /* Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constraints.swift; sourceTree = "<group>"; };
 		435C939F23AC4CEC00328EBC /* ImageTutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTutorialViewController.swift; sourceTree = "<group>"; };
+		4363493224D8BB9E0055719F /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
+		4363493424D8D0D50055719F /* PlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayButton.swift; sourceTree = "<group>"; };
+		4363493624D9BD010055719F /* ProgressLoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressLoaderView.swift; sourceTree = "<group>"; };
+		4365B0C724D22F1B004B45D9 /* Printer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Printer.swift; sourceTree = "<group>"; };
+		4365B0C924D242DC004B45D9 /* ChooseIndividuallyTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseIndividuallyTableViewController.swift; sourceTree = "<group>"; };
+		4365B0CB24D3A1A0004B45D9 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		4365B0CD24D4A309004B45D9 /* RecordAudioDiaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordAudioDiaryViewController.swift; sourceTree = "<group>"; };
+		4365B0CF24D5B064004B45D9 /* AudioVisualizerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioVisualizerView.swift; sourceTree = "<group>"; };
 		436A0B88249D2358007C7A2C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		436A0B8A249D2FA8007C7A2C /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
 		436A0B8C249D386D007C7A2C /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
@@ -224,8 +278,13 @@
 		437F54CF23762B7E0036DBC2 /* definite.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = definite.m4r; sourceTree = "<group>"; };
 		437F54D02376FF560036DBC2 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		437F54D42379AEAC0036DBC2 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		43854314250BE757005869CA /* NewProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileViewController.swift; sourceTree = "<group>"; };
+		438AD2F0251C257A0067CE90 /* view.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = view.html; sourceTree = "<group>"; };
 		438B9DAA2299D92200A79783 /* SignInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		438B9DAC2299E28800A79783 /* HLTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLTextField.swift; sourceTree = "<group>"; };
+		438BFE1A24EDD2E100187110 /* ChooseMeditationFocusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseMeditationFocusViewController.swift; sourceTree = "<group>"; };
+		438BFE1C24F072D200187110 /* BibleAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleAPIService.swift; sourceTree = "<group>"; };
+		438BFE1E24F075D900187110 /* BibleAPITypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BibleAPITypes.swift; sourceTree = "<group>"; };
 		438D568C237AEB5600639E71 /* NotificationsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsSettingsViewController.swift; sourceTree = "<group>"; };
 		438D568E237E293500639E71 /* HLNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLNavigationController.swift; sourceTree = "<group>"; };
 		438D5692237EEB7800639E71 /* GifTutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifTutorialViewController.swift; sourceTree = "<group>"; };
@@ -233,6 +292,11 @@
 		438D569823809FE300639E71 /* TutorialPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialPageViewController.swift; sourceTree = "<group>"; };
 		4393CEDA2433E5B900219591 /* ThemeControlTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeControlTableViewCell.swift; sourceTree = "<group>"; };
 		4393CEDC2435353E00219591 /* DarkModeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkModeViewController.swift; sourceTree = "<group>"; };
+		4396A8522502AC9E00CA1498 /* EndChimes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndChimes.swift; sourceTree = "<group>"; };
+		4396A8572502B2B300CA1498 /* End Chime 3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "End Chime 3.mp3"; sourceTree = "<group>"; };
+		4396A8582502B2B400CA1498 /* End Chime 2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "End Chime 2.mp3"; sourceTree = "<group>"; };
+		4396A8592502B2B400CA1498 /* End Chime 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "End Chime 1.mp3"; sourceTree = "<group>"; };
+		4396A85D2502BC6A00CA1498 /* ChooseEndChimeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseEndChimeViewController.swift; sourceTree = "<group>"; };
 		439B869923B0FB4F006FC018 /* InterestsPitchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestsPitchViewController.swift; sourceTree = "<group>"; };
 		439BFB3522B556F8007341B6 /* HLLoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLLoaderView.swift; sourceTree = "<group>"; };
 		439F770723AD4BBE00B79518 /* EditInterestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditInterestsViewController.swift; sourceTree = "<group>"; };
@@ -245,7 +309,6 @@
 		43A8484B249E906A00C29952 /* NewFeedTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFeedTableViewController.swift; sourceTree = "<group>"; };
 		43A8484D249EB30100C29952 /* CustomTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarController.swift; sourceTree = "<group>"; };
 		43A8484F249EB3E600C29952 /* TabItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabItems.swift; sourceTree = "<group>"; };
-		43A84851249EB4DB00C29952 /* NewProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileViewController.swift; sourceTree = "<group>"; };
 		43A84854249EB50800C29952 /* NewDiaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDiaryViewController.swift; sourceTree = "<group>"; };
 		43A84857249EB52500C29952 /* NewSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSettingsViewController.swift; sourceTree = "<group>"; };
 		43A84859249EC9EF00C29952 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
@@ -261,6 +324,7 @@
 		43AF93292235FBF9004B89BA /* HighLowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HighLowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		43AF932D2235FBF9004B89BA /* HighLowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighLowUITests.swift; sourceTree = "<group>"; };
 		43AF932F2235FBF9004B89BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		43B55A6324CA4D1A00E0B253 /* SharingPolicyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingPolicyCollectionViewCell.swift; sourceTree = "<group>"; };
 		43BF8C312437EB3A001A1B6B /* GifTutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GifTutorialView.swift; sourceTree = "<group>"; };
 		43BF8C332437EC82001A1B6B /* ImageTutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTutorialView.swift; sourceTree = "<group>"; };
 		43C7FABF244A46CB00266FE1 /* Crisp.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Crisp.xcframework; sourceTree = "<group>"; };
@@ -274,6 +338,12 @@
 		43D5B44822A1AD6200AB1DBA /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		43D5B44A22A7515E00AB1DBA /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		43D6CF0C232DF1B700398565 /* AboutTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutTableViewController.swift; sourceTree = "<group>"; };
+		43E47FC724F0876B00A9A698 /* TextFieldTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldTableViewCell.swift; sourceTree = "<group>"; };
+		43E47FC924F0892300A9A698 /* HolyBibleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HolyBibleTableViewCell.swift; sourceTree = "<group>"; };
+		43F161DA24E75C0800DDF3EC /* AudioPremiumWarningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPremiumWarningView.swift; sourceTree = "<group>"; };
+		43F161DC24EC68BC00DDF3EC /* StartMeditationSessionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMeditationSessionViewController.swift; sourceTree = "<group>"; };
+		43F161DE24EC8D9F00DDF3EC /* MeditationOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationOptionView.swift; sourceTree = "<group>"; };
+		43F161E024ECAB1500DDF3EC /* MTCircularSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTCircularSlider.swift; sourceTree = "<group>"; };
 		43F688862333AE9800B35715 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		43F85DE624A7C6CE002EBF8A /* Sortable.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sortable.js; sourceTree = "<group>"; };
 		43F85DE924A7C735002EBF8A /* ReflectEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectEditor.swift; sourceTree = "<group>"; };
@@ -325,6 +395,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4314A99224DC7D0D0094DB2D /* AudioStreamer */ = {
+			isa = PBXGroup;
+			children = (
+				4314A99024DC71DD0094DB2D /* AudioStreamer.swift */,
+				4314A99324DC7D330094DB2D /* AudioStreamDownloadManager.swift */,
+				4314A99524DC87A90094DB2D /* AudioStreamParser.swift */,
+				4314A99724DCC5B10094DB2D /* AudioStreamReader.swift */,
+				4314A99924DDFE190094DB2D /* AudioPlayer.swift */,
+			);
+			path = AudioStreamer;
+			sourceTree = "<group>";
+		};
+		433A662A2501EB99008AECCB /* Meditation */ = {
+			isa = PBXGroup;
+			children = (
+				43F161DC24EC68BC00DDF3EC /* StartMeditationSessionViewController.swift */,
+				43F161DE24EC8D9F00DDF3EC /* MeditationOptionView.swift */,
+				43E47FC924F0892300A9A698 /* HolyBibleTableViewCell.swift */,
+				43E47FC724F0876B00A9A698 /* TextFieldTableViewCell.swift */,
+				4396A85D2502BC6A00CA1498 /* ChooseEndChimeViewController.swift */,
+				433A662624FEFC53008AECCB /* ChooseBibleVerseViewController.swift */,
+				438BFE1A24EDD2E100187110 /* ChooseMeditationFocusViewController.swift */,
+				433A662B2501EBCD008AECCB /* MeditationViewController.swift */,
+				433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */,
+				4396A8512502AC7700CA1498 /* EndChimes */,
+			);
+			path = Meditation;
+			sourceTree = "<group>";
+		};
 		435C939823AC4AA800328EBC /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -340,11 +439,12 @@
 			isa = PBXGroup;
 			children = (
 				4352FB442318A2AE0005F00E /* AddFriendsTableViewController.swift */,
-				43A84851249EB4DB00C29952 /* NewProfileViewController.swift */,
 				4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */,
 				4329E3A722E7C1B8004D0735 /* EditProfileViewController.swift */,
 				439F770723AD4BBE00B79518 /* EditInterestsViewController.swift */,
 				430B6F5922E11B6E00046897 /* ProfileTableViewController.swift */,
+				43854314250BE757005869CA /* NewProfileViewController.swift */,
+				4304BD94251651CD00FA5566 /* UserActivitiesTableViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -355,6 +455,7 @@
 				438D568E237E293500639E71 /* HLNavigationController.swift */,
 				43A7637A24A2C9DF001429A0 /* ActivityChartCell.swift */,
 				43A7637824A2BC28001429A0 /* AddingOptionsViewController.swift */,
+				433A662A2501EB99008AECCB /* Meditation */,
 				43A7637E24A56F3A001429A0 /* AnnouncementTableViewCell.swift */,
 				430B6F5722DF9FA700046897 /* HighLowPageViewController.swift */,
 				43A7637C24A449CF001429A0 /* CardTableViewCell.swift */,
@@ -425,6 +526,7 @@
 			isa = PBXGroup;
 			children = (
 				436A0B88249D2358007C7A2C /* APIService.swift */,
+				438BFE1C24F072D200187110 /* BibleAPIService.swift */,
 				436A0B8A249D2FA8007C7A2C /* AuthService.swift */,
 				436A0B8C249D386D007C7A2C /* UserService.swift */,
 				436A0B8E249D5221007C7A2C /* ActivityService.swift */,
@@ -457,6 +559,17 @@
 				43244D912388BE0E00B7B551 /* Calendar.gif */,
 			);
 			path = Gifs;
+			sourceTree = "<group>";
+		};
+		4396A8512502AC7700CA1498 /* EndChimes */ = {
+			isa = PBXGroup;
+			children = (
+				4396A8522502AC9E00CA1498 /* EndChimes.swift */,
+				4396A8592502B2B400CA1498 /* End Chime 1.mp3 */,
+				4396A8582502B2B400CA1498 /* End Chime 2.mp3 */,
+				4396A8572502B2B300CA1498 /* End Chime 3.mp3 */,
+			);
+			path = EndChimes;
 			sourceTree = "<group>";
 		};
 		43A1C7A02299F073000D625C /* Storyboards */ = {
@@ -499,7 +612,11 @@
 			children = (
 				43A84854249EB50800C29952 /* NewDiaryViewController.swift */,
 				435356EA24B7EBC900BE20AD /* DiaryEditorViewController.swift */,
+				4365B0CD24D4A309004B45D9 /* RecordAudioDiaryViewController.swift */,
+				4365B0CF24D5B064004B45D9 /* AudioVisualizerView.swift */,
+				43F161DA24E75C0800DDF3EC /* AudioPremiumWarningView.swift */,
 				435356F024C0C74500BE20AD /* SharingPolicyViewController.swift */,
+				4365B0C924D242DC004B45D9 /* ChooseIndividuallyTableViewController.swift */,
 			);
 			path = Diary;
 			sourceTree = "<group>";
@@ -516,6 +633,7 @@
 			isa = PBXGroup;
 			children = (
 				43A958D422DA184000BCE75A /* HighLow.swift */,
+				438BFE1E24F075D900187110 /* BibleAPITypes.swift */,
 				43709F392304D68600882031 /* Comment.swift */,
 				436A0B92249D5525007C7A2C /* ActivityComment.swift */,
 				43D25052233FD95100B6F9CA /* AboutSection.swift */,
@@ -524,6 +642,7 @@
 				4352FB3C231209300005F00E /* User.swift */,
 				436A0B90249D52FA007C7A2C /* Activity.swift */,
 				436A0B9A249E52F7007C7A2C /* Resource.swift */,
+				4314A98E24D9C5B10094DB2D /* AudioFile.swift */,
 			);
 			path = "Data Classes";
 			sourceTree = "<group>";
@@ -558,6 +677,9 @@
 				43AF930D2235FBF5004B89BA /* AppDelegate.swift */,
 				436A0B87249D213D007C7A2C /* Model */,
 				43030041229F81260030C61C /* Helpers.swift */,
+				4314A99224DC7D0D0094DB2D /* AudioStreamer */,
+				4365B0C724D22F1B004B45D9 /* Printer.swift */,
+				4365B0CB24D3A1A0004B45D9 /* Extensions.swift */,
 				4307AB5822B2F24D0013044C /* ImageCache.swift */,
 				435C939623ABEBC100328EBC /* Constraints.swift */,
 				4358C93823DCEE6B00363CBF /* quotes.json */,
@@ -612,6 +734,8 @@
 				4352FB40231883D00005F00E /* PendingFriendRequestTableViewCell.swift */,
 				43287A4522DD48BF004A2F52 /* ShowAllCommentsViewCell.swift */,
 				435356EC24B93DB900BE20AD /* AddOptionCell.swift */,
+				4304BD982516550700FA5566 /* DiaryTableViewCell.swift */,
+				43B55A6324CA4D1A00E0B253 /* SharingPolicyCollectionViewCell.swift */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -632,6 +756,10 @@
 				430B6F5B22E1320700046897 /* StreakView.swift */,
 				435356E824B66C1B00BE20AD /* DiaryCollectionViewCell.swift */,
 				435356EE24C0C41900BE20AD /* Pill.swift */,
+				4363493224D8BB9E0055719F /* RecordButton.swift */,
+				4363493424D8D0D50055719F /* PlayButton.swift */,
+				4363493624D9BD010055719F /* ProgressLoaderView.swift */,
+				43F161E024ECAB1500DDF3EC /* MTCircularSlider.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -652,6 +780,7 @@
 				43F85DED24A7DAE4002EBF8A /* blockTemplates.js */,
 				43F85DF824A7F5FE002EBF8A /* BlockManager.js */,
 				43F85DEB24A7C7C8002EBF8A /* index.html */,
+				438AD2F0251C257A0067CE90 /* view.html */,
 			);
 			path = Reflect;
 			sourceTree = "<group>";
@@ -811,6 +940,7 @@
 				43F85DE724A7C6CE002EBF8A /* Sortable.js in Resources */,
 				438D569623803C2900639E71 /* definite.m4r in Resources */,
 				43D5B44722A1AC2B00AB1DBA /* Tabs.storyboard in Resources */,
+				4396A85B2502B2B400CA1498 /* End Chime 2.mp3 in Resources */,
 				43D3C63023B8281E008FF09E /* Tutorials.storyboard in Resources */,
 				43F85DF324A7E0B7002EBF8A /* Roboto in Resources */,
 				435356DF24ABE74C00BE20AD /* Autolinker.js in Resources */,
@@ -818,11 +948,14 @@
 				430860FF229986E700C4B10F /* Authentication.storyboard in Resources */,
 				438D569523803B7400639E71 /* HomeScreen.gif in Resources */,
 				43F85DF024A7DAEB002EBF8A /* Block.js in Resources */,
+				438AD2F1251C257A0067CE90 /* view.html in Resources */,
 				4358C93923DCEE6B00363CBF /* quotes.json in Resources */,
 				43548C7D23CE6E0800151285 /* GoogleService-Info.plist in Resources */,
+				4396A85C2502B2B400CA1498 /* End Chime 1.mp3 in Resources */,
 				43F85DEE24A7DAE4002EBF8A /* blockTemplates.js in Resources */,
 				43AF93182235FBF8004B89BA /* LaunchScreen.storyboard in Resources */,
 				43AF93152235FBF8004B89BA /* Assets.xcassets in Resources */,
+				4396A85A2502B2B400CA1498 /* End Chime 3.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -988,30 +1121,47 @@
 				43BF8C322437EB3A001A1B6B /* GifTutorialView.swift in Sources */,
 				439B869A23B0FB4F006FC018 /* InterestsPitchViewController.swift in Sources */,
 				435C93A023AC4CEC00328EBC /* ImageTutorialViewController.swift in Sources */,
+				433A662724FEFC53008AECCB /* ChooseBibleVerseViewController.swift in Sources */,
+				4363493324D8BB9E0055719F /* RecordButton.swift in Sources */,
 				436A0B8D249D386D007C7A2C /* UserService.swift in Sources */,
+				4304BD992516550700FA5566 /* DiaryTableViewCell.swift in Sources */,
 				43103CE923D5DEA500FD0EF3 /* TermsAndConditionsViewController.swift in Sources */,
+				4314A99624DC87A90094DB2D /* AudioStreamParser.swift in Sources */,
 				43D25057233FE0F600B6F9CA /* ReportBugViewController.swift in Sources */,
 				43A84855249EB50800C29952 /* NewDiaryViewController.swift in Sources */,
 				43A84858249EB52500C29952 /* NewSettingsViewController.swift in Sources */,
 				435356E324AC015800BE20AD /* ReflectChooseImageViewController.swift in Sources */,
 				438D569923809FE300639E71 /* TutorialPageViewController.swift in Sources */,
+				43B55A6424CA4D1A00E0B253 /* SharingPolicyCollectionViewCell.swift in Sources */,
+				4365B0CE24D4A309004B45D9 /* RecordAudioDiaryViewController.swift in Sources */,
 				435356E724B5386200BE20AD /* ReflectViewer.swift in Sources */,
 				436F9BD422B03CED0047D56F /* HighLowView.swift in Sources */,
 				430861012299884500C4B10F /* GradientUIView.swift in Sources */,
 				4352FB3D231209300005F00E /* User.swift in Sources */,
+				433A662924FF0715008AECCB /* SimpleCollectionViewCell.swift in Sources */,
 				4352FB47231B030B0005F00E /* LikeFlagTableViewCell.swift in Sources */,
+				433A662C2501EBCD008AECCB /* MeditationViewController.swift in Sources */,
 				439BFB3622B556F8007341B6 /* HLLoaderView.swift in Sources */,
 				436A0B9B249E52F7007C7A2C /* Resource.swift in Sources */,
 				436C17F922D378F400C3D7A9 /* FlagView.swift in Sources */,
 				435356EB24B7EBCA00BE20AD /* DiaryEditorViewController.swift in Sources */,
+				4365B0C824D22F1B004B45D9 /* Printer.swift in Sources */,
 				439F770A23AD562300B79518 /* InterestTableViewCell.swift in Sources */,
 				438B9DAD2299E28800A79783 /* HLTextField.swift in Sources */,
+				4304BD95251651CD00FA5566 /* UserActivitiesTableViewController.swift in Sources */,
 				430B6F5A22E11B6E00046897 /* ProfileTableViewController.swift in Sources */,
+				4314A99124DC71DD0094DB2D /* AudioStreamer.swift in Sources */,
 				438D5693237EEB7800639E71 /* GifTutorialViewController.swift in Sources */,
 				43AF930E2235FBF5004B89BA /* AppDelegate.swift in Sources */,
 				43030042229F81260030C61C /* Helpers.swift in Sources */,
+				4365B0CA24D242DC004B45D9 /* ChooseIndividuallyTableViewController.swift in Sources */,
 				436A0B8F249D5221007C7A2C /* ActivityService.swift in Sources */,
+				4363493524D8D0D50055719F /* PlayButton.swift in Sources */,
+				4314A99424DC7D330094DB2D /* AudioStreamDownloadManager.swift in Sources */,
 				436F9BD622B045140047D56F /* HLSectionView.swift in Sources */,
+				438BFE1B24EDD2E200187110 /* ChooseMeditationFocusViewController.swift in Sources */,
+				43F161DF24EC8D9F00DDF3EC /* MeditationOptionView.swift in Sources */,
+				438BFE1D24F072D200187110 /* BibleAPIService.swift in Sources */,
 				43709F3A2304D68600882031 /* Comment.swift in Sources */,
 				43A7637D24A449CF001429A0 /* CardTableViewCell.swift in Sources */,
 				43A0935622D55E8300C134FD /* CommentViewCell.swift in Sources */,
@@ -1020,6 +1170,7 @@
 				436A0BA0249E6A3A007C7A2C /* UserResource.swift in Sources */,
 				435356E924B66C1B00BE20AD /* DiaryCollectionViewCell.swift in Sources */,
 				43D5B44B22A7515E00AB1DBA /* ForgotPasswordViewController.swift in Sources */,
+				4314A99824DCC5B10094DB2D /* AudioStreamReader.swift in Sources */,
 				43BF8C342437EC82001A1B6B /* ImageTutorialView.swift in Sources */,
 				436A0B93249D5525007C7A2C /* ActivityComment.swift in Sources */,
 				435356E524AD448B00BE20AD /* SwiftPaywall.swift in Sources */,
@@ -1028,8 +1179,8 @@
 				435356EF24C0C41A00BE20AD /* Pill.swift in Sources */,
 				435356F124C0C74500BE20AD /* SharingPolicyViewController.swift in Sources */,
 				436A0BA2249E73C2007C7A2C /* ActivityResource.swift in Sources */,
+				43E47FCA24F0892300A9A698 /* HolyBibleTableViewCell.swift in Sources */,
 				43A8485A249EC9EF00C29952 /* CustomTabBar.swift in Sources */,
-				43A84852249EB4DB00C29952 /* NewProfileViewController.swift in Sources */,
 				4352FB3F2314E7F60005F00E /* FriendTableViewCell.swift in Sources */,
 				4352FB3B231207FD0005F00E /* FriendsTableViewController.swift in Sources */,
 				438B9DAB2299D92200A79783 /* SignInViewController.swift in Sources */,
@@ -1037,6 +1188,8 @@
 				43030044229F88D50030C61C /* HLButton.swift in Sources */,
 				438D568D237AEB5600639E71 /* NotificationsSettingsViewController.swift in Sources */,
 				43F688872333AE9800B35715 /* CalendarViewController.swift in Sources */,
+				43F161E124ECAB1500DDF3EC /* MTCircularSlider.swift in Sources */,
+				4365B0D024D5B064004B45D9 /* AudioVisualizerView.swift in Sources */,
 				43A7637B24A2C9DF001429A0 /* ActivityChartCell.swift in Sources */,
 				43D5B44922A1AD6200AB1DBA /* MainViewController.swift in Sources */,
 				43A84850249EB3E600C29952 /* TabItems.swift in Sources */,
@@ -1048,18 +1201,24 @@
 				43A958D522DA184000BCE75A /* HighLow.swift in Sources */,
 				436A0B91249D52FA007C7A2C /* Activity.swift in Sources */,
 				430B6F5C22E1320800046897 /* StreakView.swift in Sources */,
+				4396A8532502AC9E00CA1498 /* EndChimes.swift in Sources */,
+				43E47FC824F0876C00A9A698 /* TextFieldTableViewCell.swift in Sources */,
 				436F9BD222AF57F90047D56F /* HomeViewController.swift in Sources */,
 				43D6CF0D232DF1B700398565 /* AboutTableViewController.swift in Sources */,
 				430BB46A233545F8001B48C7 /* DateCell.swift in Sources */,
 				4393CEDD2435353E00219591 /* DarkModeViewController.swift in Sources */,
 				439F770823AD4BBE00B79518 /* EditInterestsViewController.swift in Sources */,
+				4365B0CC24D3A1A0004B45D9 /* Extensions.swift in Sources */,
 				436A0B97249D61B1007C7A2C /* UserManager.swift in Sources */,
+				43F161DB24E75C0800DDF3EC /* AudioPremiumWarningView.swift in Sources */,
 				438D568F237E293500639E71 /* HLNavigationController.swift in Sources */,
+				4314A99A24DDFE190094DB2D /* AudioPlayer.swift in Sources */,
 				4393CEDB2433E5B900219591 /* ThemeControlTableViewCell.swift in Sources */,
 				43F85DEA24A7C735002EBF8A /* ReflectEditor.swift in Sources */,
 				436A0B8B249D2FA8007C7A2C /* AuthService.swift in Sources */,
 				4358C93723DB465200363CBF /* ImageFullScreenViewController.swift in Sources */,
 				430B6F5622DE91D500046897 /* EditCommentViewController.swift in Sources */,
+				4314A98F24D9C5B10094DB2D /* AudioFile.swift in Sources */,
 				43A7637F24A56F3A001429A0 /* AnnouncementTableViewCell.swift in Sources */,
 				43A7637924A2BC28001429A0 /* AddingOptionsViewController.swift in Sources */,
 				4307AB5922B2F24D0013044C /* ImageCache.swift in Sources */,
@@ -1067,15 +1226,20 @@
 				4352FB4B231F01860005F00E /* FeedTableViewController.swift in Sources */,
 				435356ED24B93DBA00BE20AD /* AddOptionCell.swift in Sources */,
 				4307AB5522B059290013044C /* EditHLViewController.swift in Sources */,
+				43854315250BE757005869CA /* NewProfileViewController.swift in Sources */,
 				437F54D12376FF560036DBC2 /* MessageTableViewCell.swift in Sources */,
 				4358C93D23DCEF5800363CBF /* Quote.swift in Sources */,
 				437F54D52379AEAD0036DBC2 /* Reachability.swift in Sources */,
 				43D2504F233AD50D00B6F9CA /* DateHeader.swift in Sources */,
 				4352FB41231883D00005F00E /* PendingFriendRequestTableViewCell.swift in Sources */,
 				4318C0B622E6334600E393C9 /* HighLowTableViewCell.swift in Sources */,
+				4396A85E2502BC6A00CA1498 /* ChooseEndChimeViewController.swift in Sources */,
 				4352FB452318A2AE0005F00E /* AddFriendsTableViewController.swift in Sources */,
+				438BFE1F24F075D900187110 /* BibleAPITypes.swift in Sources */,
 				4352FB49231D8AD80005F00E /* AddFriendTableViewCell.swift in Sources */,
+				43F161DD24EC68BC00DDF3EC /* StartMeditationSessionViewController.swift in Sources */,
 				43D25053233FD95100B6F9CA /* AboutSection.swift in Sources */,
+				4363493724D9BD010055719F /* ProgressLoaderView.swift in Sources */,
 				436A0B99249E509F007C7A2C /* ActivityManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

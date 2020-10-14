@@ -26,10 +26,7 @@ class ActivityManager {
         }
     }
     
-    func saveActivity(_ activity: Activity) -> ActivityResource {
-        if activityCache[activity.activityId!] != nil {
-            return activityCache[activity.activityId!]!
-        }
+    @discardableResult func saveActivity(_ activity: Activity) -> ActivityResource {
         activityCache[activity.activityId!] = ActivityResource(activity)
         return activityCache[activity.activityId!]!
     }
