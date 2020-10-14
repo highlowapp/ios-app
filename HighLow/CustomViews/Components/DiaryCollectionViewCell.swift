@@ -20,7 +20,9 @@ class DiaryCollectionViewCell: UICollectionViewCell {
     weak var delegate: DiaryCollectionViewCellDelegate?
     
     let thumbnails = [
-        "diary": "DiaryThumbnail"
+        "diary": "DiaryThumbnail",
+        "highlow": "HighLowSmallIcon",
+        "audio": "AudioDiarySmallIcon"
     ]
     
     override func awakeFromNib() {
@@ -91,23 +93,16 @@ class DiaryCollectionViewCell: UICollectionViewCell {
     }
     
     func onActivityUpdate(_ owner: DiaryCollectionViewCell, _ activity: Activity) {
-        print("Hi")
         self.title.text = activity.title
         self.thumbnail.image = UIImage(named: thumbnails[activity.type!] ?? "Untitled")
     }
     
-    
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-    }
-    
-    
-    
     @objc func moreOptions(_ sender: UIView) {
         let _alert = UIAlertController(title: "Options", message: "Choose an action", preferredStyle: .actionSheet)
         _alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        _alert.addAction(UIAlertAction(title: "Edit Permissions", style: .default, handler: { action in
+            self.delegate?.editPermissions(sender: self)
+        }))
         _alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { action in
             self.activity?.delete(onSuccess: { activity in
                 self.delegate?.didDelete(sender: self)
@@ -115,6 +110,7 @@ class DiaryCollectionViewCell: UICollectionViewCell {
                 alert("An error occurred", "Please try again")
             })
         }))
+        
         
         _alert.popoverPresentationController?.sourceView = sender
         
@@ -131,4 +127,5 @@ class DiaryCollectionViewCell: UICollectionViewCell {
 
 protocol DiaryCollectionViewCellDelegate: AnyObject {
     func didDelete(sender: DiaryCollectionViewCell)
+    func editPermissions(sender: DiaryCollectionViewCell)
 }

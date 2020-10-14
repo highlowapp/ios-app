@@ -67,18 +67,18 @@ class HLImageView: UIImageView {
     }
     
     func loadImageFromURL(_ url: String) {
+        if url.starts(with: "http") {
+            self.url = url
+        } else {
+            self.url = "https://storage.googleapis.com/highlowfiles/" + url
+        }
         
-        self.url = url
-        
-        ImageCache.getImage(url, onSuccess: { image in
+        ImageCache.getImage(self.url!, onSuccess: { image in
             
             self.indicator.stopAnimating()
             self.image = image
             
         }, onError: {
-            
-            
-            
         })
         
     }
@@ -87,4 +87,12 @@ class HLImageView: UIImageView {
 
 protocol HLImageViewDelegate: AnyObject {
     func openImageFullScreen(viewController: ImageFullScreenViewController)
+}
+
+
+class HLRoundImageView: HLImageView {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layer.cornerRadius = self.bounds.width/2
+    }
 }

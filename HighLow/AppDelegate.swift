@@ -17,9 +17,12 @@ import FirebaseMessaging
 import PopupDialog
 import Crisp
 import Purchases
+import CoreHaptics
 
 var quotes: [Quote] = []
 var DEV_MODE: Bool = true
+
+var SUPPORTS_HAPTICS: Bool = false
 
 @UIApplicationMain
 
@@ -305,15 +308,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         Purchases.debugLogsEnabled = true
         Purchases.configure(withAPIKey: getRevenueCatPublicKey())
         
-        if #available(iOS 13.0, *) {
-            let standard = UINavigationBarAppearance()
-            standard.backgroundColor = AppColors.primary
-            standard.titleTextAttributes = [.foregroundColor: UIColor.white]
+        AuthService.shared.isLoggedIn(ifLoggedIn: { uid in
+            Purchases.shared.identify(uid) { (purchaserInfo, error) in
+                if error != nil {
+                    printer(error, .error)
+                }
+            }
+        }, ifNotLoggedIn: {
+            
+        })
         
-            UINavigationBar.appearance().standardAppearance = standard
+        
+        
+        if #available(iOS 13.0, *) {
+            let hapticCapability = CHHapticEngine.capabilitiesForHardware()
+            SUPPORTS_HAPTICS = hapticCapability.supportsHaptics
+        }
+        
+        if #available(iOS 13.0, *) {
+            let navBarApp = UINavigationBarAppearance()
+            navBarApp.configureWithOpaqueBackground()
+            navBarApp.backgroundColor = .white
+            navBarApp.shadowColor = .clear
+        
+            UINavigationBar.appearance().standardAppearance = navBarApp
+            UINavigationBar.appearance().scrollEdgeAppearance = navBarApp
+            UINavigationBar.appearance().compactAppearance = navBarApp
             
         } else {
-            // Fallback on earlier versions
+            //UINavigationBar.appearance().backgroundColor = .white
         }
             
         reachability.whenUnreachable = notReachable

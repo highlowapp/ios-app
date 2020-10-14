@@ -13,14 +13,49 @@
                 color: lightgray;
             }
 
+            #newBlockOptions {
+                text-align: center;
+                width: 100%;
+                color: rgb(220, 220, 220);
+                padding-top: 30px;
+                border-top: 1px solid rgb(240, 240, 240)
+            }
+
+            #newBlockOptions div {
+                font-size: 13px;
+            }
+
+            #newBlockOptions button {
+                border: none;
+                border-radius: 100%;
+                background:rgb(240, 240, 240);
+                width: 50px;
+                height: 50px;
+                text-align: center;
+                align-items: center;
+                justify-content: center;
+                margin: 5px;
+                color: black;
+                font-size: 20px;
+            }
+
+            #h2Btn {
+                flex-direction: row;
+                font-size: 15px;
+            }
+
             .block {
                 display: flex;
                 padding-left: 10px;
                 padding-right: 10px;
                 padding-top: 5px;
                 padding-bottom: 5px;
-                width: 90%;
+                width: 100%;
                 flex-direction: row;
+            }
+
+            .blockEl {
+                width: 100%;
             }
             
             .block h1, h2, p {
@@ -78,12 +113,11 @@
             }
 
             blockquote {
-                background: #f9f9f9;
-                border-left: 10px solid #ccc;
+                background: #FA9C1D33;
+                border-left: 10px solid #FA9C1D;
                 padding: 0.5em 10px;
                 margin-left: 0px;
                 quotes: "\201C""\201D""\2018""\2019";
-                width: 100%;
             }
 
             .blockHandle {
@@ -96,6 +130,20 @@
             }
             .blockHandle.locked {
                 cursor: not-allowed;
+            }
+
+            .trasher {
+                color: red;
+                width: 70px;
+                text-align: center;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                opacity: 0.5;
+            }
+
+            .trasher:focus {
+                background: none;
             }
 
             
@@ -191,7 +239,13 @@
 
         </div>
 
-        <div id='newBlock'><span><i class='material-icons'>add</i>New Block</span></div>
+        <div id='newBlockOptions'>
+            <button class='material-icons' onclick='appendBlock("h1")'>title</button>
+            <button id='h2Btn' class='material-icons' onclick='appendBlock("h2")'>title</button>
+            <button class='material-icons' onclick='appendBlock()'>subject</button>
+            <button class='material-icons' onclick='appendBlock("img")'>add_photo_alternate</button>
+            <button class='material-icons' onclick='appendBlock("quote")'>format_quote</button>
+        </div>
         
         <script src='./Sortable.js'></script>
         <script src='./Block.js'></script>
@@ -259,10 +313,10 @@
                 ghostClass: 'ghost',
                 filter: '.locked',
                 onStart: (event) => {
-                    trash.style.transform = 'scale(1)'
+                    //trash.style.transform = 'scale(1)'
                 },
                 onEnd: (event) => {
-                    trash.style.transform = 'scale(0)'
+                    //trash.style.transform = 'scale(0)'
                     save()
                 }
             });
@@ -398,12 +452,27 @@
                 }
             }
 
-            function appendBlock() {
+            function appendBlock(type) {
                 save()
-                blockManager.appendBlock(new PBlock({editable: true, content: ''}))
+                let block = undefined
+                switch (type) {
+                    case 'h1':
+                        block = new H1Block({editable: true, content: ''})
+                        break
+                    case 'h2':
+                        block = new H2Block({editable: true, content: ''})
+                        break
+                    case 'img':
+                        block = new ImgBlock({editable: true})
+                        break
+                    case 'quote':
+                        block = new QuoteBlock({editable: true, content: ''})
+                        break
+                    default:
+                        block = new PBlock({editable: true, content: ''})
+                }
+                blockManager.appendBlock(block)
             }
-
-            newBlock.onclick = appendBlock
 
             function getCurrentEditingIndex() {
                 const focused = document.activeElement

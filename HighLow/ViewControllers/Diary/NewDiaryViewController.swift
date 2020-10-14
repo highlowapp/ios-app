@@ -18,6 +18,12 @@ class NewDiaryViewController: UICollectionViewController, UICollectionViewDelega
         collectionView.deleteItems(at: [indexPath!])
     }
     
+    func editPermissions(sender: DiaryCollectionViewCell) {
+        let sharingPolicyViewController = SharingPolicyViewController()
+        sharingPolicyViewController.activity = sender.activity
+        self.present(sharingPolicyViewController, animated: true)
+    }
+    
     
     var diaryEntries: [ActivityResource] = []
     var page = 0
@@ -39,16 +45,19 @@ class NewDiaryViewController: UICollectionViewController, UICollectionViewDelega
     }
     
     func getDiaryEntries(_ reset: Bool = false) {
-        AuthService.shared.currentUser.getDiaryEntries(page: page, onSuccess: { diaryEntries in
-            self.refreshControl.endRefreshing()
-            if reset {
-                self.diaryEntries = []
-            }
-            self.diaryEntries.append(contentsOf: diaryEntries)
-            self.collectionView.reloadData()
+        UserManager.shared.getCurrentUser(onSuccess: { currentUser in
+            currentUser.getDiaryEntries(page: self.page, onSuccess: { diaryEntries in
+                self.refreshControl.endRefreshing()
+                if reset {
+                    self.diaryEntries = []
+                }
+                self.diaryEntries.append(contentsOf: diaryEntries)
+                self.collectionView.reloadData()
+            }, onError: { error in
+                self.refreshControl.endRefreshing()
+            })
         }, onError: { error in
             self.refreshControl.endRefreshing()
-            print(error)
         })
     }
     
@@ -85,6 +94,42 @@ class NewDiaryViewController: UICollectionViewController, UICollectionViewDelega
             editor.activity = activity
             self.navigationController?.pushViewController(editor, animated: true)
         }
+        
+        else if activity.type == "audio" {
+            let editor = RecordAudioDiaryViewController()
+            editor.activity = activity
+            self.present(editor, animated: true)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
+    }
+    
+    @available(iOS 13.0, *)
+    override func collectionView (_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration {
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { action in
+            let deleteItem = UIAction(title: "Delete", image: UIImage(systemName: "trash"), identifier: UIAction.Identifier(rawValue: "delete"), attributes: [.destructive]) { _ in
+                let cell = collectionView.cellForItem(at: indexPath) as! DiaryCollectionViewCell
+                cell.activity?.delete(onSuccess: { activity in
+                    self.didDelete(sender: cell)
+                }, onError: { error in
+                    alert("An error occurred", "Please try again")
+                })
+            }
+            
+            let sharingPolicyItem = UIAction(title: "Edit Permissions", image: UIImage(systemName: "compose"), identifier: UIAction.Identifier(rawValue: "compose")) { _ in
+                let cell = collectionView.cellForItem(at: indexPath) as! DiaryCollectionViewCell
+                let activity = cell.activity
+                let sharingPolicyViewController = SharingPolicyViewController()
+                sharingPolicyViewController.activity = activity
+                self.present(sharingPolicyViewController, animated: true)
+            }
+            
+            return UIMenu(title: "Options", image: nil, identifier: nil, children: [sharingPolicyItem, deleteItem])
+        }
+        
+        return configuration
     }
     
     @objc func update() {

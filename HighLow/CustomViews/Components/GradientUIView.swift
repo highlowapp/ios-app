@@ -123,7 +123,7 @@ class GradientUIView: UIView {
         super.layoutSubviews()
         gradient?.removeFromSuperlayer()
         gradient!.frame = self.bounds
-        
+        self.backgroundColor = .white
         switch themeOverride() {
         case "dark":
             self.backgroundColor = .black

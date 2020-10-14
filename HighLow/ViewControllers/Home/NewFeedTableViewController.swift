@@ -29,7 +29,6 @@ class NewFeedTableViewController: UITableViewController {
             self.tableView.reloadData()
             
         }, onError: { error in
-            print(error)
         })
     }
 

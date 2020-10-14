@@ -14,7 +14,7 @@ class Block {
         this.id = generateId()
         this.editable = attributes['editable']
         this.attributes = attributes
-        this.viewerMode = false
+        this.viewerMode = attributes['viewerMode']
         this.createElement(attributes)
     }
 
@@ -59,8 +59,30 @@ class Block {
             }
             block.appendChild(dragger)
         }
+
+        this.el.classList.add('blockEl')
+
         block.appendChild(this.el)
+
+        if (!this.viewerMode && this.editable) {
+            const trasher = document.createElement('div')
+            trasher.classList.add('material-icons')
+            trasher.classList.add('trasher')
+            trasher.innerHTML = 'delete_outline'
+            trasher.addEventListener('click', () => {
+                this.delete()
+            })
+            block.appendChild(trasher)
+        }
         return block
+    }
+
+    delete() {
+        let block = this.el
+        while (!block.classList.contains('block')) {
+            block = block.parentElement
+        }
+        block.parentElement.removeChild(block)
     }
 
     handOff(block) {
@@ -86,9 +108,13 @@ class H1Block extends Block {
 
     createElement(attributes) {
         this.el = document.createElement('h1')
-        this.el.contentEditable = this.editable
+        this.el.contentEditable = (this.editable && !this.viewerMode)
         if ('content' in attributes) {
-            this.el.innerHTML = attributes['content']
+            if (this.viewerMode) {
+                this.el.innerHTML = Autolinker.link(attributes['content'])
+            } else {
+                this.el.innerHTML = attributes['content']
+            }
         }
     }
 
@@ -109,9 +135,13 @@ class H2Block extends Block {
 
     createElement(attributes) {
         this.el = document.createElement('h2')
-        this.el.contentEditable = this.editable
+        this.el.contentEditable = (this.editable && !this.viewerMode)
         if ('content' in attributes) {
-            this.el.innerHTML = attributes['content']
+            if (this.viewerMode) {
+                this.el.innerHTML = Autolinker.link(attributes['content'])
+            } else {
+                this.el.innerHTML = attributes['content']
+            }
         }
     }
 
@@ -132,9 +162,13 @@ class PBlock extends Block {
 
     createElement(attributes) {
         this.el = document.createElement('p')
-        this.el.contentEditable = this.editable
+        this.el.contentEditable = (this.editable && !this.viewerMode)
         if ('content' in attributes) {
-            this.el.innerHTML = attributes['content']
+            if (this.viewerMode) {
+                this.el.innerHTML = Autolinker.link(attributes['content'])
+            } else {
+                this.el.innerHTML = attributes['content']
+            }
         }
     }
 
@@ -156,7 +190,7 @@ class ImgBlock extends Block {
     createElement(attributes) {
         this.el = document.createElement('div')
         this.el.placeholder = document.createElement('div')
-        this.el.style.width = '85%'
+        //this.el.style.width = '80%'
         this.el.appendChild(this.el.placeholder)
         
         const addIcon = document.createElement('i')
@@ -244,9 +278,13 @@ class QuoteBlock extends Block {
 
     createElement(attributes) {
         this.el = document.createElement('blockquote')
-        this.el.contentEditable = this.editable
+        this.el.contentEditable = (this.editable && !this.viewerMode)
         if ('content' in attributes) {
-            this.el.innerHTML = attributes['content']
+            if (this.viewerMode) {
+                this.el.innerHTML = Autolinker.link(attributes['content'])
+            } else {
+                this.el.innerHTML = attributes['content']
+            }
         }
     }
 

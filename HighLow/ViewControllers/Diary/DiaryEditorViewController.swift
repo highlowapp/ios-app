@@ -46,6 +46,27 @@ class DiaryEditorViewController: ReflectEditorViewController {
         
         navigationItem.titleView = loader
         
+        let container = Pill()
+        container.clipsToBounds = true
+        container.backgroundColor = AppColors.secondary
+        
+        
+        let tapper = UITapGestureRecognizer(target: self, action: #selector(editSharingPolicy))
+        container.addGestureRecognizer(tapper)
+        
+        let label = UILabel()
+        label.textColor = .white
+        label.text = "Share"
+        label.textAlignment = .center
+        
+        container.addSubview(label)
+        label.eqTop(container, 5).centerX(container)
+        container.eqLeading(label, -10).eqTrailing(label, 10).eqBottom(label, 5)
+        
+        let shareButton = UIBarButtonItem(customView: container)
+        
+        navigationItem.rightBarButtonItem = shareButton
+        
         
         if let blocks = activity?.data?.value(forKey: "blocks") as? [NSDictionary] {
             setBlocks(blocks)
@@ -65,32 +86,13 @@ class DiaryEditorViewController: ReflectEditorViewController {
             self.saving.textColor = .gray
             self.saving.text = "Saved!"
         }, onError: { error in
-            print(error)
             self.saving.textColor = .red
             self.saving.text = "Error When Saving"
         })
     }
 
     override func hasEdited() {
-        let container = Pill()
-        container.clipsToBounds = true
-        container.backgroundColor = .systemGreen
         
-        let tapper = UITapGestureRecognizer(target: self, action: #selector(editSharingPolicy))
-        container.addGestureRecognizer(tapper)
-        
-        let label = UILabel()
-        label.textColor = .white
-        label.text = "Publish"
-        label.textAlignment = .center
-        
-        container.addSubview(label)
-        label.eqTop(container, 5).centerX(container)
-        container.eqLeading(label, -10).eqTrailing(label, 10).eqBottom(label, 5)
-        
-        let shareButton = UIBarButtonItem(customView: container)
-        
-        navigationItem.rightBarButtonItem = shareButton
     }
     
     @objc func editSharingPolicy() {

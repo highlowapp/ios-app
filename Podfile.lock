@@ -80,6 +80,7 @@ PODS:
   - GTMSessionFetcher/Full (1.4.0):
     - GTMSessionFetcher/Core (= 1.4.0)
   - JTAppleCalendar (8.0.2)
+  - MTCircularSlider (1.0.0)
   - nanopb (1.30905.0):
     - nanopb/decode (= 1.30905.0)
     - nanopb/encode (= 1.30905.0)
@@ -102,6 +103,7 @@ DEPENDENCIES:
   - GoogleSignIn
   - Gridicons (from `https://raw.github.com/Automattic/Gridicons-iOS/develop/Gridicons.podspec`)
   - JTAppleCalendar (= 8.0.2)
+  - MTCircularSlider
   - PopupDialog (~> 1.1)
   - Purchases (= 3.4.0)
   - SwiftGifOrigin
@@ -130,6 +132,7 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - JTAppleCalendar
+    - MTCircularSlider
     - nanopb
     - PopupDialog
     - PromisesObjC
@@ -165,6 +168,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: 4deac854479704f348309e7b66189e604cf5e01e
   GTMSessionFetcher: 6f5c8abbab8a9bce4bb3f057e317728ec6182b10
   JTAppleCalendar: bb3dd3752e2bcc85cb798ab763fbdd6e142715fc
+  MTCircularSlider: ce0b277515dbc1b7b9163352103c368f53739c9e
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   PopupDialog: 720c92befd8bc23c13442254945213db5612f149
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
@@ -175,6 +179,6 @@ SPEC CHECKSUMS:
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
   WordPress-Aztec-iOS: 25a9cbe204a22dd6d540d66d90b8a889421e0b42
 
-PODFILE CHECKSUM: 4478fc56ec548eaad8d1d291d959a54504e85f8e
+PODFILE CHECKSUM: 326dc622a3f68912bfe94f962a3c59b4337dade0
 
 COCOAPODS: 1.8.4

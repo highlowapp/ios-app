@@ -144,6 +144,18 @@ func getHostName() -> String {
     return "https://api.gethighlow.com"
 }
 
+
+func getBibleAPIKey() -> String {
+    var nsDict: NSDictionary?
+    if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
+        nsDict = NSDictionary(contentsOfFile: path)
+        
+        return nsDict?.object(forKey: "bibleAPIKey") as! String
+    }
+    
+    return ""
+}
+
 func getRevenueCatPublicKey() -> String {
     var nsDict: NSDictionary?
     if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
@@ -156,6 +168,11 @@ func getRevenueCatPublicKey() -> String {
     }
 }
 
+
+extension Notification.Name {
+    static let meditationFocusChanged = Notification.Name("com.gethighlow.meditationFocusUpdated")
+    static let endChimeChanged = Notification.Name("com.gethighlow.endChimeChanged")
+}
 
 
 func themeOverride() -> String {
@@ -198,6 +215,13 @@ func rgba(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat) -> UIColor {
     return UIColor(red: r/255, green: g/255, blue: b/255, alpha: a)
 }
 
+func niceDate() -> String {
+    let currDate = Date()
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .short
+    dateFormatter.timeStyle = .none
+    return dateFormatter.string(from: currDate)
+}
 
 
 //Switch between tab and authentication screens
@@ -496,7 +520,7 @@ func authenticatedRequest(url:String, method: HTTPMethod, parameters:[String:Any
 
 
 //Display alert
-func alert(_ title: String, _ message: String, handler: (() -> Void)? = nil) {
+func alert(_ title: String = "An error occurred", _ message: String = "Please try again", handler: (() -> Void)? = nil) {
     
     let popup = PopupDialog(title: title, message: message)
     
@@ -589,3 +613,13 @@ func openURL(_ url: String) {
     guard let url = URL(string: url) else {return}
     UIApplication.shared.open(url, options: [:], completionHandler: nil)
 }
+
+
+func getPaywall() -> SwiftPaywall {
+    let paywall = SwiftPaywall(termsOfServiceUrlString: "https://gethighlow.com/termsofservice", privacyPolicyUrlString: "https://gethighlow.com/privacy", allowRestore: true, backgroundColor: .white, textColor: AppColors.primary, productSelectedColor: AppColors.primary, productDeselectedColor: AppColors.secondary)
+    paywall.titleLabel.text = "Get Full Access"
+    paywall.subtitleLabel.text = "With High/Low Premium, you get unlimited diary blocks, unlimited time for audio diaries and meditation sessions, and access to exclusive content! "
+    return paywall
+}
+
+

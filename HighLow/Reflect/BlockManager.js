@@ -20,13 +20,9 @@ class BlockManager {
             if (blockItem['editable'] === undefined || blockItem['editable'] === null) {
                 blockItem['editable'] = true
             }
-            let block = new blockTypes[ blockItem['type'] ](blockItem)
+            blockItem['viewerMode'] = viewerMode
+            let block = new blockTypes[ blockItem['type'] ](blockItem, viewerMode)
             this.blockIds[block.id] = block
-
-            if (viewerMode) {
-                block.viewerModeOn()
-            }
-
             block.addTo(this.editor)
         }
     }

@@ -53,6 +53,8 @@ class APIService {
         for (key, value) in params! {
             if i == 0 {
                 completeUrl += "?"
+            } else {
+                completeUrl += "&"
             }
             
             if let val = value as? String {
@@ -140,8 +142,6 @@ class APIService {
         NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
         var completeUrl = ""
         
-        
-        
         var finalParams: [String: Any] = [
             "supports_html": true
         ]
@@ -149,7 +149,7 @@ class APIService {
         if params != nil {
             finalParams.merge(params!, uniquingKeysWith: { (current, _) in current })
         }
-        
+                
         if method == .get {
             completeUrl = urlFromMap(url, finalParams)
         } else {
@@ -172,10 +172,11 @@ class APIService {
             "Authorization": "Bearer " + accessToken!
         ]
         
-        /*
-        AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseString { response in
+        
+        /*AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseString { response in
             print(response)
         }*/
+        
         
         AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseJSON { response in
             switch response.result {
@@ -189,20 +190,21 @@ class APIService {
                         }
                         return
                     }
-                    
+                    printer(error, .error)
                     onError(error)
                     return
                 }
                 onSuccess(json)
                 break
             case .failure(let error):
+                printer(error, .error)
                 onError(error.errorDescription ?? "unknown-error")
             }
         }
         
     }
     
-    func authenticatedRequest(_ url: String, method: HTTPMethod, params: [String: Any]?, file: UIImage, onSuccess: @escaping (_ json:
+    func authenticatedRequest(_ url: String, method: HTTPMethod, params: [String: Any]?, file: Uploadable, onSuccess: @escaping (_ json:
         NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         var completeUrl = ""
         
@@ -237,11 +239,11 @@ class APIService {
             "Authorization": "Bearer " + accessToken!
         ]
         
-        let imgData = file.jpegData(compressionQuality: 0.7)!
+        let fileData = file.getData()
             
         AF.upload(multipartFormData: { multiPartFormData in
             
-            multiPartFormData.append(imgData , withName: "file", fileName: "image.JPEG", mimeType: "image/jpeg")
+            multiPartFormData.append(fileData , withName: "file", fileName: file.getName(), mimeType: file.getMIMEType())
             
             for (key, value) in params! {
                 if value is String {
@@ -277,6 +279,7 @@ class APIService {
                         }
                         
                         else {
+                            printer(error, .error)
                             onError(error)
                         }
                         
@@ -287,6 +290,7 @@ class APIService {
                         
                     }
                 case .failure(let error):
+                    printer(error, .error)
                     onError(error.errorDescription ?? "unknown-error")
                     return
                 }
@@ -295,3 +299,20 @@ class APIService {
     }
 }
 
+protocol Uploadable: AnyObject {
+    func getData() -> Data
+    func getName() -> String
+    func getMIMEType() -> String
+}
+
+extension UIImage: Uploadable {
+    func getData() -> Data {
+        return self.jpegData(compressionQuality: 0.7)!
+    }
+    func getName() -> String {
+        return "image.JPEG"
+    }
+    func getMIMEType() -> String {
+        return "image/jpeg"
+    }
+}

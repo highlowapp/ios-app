@@ -18,6 +18,7 @@ target 'HighLow' do
   pod 'WordPress-Aztec-iOS'
   pod 'Purchases', '3.4.0'
   pod 'Gridicons', :podspec => 'https://raw.github.com/Automattic/Gridicons-iOS/develop/Gridicons.podspec'
+  pod "MTCircularSlider"
 
   target 'HighLowTests' do
   end

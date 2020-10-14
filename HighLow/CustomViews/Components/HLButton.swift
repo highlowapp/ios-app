@@ -94,7 +94,12 @@ class HLButton: UIButton {
         if (activityIndicator == nil) {
             activityIndicator = UIActivityIndicatorView()
             activityIndicator.hidesWhenStopped = true
-            activityIndicator.color = .white
+            
+            if colorStyle == "white" {
+                activityIndicator.color = AppColors.primary
+            } else {
+                activityIndicator.color = .white
+            }
         }
         
         self.addSubview(activityIndicator)
@@ -120,6 +125,7 @@ class HLButton: UIButton {
         
         gradientLayer.frame = self.bounds
         gradientLayer.cornerRadius = 0.5 * self.bounds.height
+        self.layer.cornerRadius = 0.5 * self.bounds.height
         
         gradientLayer.removeFromSuperlayer()
         
