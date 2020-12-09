@@ -369,7 +369,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         
         Messaging.messaging().delegate = self
         
-        
         if let clientID = getClientID() {
             GIDSignIn.sharedInstance()?.clientID = clientID
         } else { return false }

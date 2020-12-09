@@ -12,7 +12,7 @@ let generateId = () => {
 class Block {
     constructor(attributes) {
         this.id = generateId()
-        this.editable = attributes['editable']
+        this.editable = attributes['editable'] ? true:false
         this.attributes = attributes
         this.viewerMode = attributes['viewerMode']
         this.createElement(attributes)
@@ -71,6 +71,7 @@ class Block {
             trasher.innerHTML = 'delete_outline'
             trasher.addEventListener('click', () => {
                 this.delete()
+                save()
             })
             block.appendChild(trasher)
         }

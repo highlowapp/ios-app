@@ -24,8 +24,8 @@ class NewProfileViewController: UIViewController {
     let bioLabel: UILabel = UILabel()
     let tabs: UIStackView = UIStackView()
     
-    let activitiesVC = UserActivitiesTableViewController()
-    let friendsVC = UITableViewController()
+    let activitiesVC = UserActivitiesViewController()
+    let friendsVC = FriendsCollectionViewController()
     
     let activitiesTab = TabView()
     let friendsTab = TabView()
@@ -43,9 +43,11 @@ class NewProfileViewController: UIViewController {
 
         pageView.willMove(toParent: self)
         self.view.addSubviews([header, pageView.view])
-        
+        header.backgroundColor = .white
         headerTopConstraint = header.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 0)
         headerTopConstraint?.isActive = true
+        
+        self.title = "Profile"
         
         header.eqLeading(self.view).eqTrailing(self.view)
         
@@ -85,14 +87,18 @@ class NewProfileViewController: UIViewController {
         tabs.distribution = .fillEqually
         
         header.eqBottom(tabs)
-        
         activitiesVC.user = user
+        activitiesVC.delegate = self
+        friendsVC.user = user
+        friendsVC.delegate = self
+        
         viewControllers = [activitiesVC, friendsVC]
         
         if user == nil {
             UserManager.shared.getCurrentUser(onSuccess: { currentUser in
                 self.user = currentUser
                 self.activitiesVC.user = currentUser
+                self.friendsVC.user = currentUser
             }, onError: { error in
                 alert()
             })
@@ -174,21 +180,41 @@ extension NewProfileViewController: UIPageViewControllerDelegate, UIPageViewCont
     
 }
 
-extension NewProfileViewController: UITableViewDelegate {
+extension NewProfileViewController: UITableViewDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate  {
+    
     func setupScrolling() {
-        activitiesVC.tableView.delegate = self
-        friendsVC.tableView.delegate = self
+        activitiesVC.webView.scrollView.delegate = self
+        friendsVC.collectionView.delegate = self
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
         let offsetHeight = scrollView.contentOffset.y
         
-        if (headerTopConstraint?.constant ?? 0) - offsetHeight > 0 || (abs(headerTopConstraint?.constant ?? 0) > header.bounds.height && offsetHeight > 0) {
+        if (headerTopConstraint?.constant ?? 0) - offsetHeight > 0 || (abs(headerTopConstraint?.constant ?? 0) > header.bounds.height && offsetHeight > 0) || offsetHeight == 139.5 {
         } else {
             headerTopConstraint?.constant -= offsetHeight
             scrollView.contentOffset = .zero
         }
+    }
+}
+
+extension NewProfileViewController: UserActivitiesViewControllerDelegate, FriendsCollectionViewControllerDelegate {
+    func activitySelected(_ activity: ActivityResource) {
+        let editor = DiaryEditorViewController()
+        editor.activity = activity
+        self.navigationController?.pushViewController(editor, animated: true)
+    }
+    
+    func userSelected(_ user: UserResource) {
+        let profile = NewProfileViewController()
+        profile.user = user
+        self.navigationController?.pushViewController(profile, animated: true)
+    }
+    
+    func manageFriends() {
+        let friendsVC = FriendsTableViewController()
+        friendsVC.uid = user?.uid
+        self.navigationController?.pushViewController(friendsVC, animated: true)
     }
 }
 

@@ -3,7 +3,7 @@
     <head>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-      <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
         <style>
 
             .block {
@@ -188,6 +188,12 @@
 
             function setBlocks(blocks) {
                 blockManager.loadBlocks(blocks, true)
+
+                if (window.webkit && window.webkit.messageHandlers) {
+                    window.webkit.messageHandlers.showPremium.postMessage('activity_selected')
+                } else {
+                    /*Show premium screen on web version*/
+                }
             }
 
         </script>

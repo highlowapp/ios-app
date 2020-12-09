@@ -10,7 +10,7 @@ import UIKit
 
 class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate {
 
-    var users: [User] = []
+    var users: [UserResource] = []
     let searchBar: UISearchBar = UISearchBar()
     
     override func viewDidLayoutSubviews() {
@@ -46,13 +46,13 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         //Navigation bar
         self.title = "Add Friends"
         //navigationController?.navigationBar.barTintColor = AppColors.primary
-        navigationController?.navigationBar.tintColor = .white
+        //navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.isTranslucent = false
         
         //Left button
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(cancel))
-        navigationItem.leftBarButtonItem = cancelButton
+        //navigationItem.leftBarButtonItem = cancelButton
         
         //Search bar
         searchBar.placeholder = "Search for new friends"
@@ -66,11 +66,11 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         
         tableView.keyboardDismissMode = .onDrag
 
-        getFriendSuggestions()
+        searchUsers()
     }
     
     
-    
+    /*
     func getFriendSuggestions() {
         authenticatedRequest(url: "/user/friends/suggestions", method: .get, parameters: [:], onFinish: {
             json in
@@ -87,7 +87,7 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         }, onError: { error in
             alert("An error occurred", "Please try again")
         })
-    }
+    }*/
     
     
     
@@ -100,21 +100,12 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
         let params: [String: Any] = [
             "search": searchBar.text ?? ""
         ]
-        authenticatedRequest(url: "/user/search", method: .post, parameters: params, onFinish: { json in
-            
+        UserService.shared.searchUsers(search: searchBar.text ?? "", onSuccess: { users in
             self.searchBar.isLoading = false
-            
-            if let users = json["users"] as? [NSDictionary] {
-                self.users = []
-                for i in users {
-                    self.users.append( User(data: i["user"] as! NSDictionary) )
-                }
-                
-                self.tableView.reloadData()
-                
-            }
-            
+            self.users = users
+            self.tableView.reloadData()
         }, onError: { error in
+            alert()
             self.searchBar.isLoading = false
         })
         
@@ -138,21 +129,20 @@ class AddFriendsTableViewController: UITableViewController, UISearchBarDelegate 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = AddFriendTableViewCell(style: .default, reuseIdentifier: "user")
-        cell.loadUser(users[indexPath.row])
+        cell.loadUser(users[indexPath.row].getItem())
         return cell
     }
 
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        openProfile(uid: users[indexPath.row].uid!)
+        openProfile(user: users[indexPath.row])
         
     }
     
-    func openProfile(uid: String) {
-        let profileTableViewController = ProfileTableViewController()
-        profileTableViewController.uid = uid
-        profileTableViewController.restricted = true 
+    func openProfile(user: UserResource) {
+        let profileTableViewController = NewProfileViewController()
+        profileTableViewController.user = user
         
         self.navigationController?.pushViewController(profileTableViewController, animated: true)
     }

@@ -41,7 +41,12 @@ class UserResource: Resource<User> {
     
     var profileimage: String? {
         get {
-            return getItem().profileimage
+            let profileImage = getItem().profileimage
+            if profileImage != nil && profileImage!.starts(with: "http") {
+                return profileImage
+            }
+            guard let _profileImage = profileImage else { return nil }
+            return "https://storage.googleapis.com/highlowfiles/" + _profileImage
         }
     }
     
@@ -63,6 +68,10 @@ class UserResource: Resource<User> {
         }
     }
     
+    func asJson() -> NSDictionary {
+        return getItem().asJson()
+    }
+    
     func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         let user = getItem()
         
@@ -78,13 +87,10 @@ class UserResource: Resource<User> {
         }, onError: onError, onProgressUpdate: onProgressUpdate)
     }
     
-    func getFriends(onSuccess: @escaping (_ friends: [UserResource]) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func getFriends(onSuccess: @escaping (_ friendsResponse: FriendsResponse) -> Void, onError: @escaping (_ error: String) -> Void) {
         let user = getItem()
         UserService.shared.getFriendsForUser(uid: user.uid, onSuccess: { users in
-            let userResources = users.map { user in
-                return UserManager.shared.saveUser(user: user)
-            }
-            onSuccess(userResources)
+            onSuccess(users)
         }, onError: onError)
     }
     
@@ -130,10 +136,7 @@ class UserResource: Resource<User> {
     
     func searchUsers(search: String, onSuccess: @escaping (_ users: [UserResource]) -> Void, onError: @escaping (_ error: String) -> Void) {
         UserService.shared.searchUsers(search: search, onSuccess: { users in
-            let userResources = users.map { user in
-                return UserManager.shared.saveUser(user: user)
-            }
-            onSuccess(userResources)
+            onSuccess(users)
         }, onError: onError)
     }
     

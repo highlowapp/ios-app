@@ -10,7 +10,11 @@ import UIKit
 import WebKit
 import Purchases
 
-class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UIImagePickerControllerDelegate, UINavigationControllerDelegate, WKNavigationDelegate {
+class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UIImagePickerControllerDelegate, UINavigationControllerDelegate, WKNavigationDelegate, ProgressLoaderViewDelegate {
+    func didSkip() {
+        
+    }
+    
     var currentBlockId: String?
     var type: String = "diary"
     
@@ -74,6 +78,12 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
     let imagePicker: UIImagePickerController = UIImagePickerController()
     var currentUrl: String = ""
     var editor: ReflectEditorView?
+    let loaderView: ProgressLoaderView = ProgressLoaderView()
+    var isLoading: Bool = false {
+        didSet {
+            loaderView.isHidden = !isLoading
+        }
+    }
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -105,6 +115,13 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         imagePicker.mediaTypes = ["public.image"]
         
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
+        self.view.addSubview(loaderView)
+        
+        loaderView.eqTop(self.view).eqBottom(self.view).eqLeading(self.view).eqTrailing(self.view)
+        loaderView.isHidden = !isLoading
+        loaderView.delegate = self
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -132,7 +149,7 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         do {
             let blocksJson = try JSONSerialization.data(withJSONObject: blocks, options: .prettyPrinted)
             let jsonStr = NSString(data: blocksJson, encoding: String.Encoding.utf8.rawValue)! as String
-            editor?.evaluateJavaScript("setBlocks(" + jsonStr + ")")
+            editor?.evaluateJavaScript("setBlocks(\(jsonStr))")
         } catch {
             
         }
@@ -197,11 +214,16 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
     }
     
     func uploadImage(_ img: UIImage) {
+        loaderView.allowsSkip = false
+        loaderView.setTitle("Uploading...")
+        isLoading = true
+        
         ActivityService.shared.addImage(img: img, onSuccess: { url in
+            self.isLoading = false
             self.editor?.evaluateJavaScript("updateBlock('\(self.currentBlockId ?? "")', {'url': '\(url)'})", completionHandler: nil)
         }, onError: { error in
         }, onProgressUpdate: { progress in
-            print(progress.fractionCompleted)
+            self.loaderView.setProgress(Float(progress.fractionCompleted))
         })
     }
     

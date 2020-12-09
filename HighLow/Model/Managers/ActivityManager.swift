@@ -27,7 +27,11 @@ class ActivityManager {
     }
     
     @discardableResult func saveActivity(_ activity: Activity) -> ActivityResource {
-        activityCache[activity.activityId!] = ActivityResource(activity)
+        if let existingActivity = activityCache[activity.activityId!] {
+            existingActivity.set(item: activity)
+        } else {
+            activityCache[activity.activityId!] = ActivityResource(activity)
+        }
         return activityCache[activity.activityId!]!
     }
 }

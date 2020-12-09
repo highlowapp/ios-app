@@ -41,6 +41,32 @@ class Activity: DataObject {
         }
     }
     
+    func asDict() -> NSDictionary {
+        var dict: [String: Any] = [
+            "activity_id": activityId ?? "",
+            "uid": uid ?? "",
+            "type": type ?? "",
+            "title": title ?? "",
+            "timestamp": timestamp ?? "",
+            "data": data ?? [:],
+            "date": date ?? "",
+            "flagged": flagged ?? false
+        ]
+        
+        guard let comments = comments else {
+            dict["comments"] = []
+            return dict as NSDictionary
+        }
+        
+        var jsonComments: [NSDictionary] = []
+        for comment in comments {
+            jsonComments.append(comment.asJson())
+        }
+        
+        dict["comments"] = jsonComments
+        return dict as NSDictionary
+    }
+    
     func updateData(with data: Activity) {
         activityId = data.activityId ?? activityId
         uid = data.uid ?? uid

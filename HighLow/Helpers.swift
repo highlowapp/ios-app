@@ -376,7 +376,7 @@ func attemptTokenRefresh(onFinish callback: @escaping (_ result: String) -> Void
 
 
 //For making authenticated request
-func authenticatedRequest(url:String, method: HTTPMethod, parameters:[String:Any], file: UIImage? = nil, onFinish callback: @escaping (_ json: NSDictionary) -> Void, onError fail: @escaping (_ error: String) -> Void){
+func authenticatedRequest(url:String, method: Alamofire.HTTPMethod, parameters:[String:Any], file: UIImage? = nil, onFinish callback: @escaping (_ json: NSDictionary) -> Void, onError fail: @escaping (_ error: String) -> Void){
     let oldUrl = url
     let url = getHostName() + url
     

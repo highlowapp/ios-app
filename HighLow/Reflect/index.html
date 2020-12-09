@@ -453,7 +453,6 @@
             }
 
             function appendBlock(type) {
-                save()
                 let block = undefined
                 switch (type) {
                     case 'h1':
@@ -472,6 +471,7 @@
                         block = new PBlock({editable: true, content: ''})
                 }
                 blockManager.appendBlock(block)
+                save()
             }
 
             function getCurrentEditingIndex() {
@@ -485,6 +485,7 @@
 
             function updateBlock(blockId, data) {
                 blockManager.updateBlock(blockId, data)
+                save()
             }
             
             function enablePremiumFeatures() {

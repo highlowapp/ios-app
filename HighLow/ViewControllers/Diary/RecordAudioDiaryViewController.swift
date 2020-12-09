@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import Purchases
+import PopupDialog
 
 class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, ProgressLoaderViewDelegate, AudioPlayerDelegate, AudioPremiumWarningViewDelegate {
     
@@ -48,9 +49,12 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
     let clock = UILabel()
     let recordButton: RecordButton = RecordButton()
     let playButton: PlayButton = PlayButton()
+    let bigPlayButton: PlayButton = PlayButton()
     let doneButton: Pill = Pill()
+    let spacer: UIView = UIView()
     let loadingView: ProgressLoaderView = ProgressLoaderView()
     let shareButton = Pill()
+    let controls: UIStackView = UIStackView()
     
     var startDate: Date = Date()
     let dateFormatter: DateComponentsFormatter = DateComponentsFormatter()
@@ -58,12 +62,30 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
     var activity: ActivityResource? {
         didSet {
             shareButton.isHidden = activity == nil
+            guard let activity = activity else { return }
+            if let uid = AuthService.shared.uid, let activityUid = activity.uid {
+                isOwner = uid == activityUid
+                
+                if isOwner {
+                    bigPlayButton.removeFromSuperview()
+                    controls.addArrangedSubview(playButton)
+                    controls.addArrangedSubview(recordButton)
+                    controls.addArrangedSubview(spacer)
+                    controls.addArrangedSubview(doneButton)
+                    playButton.enable()
+                }
+            } else {
+                controls.addArrangedSubview(bigPlayButton)
+            }
+            
         }
     }
     
     var transcriptionFinished: Bool = true
     var isCanceling: Bool = false
     var audioFile: AudioFile?
+    
+    var isOwner: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +98,9 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
         audioVisualizer.isHidden = isShowingWarning
         audioPremiumWarning.isHidden = !isShowingWarning
         
+        if let uid = AuthService.shared.uid, let activityUid = activity?.uid {
+            isOwner = uid == activityUid
+        }
         
         let cancelButton = UIButton()
         cancelButton.setTitle("Done", for: .normal)
@@ -120,12 +145,24 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
         audioIcon.topToBottom(shareButton).centerX(self.view)
         header.topToBottom(audioIcon, 10).eqLeading(self.view).eqTrailing(self.view)
         
+        spacer.width(50)
+        
+        controls.axis = .horizontal
+        controls.distribution = .equalSpacing
+        controls.alignment = .center
+        controls.height(70)
+        
+        
         let container = UIView()
         container.addSubviews([audioVisualizer, clock, audioPremiumWarning])
-        self.addSubviews([container, recordButton, playButton, doneButton, loadingView])
+        self.addSubviews([container, controls, loadingView])
+        
+        controls.centerX(self.view).eqWidth(self.view, 0, 0.8).eqBottom(self.view.safeAreaLayoutGuide, -30)
         
         audioVisualizer.eqLeading(container).eqTrailing(container).eqTop(container).eqHeight(self.view, 0, 0.33)
-        clock.eqLeading(container).eqTrailing(container).topToBottom(audioPremiumWarning, 20)
+        clock.eqLeading(container).eqTrailing(container)
+        clock.topAnchor.constraint(greaterThanOrEqualTo: audioPremiumWarning.bottomAnchor, constant: 20).isActive = true
+        clock.topAnchor.constraint(greaterThanOrEqualTo: audioVisualizer.bottomAnchor, constant: 20).isActive = true
         container.eqBottom(clock)
         
         audioPremiumWarning.eqLeading(container).eqTrailing(container).eqTop(container)
@@ -155,20 +192,31 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
         
         //header.centerX(self.view).eqTop(self.view, 30).eqWidth(self.view, 0.8)
         container.centerY(self.view).eqLeading(self.view).eqTrailing(self.view)
-        recordButton.centerX(self.view).eqBottom(self.view, -30).width(70)
+        //recordButton.centerX(self.view).eqBottom(self.view.safeAreaLayoutGuide, -30).width(70)
         
-        
+        recordButton.width(70).aspectRatioFromWidth(1)
         recordButton.addTarget(self, action: #selector(toggleRecord), for: .touchUpInside)
         recordButton.showBorder(.red, 1)
         
-        playButton.centerY(recordButton).trailingToLeading(recordButton, -30).width(50)
+        //playButton.centerY(recordButton).trailingToLeading(recordButton, -30).width(50)
+        playButton.width(50).height(50)
         playButton.addTarget(self, action: #selector(togglePlayback), for: .touchUpInside)
         
+        bigPlayButton.width(70).height(70)
+        bigPlayButton.addTarget(self, action: #selector(togglePlayback), for: .touchUpInside)
+        
+        
+        
         if activity == nil {
+            bigPlayButton.removeFromSuperview()
+            controls.addArrangedSubview(playButton)
+            controls.addArrangedSubview(recordButton)
+            controls.addArrangedSubview(spacer)
+            controls.addArrangedSubview(doneButton)
             playButton.disable()
         }
         
-        doneButton.centerY(recordButton).leadingToTrailing(recordButton, 30)
+        //doneButton.centerY(recordButton).leadingToTrailing(recordButton, 30)
         
         dateFormatter.unitsStyle = .abbreviated
         dateFormatter.includesApproximationPhrase = false
@@ -192,7 +240,24 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
     }
     
     @objc func cancel() {
-        self.dismiss(animated: true, completion: nil)
+        if !doneButton.isHidden {
+            let popup = PopupDialog(title: "Are you sure you want to leave?", message: "Your changes will not be saved!")
+            let doItButton = DestructiveButton(title: "Yes, I'm sure", action: {
+                self.dismiss(animated: true, completion: nil)
+            })
+            let cancelButton = CancelButton(title: "No, I'll save first", action: {
+                
+            })
+            
+            popup.addButton(cancelButton)
+            popup.addButton(doItButton)
+            
+            self.present(popup, animated: true, completion: nil)
+        } else {
+        
+            self.dismiss(animated: true, completion: nil)
+            
+        }
     }
     
     @objc func toggleRecord() {
@@ -356,11 +421,16 @@ extension RecordAudioDiaryViewController {
          */
     }
     
+    func showDoneButton() {
+        doneButton.isHidden = false
+        spacer.isHidden = true
+    }
+    
     func audioPlayer(_ audioPlayer: AudioPlayer, didStop state: AudioStreamerState) {
         playButton.togglePlaying()
         timer?.invalidate()
         recordButton.enable()
-        doneButton.isHidden = false
+        showDoneButton()
         
         Purchases.shared.purchaserInfo { (purchaserInfo, error) in
             if purchaserInfo?.entitlements["Premium"]?.isActive == true {
@@ -421,7 +491,10 @@ extension RecordAudioDiaryViewController {
         timer?.invalidate()
         
         recordButton.enable()
-        doneButton.isHidden = false
+        let url = getFileURLForPlaying()
+        if url.isFileURL {
+            showDoneButton()
+        }
     }
     
     func setupAudioRecordSession() {
@@ -519,7 +592,7 @@ extension RecordAudioDiaryViewController {
         audioRecorder = nil
         
         playButton.enable()
-        doneButton.isHidden = false
+        showDoneButton()
         recordButton.stopRecording()
     }
     

@@ -131,6 +131,7 @@ class EditCommentViewController: UIViewController, UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         errorLabel.text = String(2048 - textView.text.count) + " chars left"
         scrollTextViewToBottom(textView: textView)
+        message = textView.text
     }
     
     func scrollTextViewToBottom(textView: UITextView) {
@@ -188,12 +189,14 @@ class EditCommentViewController: UIViewController, UITextViewDelegate {
         loader.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         loader.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
         
-        CommentViewCell.editComment(loader: loader, commentid: commentid ?? "", message: textView.text) {
-            
+        guard let commentid = commentid else { alert(); return }
+        
+        ActivityService.shared.editComment(commentid: commentid, message: message ?? "", onSuccess: { activity in
             self.delegate?.editCommentViewControllerDidFinishEditing(sender: self)
             self.dismiss(animated: true, completion: nil)
-            
-        }
+        }, onError: { error in
+            alert()
+        })
         
     }
 

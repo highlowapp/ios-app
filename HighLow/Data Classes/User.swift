@@ -37,6 +37,14 @@ class User: DataObject {
         return first + " " + last
     }
     
+    func getProfileImage() -> String {
+        guard let profileimage = self.profileimage else { return "" }
+        if profileimage.starts(with: "http") {
+            return profileimage
+        }
+        return "https://storage.googleapis.com/highlowfiles/" + profileimage
+    }
+    
     func updateData(with data: User) {
         firstname = data.firstname ?? firstname
         lastname = data.lastname ?? lastname

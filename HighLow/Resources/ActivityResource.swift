@@ -63,6 +63,10 @@ class ActivityResource: Resource<Activity> {
         }
     }
     
+    func asDict() -> NSDictionary {
+        return getItem().asDict()
+    }
+    
     func update(data: NSDictionary, onSuccess: @escaping () -> Void, onError: @escaping (_ error: String) -> Void) {
         let activity = getItem()
         activity.data = data

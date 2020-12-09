@@ -10,7 +10,7 @@ import UIKit
 
 class FriendsTableViewController: UITableViewController, FriendTableViewCellDelegate, PendingFriendRequestTableViewCellDelegate {
     
-    var friends: [User] = []
+    var friends: [UserResource] = []
     var uid: String?
     var pendingRequests: [User] = []
     var isCurrentUser: Bool = false
@@ -54,19 +54,18 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
         //Navigation bar
         self.navigationController?.navigationBar.barStyle = .black
         self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.tintColor = .white
         //self.navigationController?.navigationBar.barTintColor = AppColors.primary
         self.title = "Friends"
         
         //Edit button
         let editButton = UIBarButtonItem(title: "Edit", style: .done, target: self, action: #selector(editMode))
-        editButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
+        editButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: AppColors.primary], for: .normal)
         self.navigationItem.rightBarButtonItem = editButton
         
         //Back button
         let backButton = UIBarButtonItem(title: "Back", style: .done, target: self, action: #selector(back))
-        backButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
-        self.navigationItem.leftBarButtonItem = backButton
+        backButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: AppColors.primary], for: .normal)
+        //self.navigationItem.leftBarButtonItem = backButton
         
         
         reloadData()
@@ -88,7 +87,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
         
         addFriends.addTarget(self, action: #selector(openAddFriendsViewController), for: .touchUpInside)
         
-        tableView.tableHeaderView?.backgroundColor = getColor("Separator")
+        tableView.tableHeaderView?.backgroundColor = .white
         tableView.tableHeaderView?.addSubview(addFriends)
         
         addFriends.centerX(tableView.tableHeaderView!).eqTop(tableView.tableHeaderView!, 10).width(150).height(50)
@@ -117,32 +116,13 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
     }
     
     func getFriends(callback: @escaping () -> Void) {
-
-        var url = "/user/friends"
-        
-        if uid != nil {
-            url += "?uid=" + uid!
-        }
-        
-        authenticatedRequest(url: url, method: .get, parameters: [:], onFinish: { json in
-
-            if json["error"] != nil {
-
-            } else {
-                
-                if let friends = json["friends"] as? [NSDictionary] {
-                    self.friends = []
-                    for friend in friends {
-                        self.friends.append( User(data: friend) )
-                    }
-                    callback()
-                    self.tableView.reloadData()
-                    
-                }
-                
-            }
-            
+        guard let uid = self.uid else { return }
+        UserService.shared.getFriendsForUser(uid: uid, onSuccess: { friendsResponse in
+            self.friends = friendsResponse.friends
+            callback()
+            self.tableView.reloadData()
         }, onError: { error in
+            alert()
             callback()
         })
         
@@ -181,7 +161,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
             
         } else {
             let cell = FriendTableViewCell(style: .default, reuseIdentifier: "friend")
-            cell.loadUser( friends[indexPath.row] )
+            cell.loadUser( friends[indexPath.row].getItem() )
             cell.delegate = self
             return cell
         }
@@ -237,7 +217,10 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
         if indexPath.section == 0 && pendingRequests.count > 0 {
             openProfile( uid: pendingRequests[indexPath.row].uid! )
         } else {
-            openProfile( uid: friends[indexPath.row].uid! )
+            let profileViewController = NewProfileViewController()
+            profileViewController.user = self.friends[indexPath.row]
+            self.navigationController?.navigationBar.tintColor = AppColors.primary
+            self.navigationController?.pushViewController(profileViewController, animated: true)
         }
         
     }
@@ -258,7 +241,6 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
                 if self.uid == uid {
                     self.isCurrentUser = true
                     self.addFriendsButton()
-                    self.getPendingRequests()
                 }
             })
         }
@@ -277,13 +259,7 @@ class FriendsTableViewController: UITableViewController, FriendTableViewCellDele
 
         let addFriendsTableViewController = AddFriendsTableViewController()
         
-        let navController = UINavigationController(rootViewController: addFriendsTableViewController)
-        
-        navController.navigationBar.backgroundColor = AppColors.primary
-        navController.navigationBar.tintColor = AppColors.primary
-        navController.navigationBar.barStyle = .black
-        
-        self.present(navController, animated: true)
+        self.navigationController?.pushViewController(addFriendsTableViewController, animated: true)
     }
 
 }

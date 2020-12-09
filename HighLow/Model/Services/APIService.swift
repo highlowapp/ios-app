@@ -179,6 +179,7 @@ class APIService {
         
         
         AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseJSON { response in
+            print(response.response)
             switch response.result {
             case .success(let result):
                 let json = result as! NSDictionary

@@ -24,10 +24,13 @@ class AuthService {
         
         KeychainWrapper.standard.removeObject(forKey: "access")
         KeychainWrapper.standard.removeObject(forKey: "refresh")
+        KeychainWrapper.standard.removeObject(forKey: "uid")
         
         GIDSignIn.sharedInstance()?.signOut()
         
         APIService.shared.signOut()
+        
+        self.uid = nil
     }
     
     func signIn(email: String, password: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
@@ -100,6 +103,7 @@ class AuthService {
     func isLoggedIn(ifLoggedIn: @escaping (_ uid: String) -> Void, ifNotLoggedIn: @escaping () -> Void) {
         APIService.shared.authenticatedRequest("/user/isLoggedIn", method: .get, params: nil, onSuccess: { result in
             if let uid = result["uid"] as? String {
+                self.uid = uid
                 ifLoggedIn(uid)
             } else {
                 ifNotLoggedIn()

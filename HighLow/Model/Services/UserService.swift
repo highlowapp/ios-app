@@ -65,18 +65,26 @@ class UserService {
         }, onError: onError)
     }
     
-    func getFriendsForUser(uid: String?, onSuccess: @escaping (_ friends: [User]) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func getFriendsForUser(uid: String?, onSuccess: @escaping (_ friendsResponse: FriendsResponse) -> Void, onError: @escaping (_ error: String) -> Void) {
         let params: [String: Any] = [
             "uid": uid as Any
         ]
         
-        APIService.shared.authenticatedRequest("/user/friends", method: .get, params: params, onSuccess: { json in
+        APIService.shared.authenticatedRequest("/user/allFriends", method: .get, params: params, onSuccess: { json in
             
             let friendsJson = json.value(forKey: "friends") as! [NSDictionary]
             let friends = friendsJson.map { item in
-                return User(data: item)
+                return UserManager.shared.saveUser(user: User(data: item) )
             }
-            onSuccess(friends)
+            let pendingRequestsJson = json.value(forKey: "pending_requests") as? [NSDictionary] ?? []
+            let pendingRequests = pendingRequestsJson.map { item in
+                return UserManager.shared.saveUser(user: User(data: item) )
+            }
+            
+            let isCurrentUser = json.value(forKey: "isCurrentUser") as? Bool ?? false
+            
+            let friendsResponse = FriendsResponse(friends: friends, pendingRequests: pendingRequests, isCurrentUser: isCurrentUser)
+            onSuccess(friendsResponse)
             
         }, onError: onError)
     }
@@ -94,19 +102,25 @@ class UserService {
     }
     
     func acceptFriend(uid: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
-        APIService.shared.authenticatedRequest("/user/" + uid + "/accept_friend", method: .post, params: nil, onSuccess: { json in
+        APIService.shared.authenticatedRequest("/user/accept_friend/" + uid, method: .post, params: nil, onSuccess: { json in
             onSuccess(json)
         }, onError: onError)
     }
     
-    func searchUsers(search: String, onSuccess: @escaping (_ users: [User]) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func rejectFriend(uid: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
+        APIService.shared.authenticatedRequest("/user/reject_friend/" + uid, method: .post, params: nil, onSuccess: { json in
+            onSuccess(json)
+        }, onError: onError)
+    }
+    
+    func searchUsers(search: String, onSuccess: @escaping (_ users: [UserResource]) -> Void, onError: @escaping (_ error: String) -> Void) {
         let params = [
             "search": search
         ]
         APIService.shared.authenticatedRequest("/user/search", method: .post, params: params, onSuccess: { json in
             let results = json.value(forKey: "users") as! [NSDictionary]
             let users = results.map { item in
-                return User(data: item["user"] as! NSDictionary)
+                return UserResource(User(data: item["user"] as! NSDictionary))
             }
             onSuccess(users)
         }, onError: onError)

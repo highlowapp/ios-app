@@ -112,11 +112,10 @@ class ChooseIndividuallyTableViewController: UIViewController, UITableViewDelega
     
     private func loadFriends() {
         UserManager.shared.getCurrentUser(onSuccess: { currentUser in
-            currentUser.getFriends(onSuccess: { friends in
-                print(friends)
+            currentUser.getFriends(onSuccess: { friendsResponse in
                 let uids = self.policy?["uids"] as? [String]
                 self.items = []
-                for friend in friends {
+                for friend in friendsResponse.friends {
                     if uids != nil {
                         self.items.append(ChooseIndividuallyItem(user: friend, isActivated: uids!.contains(friend.uid!)))
                     } else {

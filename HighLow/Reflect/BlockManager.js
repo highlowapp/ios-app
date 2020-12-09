@@ -94,12 +94,13 @@ class BlockManager {
     }
 
     appendBlock(block) {
-        if (!this.isPremium && (document.querySelectorAll('#editor .block').length >= 10 || (document.querySelectorAll('.block.img').length >= 2 && newBlock instanceof ImgBlock))) {
+        if (!this.isPremium && (document.querySelectorAll('#editor .block').length >= 10 || (document.querySelectorAll('.block.img').length >= 2 && block instanceof ImgBlock))) {
             if (window.webkit && window.webkit.messageHandlers) {
                 window.webkit.messageHandlers.showPremium.postMessage('show_paywall')
             } else {
                 /*Show premium screen on web version*/
             }
+            return false
         } else {
             this.blockIds[block.id] = block
             block.addTo(this.editor)

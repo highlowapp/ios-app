@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
+import FirebaseAnalytics
 
 class ActivityService {
     static let shared = ActivityService()
@@ -23,11 +24,11 @@ class ActivityService {
     
     func updateActivity(activity_id: String, data: NSDictionary, onSuccess: @escaping (_ activity: Activity) -> Void, onError: @escaping (_ error: String) -> Void) {
         do {
-        let serializedData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
-        let jsonStr = NSString(data: serializedData, encoding: String.Encoding.utf8.rawValue)! as String
-        let params = [
-            "data": jsonStr
-        ]
+            let serializedData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+            let jsonStr = NSString(data: serializedData, encoding: String.Encoding.utf8.rawValue)! as String
+            let params = [
+                "data": jsonStr
+            ]
             APIService.shared.authenticatedRequest("/user/activities/" + activity_id, method: .post, params: params, onSuccess: { json in
                 onSuccess(Activity(data: json))
             }, onError: onError)
@@ -100,26 +101,29 @@ class ActivityService {
     }
     
     func comment(activity_id: String, message: String, onSuccess: @escaping (_ activity: Activity) -> Void, onError: @escaping (_ error: String) -> Void) {
-        let params = [
+        let params: [String: Any] = [
             "message": message
         ]
-        APIService.shared.authenticatedRequest("/user/activities/" + activity_id + "/comment", method: .post, params: params, onSuccess: { json in
+        
+        APIService.shared.authenticatedRequest("/user/activities/" + activity_id + "/comments", method: .post, params: params, onSuccess: { json in
             onSuccess(Activity(data: json))
         }, onError: onError)
     }
     
-    func editComment(commentid: String, message: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func editComment(commentid: String, message: String, onSuccess: @escaping (_ activity: ActivityResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         let params = [
             "message": message
         ]
         APIService.shared.authenticatedRequest("/comments/" + commentid, method: .post, params: params, onSuccess: { json in
-            onSuccess(json)
+            let activity = ActivityManager.shared.saveActivity(Activity(data: json))
+            onSuccess(activity)
         }, onError: onError)
     }
     
-    func deleteComment(commentid: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
+    func deleteComment(commentid: String, onSuccess: @escaping (_ activity: ActivityResource) -> Void, onError: @escaping (_ error: String) -> Void) {
         APIService.shared.authenticatedRequest("/comments/" + commentid, method: .delete, params: nil, onSuccess: { json in
-            onSuccess(json)
+            let activity = ActivityManager.shared.saveActivity(Activity(data: json))
+            onSuccess(activity)
         }, onError: onError)
     }
     
