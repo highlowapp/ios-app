@@ -39,6 +39,7 @@
 		433A662924FF0715008AECCB /* SimpleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */; };
 		433A662C2501EBCD008AECCB /* MeditationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662B2501EBCD008AECCB /* MeditationViewController.swift */; };
 		433F0FFC25815B0E008EE958 /* ManageFriendsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433F0FFB25815B0E008EE958 /* ManageFriendsCollectionViewCell.swift */; };
+		433F10002581899E008EE958 /* BibleAPI.plist in Resources */ = {isa = PBXBuildFile; fileRef = 433F0FFF2581899E008EE958 /* BibleAPI.plist */; };
 		4352FB3B231207FD0005F00E /* FriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */; };
 		4352FB3D231209300005F00E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3C231209300005F00E /* User.swift */; };
 		4352FB3F2314E7F60005F00E /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3E2314E7F50005F00E /* FriendTableViewCell.swift */; };
@@ -237,6 +238,7 @@
 		433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCollectionViewCell.swift; sourceTree = "<group>"; };
 		433A662B2501EBCD008AECCB /* MeditationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationViewController.swift; sourceTree = "<group>"; };
 		433F0FFB25815B0E008EE958 /* ManageFriendsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageFriendsCollectionViewCell.swift; sourceTree = "<group>"; };
+		433F0FFF2581899E008EE958 /* BibleAPI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BibleAPI.plist; sourceTree = "<group>"; };
 		4340802C22CE304C009778ED /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
 		4352FB3C231209300005F00E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -724,6 +726,7 @@
 				438D5697238043E000639E71 /* Gifs */,
 				437F54CF23762B7E0036DBC2 /* definite.m4r */,
 				43548C7C23CE6E0800151285 /* GoogleService-Info.plist */,
+				433F0FFF2581899E008EE958 /* BibleAPI.plist */,
 			);
 			path = HighLow;
 			sourceTree = "<group>";
@@ -974,6 +977,7 @@
 				4396A85B2502B2B400CA1498 /* End Chime 2.mp3 in Resources */,
 				43D3C63023B8281E008FF09E /* Tutorials.storyboard in Resources */,
 				43F85DF324A7E0B7002EBF8A /* Roboto in Resources */,
+				433F10002581899E008EE958 /* BibleAPI.plist in Resources */,
 				435356DF24ABE74C00BE20AD /* Autolinker.js in Resources */,
 				43244D922388BE0E00B7B551 /* Calendar.gif in Resources */,
 				4320BEA025434CA200B93262 /* webview.html in Resources */,

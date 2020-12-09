@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>revenuecatkey</key>
-	<string>YGfUbzNDybIfScxtFhNVJrUMHcApwIxz</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -33,6 +31,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
@@ -44,10 +44,15 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>We use the camera to add images to your High/Lows and profile, and to upload images in the chat</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We use the device microphone to record your audio entries.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We use photos to add images to your High/Lows and profile</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We make transcriptions of the audio to generate titles and make it easier to search through your entries.</string>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -72,5 +77,7 @@
 	<true/>
 	<key>host</key>
 	<string>https://api.gethighlow.com</string>
+	<key>revenuecatkey</key>
+	<string>YGfUbzNDybIfScxtFhNVJrUMHcApwIxz</string>
 </dict>
 </plist>

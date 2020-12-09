@@ -147,7 +147,7 @@ func getHostName() -> String {
 
 func getBibleAPIKey() -> String {
     var nsDict: NSDictionary?
-    if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
+    if let path = Bundle.main.path(forResource: "BibleAPI", ofType: "plist") {
         nsDict = NSDictionary(contentsOfFile: path)
         
         return nsDict?.object(forKey: "bibleAPIKey") as! String
