@@ -10,8 +10,17 @@ import UIKit
 import AVFoundation
 import Purchases
 import PopupDialog
+import EasyTipView
 
-class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, ProgressLoaderViewDelegate, AudioPlayerDelegate, AudioPremiumWarningViewDelegate {
+class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, ProgressLoaderViewDelegate, AudioPlayerDelegate, AudioPremiumWarningViewDelegate, SwiftPaywallDelegate {
+    func purchaseCompleted(paywall: SwiftPaywall, transaction: SKPaymentTransaction, purchaserInfo: Purchases.PurchaserInfo) {
+        updatePremiumStatus()
+    }
+    
+    func purchaseRestored(paywall: SwiftPaywall, purchaserInfo: Purchases.PurchaserInfo?, error: Error?) {
+        updatePremiumStatus()
+    }
+    
     
     let recordingFileName: String = "recording.flac"
     
@@ -55,6 +64,9 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
     let loadingView: ProgressLoaderView = ProgressLoaderView()
     let shareButton = Pill()
     let controls: UIStackView = UIStackView()
+    let header = UILabel()
+    
+    var hasSaved: Bool = false
     
     var startDate: Date = Date()
     let dateFormatter: DateComponentsFormatter = DateComponentsFormatter()
@@ -86,13 +98,18 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
     var audioFile: AudioFile?
     
     var isOwner: Bool = false
+    
+    override func updateViewColors() {
+        self.view.backgroundColor = getColor("White2Black")
+        audioVisualizer.backgroundColor = getColor("Separator")
+        header.textColor = getColor("BlackText")
+        clock.textColor = getColor("BlackText")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view.backgroundColor = .white
-        
-        audioVisualizer.backgroundColor = rgb(240, 240, 240)
+        handleDarkMode()
+                
         audioVisualizer.setMeters(peak: -160, avg: -160)
         
         audioVisualizer.isHidden = isShowingWarning
@@ -132,11 +149,10 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
         let audioIcon = UIImageView(image: UIImage(named: "AudioDiarySmallIcon"))
         
         
-        let header = UILabel()
+        
         
         header.text = "Audio Entry"
         header.numberOfLines = 0
-        header.textColor = .black
         header.textAlignment = .center
         header.font = .preferredFont(forTextStyle: .headline)
         
@@ -227,6 +243,8 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
         updatePremiumStatus()
         
         audioPremiumWarning.delegate = self
+        
+        updateViewColors()
     }
     
     func updatePremiumStatus() {
@@ -240,8 +258,8 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
     }
     
     @objc func cancel() {
-        if !doneButton.isHidden {
-            let popup = PopupDialog(title: "Are you sure you want to leave?", message: "Your changes will not be saved!")
+        if !doneButton.isHidden && !hasSaved {
+            let popup = PopupDialog(title: "Are you sure you want to leave?", message: "Your changes will not be saved! If you'd like to save them first, please press the 'save' button at the bottom right.")
             let doItButton = DestructiveButton(title: "Yes, I'm sure", action: {
                 self.dismiss(animated: true, completion: nil)
             })
@@ -346,9 +364,13 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
             self.loadingView.setProgress(1)
             self.loadingView.setTitle("Success!")
             self.activity = activity
+            self.hasSaved = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.isLoading = false
                 self.transcriptionFinished = false
+                if !UserDefaults.standard.bool(forKey: "com.gethighlow.hasSeenTooltip.sharing") {
+                    self.showHelper()
+                }
             }
         }, onError: { error in
             self.isLoading = false
@@ -369,6 +391,7 @@ class RecordAudioDiaryViewController: UIViewController, AVAudioRecorderDelegate,
         activity?.update(data: data as NSDictionary, onSuccess: {
             self.loadingView.setProgress(1)
             self.loadingView.setTitle("Success!")
+            self.hasSaved = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.isLoading = false
                 self.transcriptionFinished = false
@@ -482,7 +505,6 @@ extension RecordAudioDiaryViewController {
                     self.clock.text = t?.stringFromTimeInterval()
                 }
             } catch {
-                print(error.localizedDescription)
             }
     }
     
@@ -504,10 +526,12 @@ extension RecordAudioDiaryViewController {
                 try audioSession.setCategory(.playAndRecord, mode: .default)
                 try audioSession.setActive(true)
                 audioSession.requestRecordPermission { [unowned self] allowed in
-                    if allowed {
-                        self.startRecording()
-                    } else {
-                        
+                    DispatchQueue.main.async {
+                        if allowed {
+                            self.startRecording()
+                        } else {
+                            
+                        }
                     }
                 }
             } catch {
@@ -518,6 +542,7 @@ extension RecordAudioDiaryViewController {
             resumeRecording()
         }
         
+        hasSaved = false
         recordButton.startRecording()
     }
     
@@ -553,7 +578,6 @@ extension RecordAudioDiaryViewController {
                     self.timer?.invalidate()
                     return
                 }
-                
                 audioRecorder.updateMeters()
                 let peak = CGFloat(audioRecorder.peakPower(forChannel: 1))
                 let avg = 160 * pow(1.09, CGFloat(audioRecorder.averagePower(forChannel: 1))+5) - 160
@@ -562,6 +586,7 @@ extension RecordAudioDiaryViewController {
             }
             
         } catch {
+            recordButton.stopRecording()
             printer(error, .error)
         }
     }
@@ -584,6 +609,16 @@ extension RecordAudioDiaryViewController {
             self.audioVisualizer.setMeters(peak: peak, avg: avg)
             self.updateTimeCode(withTimeInterval: self.audioRecorder.currentTime)
         }
+    }
+    
+    func showHelper() {
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = AppColors.primary
+        preferences.drawing.arrowPosition = .top
+        
+        EasyTipView.show(animated: true, forView: shareButton, withinSuperview: nil, text: "When you're done recording, you can share your post with others here. Until then, only you can see it.", preferences: preferences, delegate: nil)
+        UserDefaults.standard.set(true, forKey: "com.gethighlow.hasSeenTooltip.sharing")
     }
     
     func stopRecording() {
@@ -611,6 +646,7 @@ extension RecordAudioDiaryViewController {
         if self.isShowingWarning && timeCode >= 60 {
             stopRecording()
             let paywall = getPaywall()
+            paywall.delegate = self
             self.present(paywall, animated: true, completion: nil)
         }
     }
@@ -619,6 +655,7 @@ extension RecordAudioDiaryViewController {
         pauseRecording()
         
         let paywall = getPaywall()
+        paywall.delegate = self
         self.present(paywall, animated: true, completion: nil)
     }
 }
@@ -629,11 +666,8 @@ extension TimeInterval{
     func stringFromTimeInterval() -> String {
 
         let time = NSInteger(self)
-
-        let ms = Int((self.truncatingRemainder(dividingBy: 1)) * 1000)
         let seconds = time % 60
         let minutes = (time / 60) % 60
-        let hours = (time / 3600)
 
         return String(format: "%0.2d:%0.2d",minutes,seconds)
 

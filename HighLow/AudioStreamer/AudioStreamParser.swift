@@ -35,7 +35,6 @@ class AudioStreamParser {
         _ = try data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
             let result = AudioFileStreamParseBytes(streamId, UInt32(count), bytes, [])
             guard result == noErr else {
-                print(result)
                 throw NSError()
             }
         }

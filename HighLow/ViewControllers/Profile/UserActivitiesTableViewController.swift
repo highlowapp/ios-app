@@ -41,8 +41,6 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
             flagActivity(activity)
         } else if message.name == "loadNextPage" {
             currentPage += 1
-            print("Loading Activities")
-            print(currentPage)
             loadActivities(page: currentPage)
         }
     }
@@ -81,7 +79,7 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
         self.present(_alert, animated: true, completion: nil)
     }
     
-    var webView = ReflectListView()
+    var webView = ReflectProfileListView()
     
     var user: UserResource? {
         didSet {
@@ -95,7 +93,28 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
     
     weak var delegate: UserActivitiesViewControllerDelegate?
     
+    override func updateViewColors() {
+        themeSwitch(onDark: {
+            self.webView.darkMode()
+        }, onLight: {
+            self.webView.lightMode()
+        }, onAuto: {
+            if #available(iOS 12.0, *) {
+                if self.traitCollection.userInterfaceStyle == .dark {
+                    self.webView.darkMode()
+                } else {
+                    self.webView.lightMode()
+                }
+            } else {
+                self.webView.lightMode()
+            }
+        })
+    }
+    
     override func viewDidLoad() {
+        super.viewDidLoad()
+        handleDarkMode()
+        
         let config = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
         userContentController.add(self, name: "activitySelected")
@@ -106,19 +125,31 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
         userContentController.add(self, name: "loadNextPage")
         config.userContentController = userContentController
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-        webView = ReflectListView(frame: .zero, configuration: config)
+        
+        webView = ReflectProfileListView(frame: .zero, configuration: config)
         
         refreshControl.addTarget(self, action: #selector(reload), for: .valueChanged)
         
         self.view.addSubview(webView)
         webView.eqTop(self.view).eqBottom(self.view).eqLeading(self.view).eqTrailing(self.view)
         webView.navigationDelegate = self
+        
         webView.load()
         
         webView.scrollView.addSubview(refreshControl)
         self.refreshControl.beginRefreshing()
         loadActivities()
         
+        updateViewColors()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        updateViewColors()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        updateViewColors()
+        loadActivities()
     }
     
     @objc func reload() {
@@ -158,7 +189,7 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
                 self.refreshControl.endRefreshing()
                 return
             }
-            
+                    
             if page == 0 {
                 self.activities = []
             }
@@ -180,18 +211,25 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
             if page == 0 {
                 UserService.shared.getUser(onSuccess: { user in
                     self.refreshControl.endRefreshing()
-                    self.webView.loadActivities(json, self.user!.asJson(), user.asJson())
+                    self.updateViewColors()
+                    self.webView.loadActivities(json, self.user!.asJson(), user.asJson()) {
+                        
+                    }
                 }, onError: { error in
                     printer(error, .error)
+                    self.updateViewColors()
                     self.refreshControl.endRefreshing()
                 })
             } else {
-                self.refreshControl.endRefreshing()
-                self.webView.loadActivities(json, self.user!.asJson())
+                self.updateViewColors()
+                self.webView.loadActivities(json, self.user!.asJson()) {
+                    self.refreshControl.endRefreshing()
+                }
             }
             
         }, onError: { error in
-            print(error)
+            printer(error, .error)
+            alert()
             self.refreshControl.endRefreshing()
         })
     }
@@ -201,7 +239,7 @@ class UserActivitiesViewController: UIViewController, WKNavigationDelegate, WKSc
             let activitiesString = try JSONSerialization.data(withJSONObject: activity.asDict(), options: .prettyPrinted)
             let jsonStr = NSString(data: activitiesString, encoding: String.Encoding.utf8.rawValue)! as String
             webView.evaluateJavaScript("updateActivity(\(jsonStr))")
-        } catch(let error) {
+        } catch(let _) {
             
         }
     }

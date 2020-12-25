@@ -227,6 +227,7 @@
             }
             
         </style>
+        <link href='./darkmodestyles.css' rel='stylesheet'>
     </head>
     <body>
         <div id='trash-container'>
@@ -260,6 +261,16 @@
             let hasEdited = false
 
             let timer = undefined
+
+            function darkMode(el) {
+                document.body.classList.add('dark')
+                document.getElementsByTagName('html')[0].classList.add('dark')
+            }
+
+            function lightMode(el) {
+                document.body.classList.remove('dark')
+                document.getElementsByTagName('html')[0].classList.remove('dark')
+            }
 
             let templates = {
                 example: [

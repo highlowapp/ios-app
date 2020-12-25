@@ -23,6 +23,7 @@ target 'HighLow' do
   pod 'Purchases', '3.4.0'
   pod 'Gridicons', :podspec => 'https://raw.github.com/Automattic/Gridicons-iOS/develop/Gridicons.podspec'
   pod "MTCircularSlider"
+  pod 'EasyTipView', '~> 2.0.4'
 
   target 'HighLowTests' do
   end

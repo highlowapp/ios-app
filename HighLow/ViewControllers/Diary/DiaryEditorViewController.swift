@@ -7,12 +7,15 @@
 //
 
 import UIKit
+import EasyTipView
+import Foundation
 
 class DiaryEditorViewController: ReflectEditorViewController {
     
     var activity: ActivityResource?
     let ai: UIActivityIndicatorView = UIActivityIndicatorView(style: .gray)
     let saving: UILabel = UILabel()
+    var shareButton: UIBarButtonItem?
     
     override var type: String {
         get {
@@ -22,14 +25,34 @@ class DiaryEditorViewController: ReflectEditorViewController {
             
         }
     }
+    
+    override func updateViewColors() {
+        themeSwitch(onDark: {
+            self.darkMode()
+        }, onLight: {
+            self.lightMode()
+        }, onAuto: {
+            if #available(iOS 12.0, *) {
+                if self.traitCollection.userInterfaceStyle == .dark {
+                    self.darkMode()
+                } else {
+                    self.lightMode()
+                }
+            } else {
+                self.lightMode()
+            }
+        })
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
         title = "Editing"
     }
     
     override func configureEditor() {
         super.configureEditor()
+        updateViewColors()
         
         let loader = UIStackView()
         loader.axis = .horizontal
@@ -63,7 +86,7 @@ class DiaryEditorViewController: ReflectEditorViewController {
         label.eqTop(container, 5).centerX(container)
         container.eqLeading(label, -10).eqTrailing(label, 10).eqBottom(label, 5)
         
-        let shareButton = UIBarButtonItem(customView: container)
+        shareButton = UIBarButtonItem(customView: container)
         
         navigationItem.rightBarButtonItem = shareButton
         
@@ -71,6 +94,17 @@ class DiaryEditorViewController: ReflectEditorViewController {
         if let blocks = activity?.data?.value(forKey: "blocks") as? [NSDictionary] {
             setBlocks(blocks)
         }
+    }
+    
+    
+    func showHelper() {
+        var preferences = EasyTipView.Preferences()
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = AppColors.primary
+        preferences.drawing.arrowPosition = .top
+        
+        EasyTipView.show(animated: true, forItem: shareButton!, withinSuperview: nil, text: "When you're done editing, you can share your post with others here. Until then, only you can see it.", preferences: preferences, delegate: nil)
+        UserDefaults.standard.set(true, forKey: "com.gethighlow.hasSeenTooltip.sharing")
     }
     
     override func saveDocument(_ blocks: NSDictionary) {
@@ -85,6 +119,10 @@ class DiaryEditorViewController: ReflectEditorViewController {
             self.ai.stopAnimating()
             self.saving.textColor = .gray
             self.saving.text = "Saved!"
+            
+            if !UserDefaults.standard.bool(forKey: "com.gethighlow.hasSeenTooltip.sharing") {
+                self.showHelper()
+            }
         }, onError: { error in
             self.saving.textColor = .red
             self.saving.text = "Error When Saving"

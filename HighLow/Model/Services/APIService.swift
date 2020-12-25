@@ -38,7 +38,8 @@ class APIService {
             KeychainWrapper.standard.set(uid!, forKey: "uid")
         }
         
-        //Emit log in notification
+        accessToken = access
+        refreshToken = refresh
     }
     
     func urlFromMap(_ url: String, _ params: [String: Any]?) -> String {
@@ -172,14 +173,7 @@ class APIService {
             "Authorization": "Bearer " + accessToken!
         ]
         
-        
-        /*AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseString { response in
-            print(response)
-        }*/
-        
-        
         AF.request(completeUrl, method: method, parameters: (method == .delete ? nil:finalParams), encoding: (method == .get ? URLEncoding.queryString:URLEncoding.httpBody), headers: headers).responseJSON { response in
-            print(response.response)
             switch response.result {
             case .success(let result):
                 let json = result as! NSDictionary
@@ -205,7 +199,7 @@ class APIService {
         
     }
     
-    func authenticatedRequest(_ url: String, method: HTTPMethod, params: [String: Any]?, file: Uploadable, onSuccess: @escaping (_ json:
+    func authenticatedRequest(_ url: String, method: HTTPMethod, params: [String: Any]?, file: Uploadable?, onSuccess: @escaping (_ json:
         NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         var completeUrl = ""
         
@@ -240,12 +234,13 @@ class APIService {
             "Authorization": "Bearer " + accessToken!
         ]
         
-        let fileData = file.getData()
+        let fileData = file?.getData()
             
         AF.upload(multipartFormData: { multiPartFormData in
-            
-            multiPartFormData.append(fileData , withName: "file", fileName: file.getName(), mimeType: file.getMIMEType())
-            
+            if file != nil, fileData != nil {
+                multiPartFormData.append(fileData! , withName: "file", fileName: file!.getName(), mimeType: file!.getMIMEType())
+            }
+                
             for (key, value) in params! {
                 if value is String {
                     multiPartFormData.append((value as! String).data(using: String.Encoding.utf8)!, withName: key )

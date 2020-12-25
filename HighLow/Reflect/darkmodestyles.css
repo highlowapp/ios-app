@@ -1,0 +1,117 @@
+/*
+43 = Separator gray
+
+*/
+:root {
+    --separator: rgb(43, 43, 43);
+    --black: black;
+    --white: white;
+    --graytext: rgb(204, 204, 204);
+    --lightgray: rgb(230, 230, 230);
+    --darkgray: rgb(100, 100, 100);
+}
+
+.dark .img-placeholder {
+    background: var(--separator);
+}
+
+.dark .comments {
+    border-top: 2px solid var(--separator);
+}
+
+.dark .comment-textarea {
+    background-color: var(--separator);
+    border: 2px solid var(--darkgray);
+}
+
+.dark .add-comment button {
+    background: var(--darkgray);
+    color: var(--graytext);
+}
+
+.dark .comment-content p {
+    color: var(--white);
+}
+
+.dark .comment-content p strong {
+    color: var(--white);
+}
+
+.dark .ghost {
+    background-color: var(--lightgray);
+}
+
+html.dark, body.dark {
+    background: var(--black);
+}
+
+.dark #list div.activity {
+    background: var(--separator);
+}
+
+.dark #list div.activity-chart {
+    background: var(--separator);
+}
+
+.dark .activity-chart .chart {
+    background: var(--darkgray);
+}
+
+.dark .activity-chart h2 {
+    color: var(--white);
+}
+
+
+
+.dark .blockHandle {
+
+}
+
+.dark h1 {
+    color: white;
+}
+
+.dark h2 {
+    color: white;
+}
+
+.dark p {
+    color: white;
+}
+
+.dark .material-icons {
+    color: white;
+}
+
+.dark span {
+    color: white;
+}
+
+.dark {
+    color: white;
+}
+.dark blockquote {
+    background: var(--darkgray);
+}
+
+.dark .trasher {
+    color: red;
+    width: 70px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.dark #newBlockOptions {
+    border-top: 1px solid var(--separator);
+}
+
+.dark #newBlockOptions button {
+    background: var(--darkgray);
+}
+
+.dark .comment-textarea {
+    color: white;
+}

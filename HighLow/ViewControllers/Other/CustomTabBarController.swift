@@ -19,9 +19,22 @@ class CustomTabBarController: UITabBarController, AddingOptionsViewControllerDel
     var popup: Bool = false
     let addingOptionsViewController = AddingOptionsViewController()
     
+    override func updateViewColors() {
+        guard let tabBar = tabBar as? CustomTabBar else { return }
+        tabBar.barColor = getColor("TabBar")
+    }
+    
+    @objc func gotUserUid(notification: Notification) {
+        self.selectedIndex = 1
+        guard let profileViewController = self.viewControllers?[1] as? NewProfileViewController else { return }
+        profileViewController.shouldShowFriendsFirst = true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(gotUserUid(notification:)), name: NSNotification.Name("com.gethighlow.uidFromNotification"), object: nil)
         
         tabBar.layer.shadowColor = UIColor.black.cgColor
         tabBar.layer.shadowOffset = CGSize(width: 0, height: -10)

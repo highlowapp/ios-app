@@ -76,6 +76,9 @@ class ActivityService {
             
             APIService.shared.authenticatedRequest("/user/activities", method: .post, params: params, onSuccess: { json in
                 let activity = ActivityManager.shared.saveActivity(Activity(data: json))
+                Analytics.logEvent("created_activity", parameters: [
+                    "type": type
+                ])
                 onSuccess(activity)
             }, onError: onError)
         } catch {
@@ -96,6 +99,9 @@ class ActivityService {
             params["uids"] = uids!
         }
         APIService.shared.authenticatedRequest("/user/activities/" + activity_id + "/sharing", method: .post, params: params, onSuccess: { json in
+            Analytics.logEvent(AnalyticsEventShare, parameters: [
+                "category": category
+            ])
             onSuccess(Activity(data: json))
         }, onError: onError)
     }
@@ -106,6 +112,7 @@ class ActivityService {
         ]
         
         APIService.shared.authenticatedRequest("/user/activities/" + activity_id + "/comments", method: .post, params: params, onSuccess: { json in
+            Analytics.logEvent("commented", parameters: nil)
             onSuccess(Activity(data: json))
         }, onError: onError)
     }
@@ -148,6 +155,11 @@ class ActivityService {
     func addImage(img: UIImage, onSuccess: @escaping (_ url: String) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         APIService.shared.authenticatedRequest("/user/activities/addImage", method: .post, params: [:], file: img, onSuccess: { json in
             let url = json["url"] as! String
+            
+            let pngImage = img.pngData()
+            Analytics.logEvent("added_image", parameters: [
+                "size": pngImage?.count
+            ])
             onSuccess(url)
         }, onError: onError, onProgressUpdate: onProgressUpdate)
     }
@@ -156,6 +168,9 @@ class ActivityService {
         
         APIService.shared.authenticatedRequest("/user/activities/uploadAudio", method: .post, params: [:], file: audioFile, onSuccess: { json in
             let url = json["url"] as! String
+            Analytics.logEvent("uploaded_audio", parameters: [
+                "size": audioFile.data?.count
+            ])
             onSuccess(url)
         }, onError: onError, onProgressUpdate: onProgressUpdate)
     }

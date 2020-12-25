@@ -10,7 +10,15 @@ import UIKit
 import WebKit
 import Purchases
 
-class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UIImagePickerControllerDelegate, UINavigationControllerDelegate, WKNavigationDelegate, ProgressLoaderViewDelegate {
+class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UIImagePickerControllerDelegate, UINavigationControllerDelegate, WKNavigationDelegate, ProgressLoaderViewDelegate, SwiftPaywallDelegate {
+    func purchaseCompleted(paywall: SwiftPaywall, transaction: SKPaymentTransaction, purchaserInfo: Purchases.PurchaserInfo) {
+        updatePremiumStatus()
+    }
+    
+    func purchaseRestored(paywall: SwiftPaywall, purchaserInfo: Purchases.PurchaserInfo?, error: Error?) {
+        updatePremiumStatus()
+    }
+    
     func didSkip() {
         
     }
@@ -66,6 +74,7 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
             let paywall = SwiftPaywall(termsOfServiceUrlString: "https://gethighlow.com/termsofservice", privacyPolicyUrlString: "https://gethighlow.com/privacy", allowRestore: true, backgroundColor: .white, textColor: AppColors.primary, productSelectedColor: AppColors.primary, productDeselectedColor: AppColors.secondary)
             paywall.titleLabel.text = "Get Full Access"
             paywall.subtitleLabel.text = "With High/Low Premium, you get unlimited diary blocks, unlimited time for audio diaries and meditation sessions, and access to exclusive content! "
+            paywall.delegate = self
             self.present(paywall, animated: true)
         }
         else if message.name == "save" {
@@ -87,7 +96,9 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureNavBar()
+        
+        
+        navigationController?.navigationBar.tintColor = AppColors.primary
         let config = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
         userContentController.add(self, name: "chooseImage")
@@ -136,6 +147,14 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
         
     }
     
+    func darkMode() {
+        editor?.evaluateJavaScript("darkMode()")
+    }
+    
+    func lightMode() {
+        editor?.evaluateJavaScript("lightMode()")
+    }
+    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "estimatedProgress" {
             let progress = editor?.estimatedProgress
@@ -157,19 +176,18 @@ class ReflectEditorViewController: UIViewController, WKScriptMessageHandler, UII
     }
     
     func configureEditor() {
-        
         editor!.evaluateJavaScript("setType('\(type)')", completionHandler: nil)
-        
+        updatePremiumStatus()
+    }
+    
+    func updatePremiumStatus() {
         Purchases.shared.purchaserInfo { (purchaserInfo, error) in
-            if (error != nil) {
-                print(error)
-            } else {
-                if purchaserInfo?.entitlements["Premium"]?.isActive == true {
-                    self.editor?.evaluateJavaScript("enablePremiumFeatures", completionHandler: nil)
-                }
-                if purchaserInfo?.entitlements["Premium"]?.billingIssueDetectedAt != nil {
-                    alert("Billing Issue Detected", "There has been a billing issue that prevented your subscription from renewing. You will still have access to premium features during a 16-day grace period, but you should probably get that worked out as soon as possible.")
-                }
+            let premium = purchaserInfo?.entitlements["Premium"]
+            if premium?.isActive == true {
+                self.editor?.evaluateJavaScript("enablePremiumFeatures()", completionHandler: nil)
+            }
+            if purchaserInfo?.entitlements["Premium"]?.billingIssueDetectedAt != nil {
+                alert("Billing Issue Detected", "There has been a billing issue that prevented your subscription from renewing. You will still have access to premium features during a 16-day grace period, but you should probably get that worked out as soon as possible.")
             }
         }
     }

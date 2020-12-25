@@ -38,9 +38,21 @@ class NewProfileViewController: UIViewController {
     
     var headerTopConstraint: NSLayoutConstraint?
     
+    var shouldShowFriendsFirst: Bool = false
+    
+    override func updateViewColors() {
+        header.backgroundColor = getColor("TabBar")
+        pageView.view.backgroundColor = getColor("Separator")
+        nameLabel.textColor = getColor("BlackText")
+        bioLabel.textColor = getColor("BlackText")
+        activitiesVC.updateViewColors()
+        friendsVC.updateViewColors()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        handleDarkMode()
+        
         pageView.willMove(toParent: self)
         self.view.addSubviews([header, pageView.view])
         header.backgroundColor = .white
@@ -66,6 +78,15 @@ class NewProfileViewController: UIViewController {
         bioLabel.textAlignment = .center
         bioLabel.numberOfLines = 0
         
+        let editButton = UIButton()
+        editButton.setTitle("Edit", for: .normal)
+        editButton.setTitleColor(AppColors.primary, for: .normal)
+        editButton.isHidden = true
+        editButton.addTarget(self, action: #selector(editProfile), for: .touchUpInside)
+        
+        header.addSubview(editButton)
+        
+        editButton.eqTrailing(header, -40).eqTop(header, 20)
         nameLabel.centerX(header).topToBottom(profileImageView, 20)
         bioLabel.centerX(header).topToBottom(nameLabel).eqWidth(header, 0, 0.8)
         
@@ -99,6 +120,8 @@ class NewProfileViewController: UIViewController {
                 self.user = currentUser
                 self.activitiesVC.user = currentUser
                 self.friendsVC.user = currentUser
+                
+                editButton.isHidden = false
             }, onError: { error in
                 alert()
             })
@@ -107,14 +130,30 @@ class NewProfileViewController: UIViewController {
         }
         
         setupScrolling()
+        
+        if shouldShowFriendsFirst {
+            viewFriends()
+        }
+        
+        updateViewColors()
+    }
+    
+    @objc func editProfile() {
+        let editProfileViewController = EditProfileViewController()
+        editProfileViewController.user = user
+        self.present(editProfileViewController, animated: true, completion: nil)
     }
     
     func loadUser() {
-        if let imageUrl = user?.profileimage {
+        user?.registerReceiver(self, onDataUpdate: updateUser(_:_:))
+    }
+    
+    func updateUser(_ sender: NewProfileViewController, _ user: User) {
+        if let imageUrl = user.profileimage {
             profileImageView.loadImageFromURL(imageUrl)
         }
-        nameLabel.text = user?.fullName
-        bioLabel.text = user?.bio
+        nameLabel.text = user.fullName()
+        bioLabel.text = user.bio
     }
     
     func setupPager() {
@@ -124,7 +163,7 @@ class NewProfileViewController: UIViewController {
     }
     
     @objc func viewActivities() {
-        pageView.setViewControllers([activitiesVC], direction: .forward, animated: true, completion: nil)
+        pageView.setViewControllers([activitiesVC], direction: .reverse, animated: true, completion: nil)
         activitiesTab.isSelected = true
         friendsTab.isSelected = false
     }
@@ -180,17 +219,16 @@ extension NewProfileViewController: UIPageViewControllerDelegate, UIPageViewCont
     
 }
 
-extension NewProfileViewController: UITableViewDelegate, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate  {
+extension NewProfileViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate  {
     
     func setupScrolling() {
         activitiesVC.webView.scrollView.delegate = self
-        friendsVC.collectionView.delegate = self
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetHeight = scrollView.contentOffset.y
         
-        if (headerTopConstraint?.constant ?? 0) - offsetHeight > 0 || (abs(headerTopConstraint?.constant ?? 0) > header.bounds.height && offsetHeight > 0) || offsetHeight == 139.5 {
+        if (headerTopConstraint?.constant ?? 0) - offsetHeight > 0 || (abs(headerTopConstraint?.constant ?? 0) > header.bounds.height && offsetHeight > 0){
         } else {
             headerTopConstraint?.constant -= offsetHeight
             scrollView.contentOffset = .zero

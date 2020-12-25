@@ -26,45 +26,17 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
         
         let email = Email.textField.text ?? ""
         
-        let parameters: [String: Any] = [
-            "email": email
-        ]
-        
         SubmitButton.startLoading()
         
-        AF.request(getHostName() + "/auth/forgot_password", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
-            
+        AuthService.shared.forgotPassword(email: email, onSuccess: { json in
             self.SubmitButton.stopLoading()
             
-            switch response.result {
-            case .success(let result):
-                //Convert to JSON
-                let JSON = result as! NSDictionary
-                
-                //Check for errors
-                let errorExists = JSON["error"] as! String != ""
-                
-                if errorExists {
-                    
-                    let error = JSON["error"] as! String
-                    
-                    self.Message.text = self.errorMessages[error]
-                    
-                }
-                    
-                    //Otherwise...
-                else {
-                    
-                    self.Message.text = "Success! You should be receiving an email shortly."
-                    
-                }
-            case .failure( _):
-                return
-                
-                
-            }
+            self.Message.text = "Success! You should be receiving an email shortly."
+        }, onError: { error in
+            self.SubmitButton.stopLoading()
             
-        }
+            self.Message.text = self.errorMessages[error]
+        })
         
     }
     

@@ -46,7 +46,6 @@ class AudioFile: Uploadable {
             }
             
             if result.isFinal {
-                print(result.bestTranscription.formattedString)
                 callback(result.bestTranscription.formattedString, false)
             } else {
                 callback(niceDate(), true)

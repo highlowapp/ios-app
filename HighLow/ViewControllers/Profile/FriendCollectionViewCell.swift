@@ -19,6 +19,11 @@ class FriendCollectionViewCell: CardCollectionViewCell {
     let profileImageView: HLRoundImageView = HLRoundImageView(frame: .zero)
     let nameLabel: UILabel = UILabel()
     
+    override func updateColors() {
+        super.updateColors()
+        nameLabel.textColor = getColor("BlackText")
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         let container = UIView()

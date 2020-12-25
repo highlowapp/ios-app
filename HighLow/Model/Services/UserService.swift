@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
+import FirebaseAnalytics
 
 class UserService {
     static let shared = UserService()
@@ -29,13 +30,13 @@ class UserService {
         }, onError: onError)
     }
     
-    func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
+    func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage?, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         let params = [
             "firstname": firstname,
             "lastname": lastname,
             "email": email,
             "bio": bio
-        ]
+        ] 
         
         APIService.shared.authenticatedRequest("/user/set_profile", method: .post, params: params, file: profileimage, onSuccess: { json in
             onSuccess(json)
@@ -103,12 +104,13 @@ class UserService {
     
     func acceptFriend(uid: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
         APIService.shared.authenticatedRequest("/user/accept_friend/" + uid, method: .post, params: nil, onSuccess: { json in
+            Analytics.logEvent("accepted_friendship", parameters: nil)
             onSuccess(json)
         }, onError: onError)
     }
     
     func rejectFriend(uid: String, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void) {
-        APIService.shared.authenticatedRequest("/user/reject_friend/" + uid, method: .post, params: nil, onSuccess: { json in
+        APIService.shared.authenticatedRequest("/user/" + uid + "/unfriend", method: .post, params: nil, onSuccess: { json in
             onSuccess(json)
         }, onError: onError)
     }
@@ -122,6 +124,9 @@ class UserService {
             let users = results.map { item in
                 return UserResource(User(data: item["user"] as! NSDictionary))
             }
+            Analytics.logEvent(AnalyticsEventSearch, parameters: [
+                "search": search
+            ])
             onSuccess(users)
         }, onError: onError)
     }

@@ -72,12 +72,15 @@ class UserResource: Resource<User> {
         return getItem().asJson()
     }
     
-    func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
+    func setProfile(firstname: String, lastname: String, email: String, bio: String, profileimage: UIImage?, onSuccess: @escaping (_ json: NSDictionary) -> Void, onError: @escaping (_ error: String) -> Void, onProgressUpdate: @escaping Request.ProgressHandler) {
         let user = getItem()
-        
+         
         UserService.shared.setProfile(firstname: firstname, lastname: lastname, email: email, bio: bio, profileimage: profileimage, onSuccess: { json in
             user.firstname = firstname
             user.lastname = lastname
+            if let profileimage = json.value(forKey: "profileimage") as? String {
+                user.profileimage = profileimage
+            }
             user.email = email
             user.bio = bio
             

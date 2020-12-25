@@ -42,6 +42,7 @@ class ChooseIndividuallyTableViewController: UIViewController, UITableViewDelega
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
         updateViewColors()
         
         let cancel = cancelButton()
@@ -92,7 +93,7 @@ class ChooseIndividuallyTableViewController: UIViewController, UITableViewDelega
                 alert("An error occurred", "Please try again")
             }
             
-            if (purchaserInfo?.entitlements.active["Premium"]) != nil {
+            if purchaserInfo?.entitlements["Premium"]?.isActive == true {
                 self.saveButton.startLoading()
                 self.activity?.setSharingPolicy(category: "uids", uids: self.uidsList(), onSuccess: {
                     self.saveButton.stopLoading()

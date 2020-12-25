@@ -96,13 +96,8 @@ class DiaryTableViewCell: CardTableViewCell {
         guard let activity = activity else { return }
         
         guard let data = activity.data else { return }
-        guard let blocks = data.value(forKey: "blocks") as? [NSDictionary] else { return }
         
         self.activity = activity
-        
-        /*activityView.loadBlocks(blocks, completion: {
-            self.activityView.invalidateIntrinsicContentSize()
-        })*/
         self.activityView.invalidateIntrinsicContentSize()
     }
 

@@ -18,7 +18,7 @@ enum TabItem: String, CaseIterable {
     var viewController: UIViewController {
         switch self {
         case .home:
-            return NewFeedTableViewController()
+            return NewFeedViewController()
         case .profile:
             return NewProfileViewController()
         case .diary:

@@ -41,7 +41,9 @@ let dynamicColors: [String:DynamicColor] = [
     "Separator": DynamicColor(lightColor: UIColor.init(displayP3Red: 0.9, green: 0.9, blue: 0.9, alpha: 1), darkColor: UIColor.init(displayP3Red: 0.17, green: 0.17, blue: 0.17, alpha: 1)),
     "GrayText": DynamicColor(lightColor: UIColor(displayP3Red: 0.6, green: 0.6, blue: 0.6, alpha: 1), darkColor: UIColor(displayP3Red: 0.8, green: 0.8, blue: 0.8, alpha: 1)),
     "BlackText": DynamicColor(lightColor: .black, darkColor: .white),
-    "Black2White": DynamicColor(lightColor: .black, darkColor: .white)
+    "Black2White": DynamicColor(lightColor: .black, darkColor: .white),
+    "TabBar": DynamicColor(lightColor: .white, darkColor: UIColor.init(displayP3Red: 0.17, green: 0.17, blue: 0.17, alpha: 1)),
+    "Gray2Black": DynamicColor(lightColor: rgb(240, 240, 240), darkColor: .black)
 ]
 
 let dynamicImages: [String: DynamicImage] = [
@@ -91,6 +93,9 @@ extension UIViewController {
             }
         })
         
+        self.navigationController?.navigationBar.barTintColor = getColor("TabBar")
+        self.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: getColor("BlackText")]
+        
         NotificationCenter.default.addObserver(self, selector: #selector(onThemeChange), name: Notification.Name("com.gethighlow.themeChanged"), object: nil)
     }
     
@@ -108,6 +113,28 @@ extension UIViewController {
         }
         self.updateViewColors()
         
+        if #available(iOS 13.0, *) {
+            UINavigationBar.appearance().standardAppearance.backgroundColor = getColor("TabBar")
+            UINavigationBar.appearance().compactAppearance?.backgroundColor = getColor("TabBar")
+            UINavigationBar.appearance().scrollEdgeAppearance?.backgroundColor = getColor("TabBar")
+            
+            UINavigationBar.appearance().standardAppearance.titleTextAttributes = [.foregroundColor: getColor("BlackText")]
+            UINavigationBar.appearance().compactAppearance?.titleTextAttributes = [.foregroundColor: getColor("BlackText")]
+            UINavigationBar.appearance().scrollEdgeAppearance?.titleTextAttributes = [.foregroundColor: getColor("BlackText")]
+            
+            
+        } else {
+            UINavigationBar.appearance().backgroundColor = getColor("TabBar")
+            UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: getColor("BlackText")]
+            navigationController?.navigationBar.barTintColor = getColor("TabBar")
+            navigationController?.navigationBar.tintColor = getColor("BlackText")
+        }
+        
+        self.navigationController?.navigationBar.barTintColor = getColor("TabBar")
+        self.navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: getColor("BlackText")]
+        
+        self.navigationController?.isNavigationBarHidden = true
+        self.navigationController?.isNavigationBarHidden = false
     }
 }
 
@@ -226,21 +253,10 @@ func niceDate() -> String {
 
 //Switch between tab and authentication screens
 func switchToMain() {
-    let hasPassedInterestsScreen = UserDefaults.standard.bool(forKey: "com.gethighlow.hasPassedInterestsScreen")
-    
     let hasAgreedToTerms = UserDefaults.standard.bool(forKey: "com.gethighlow.hasAgreedToTerms")
     
     if !hasAgreedToTerms {
         let mainViewController = TermsAndConditionsViewController()
-        
-        UIApplication.shared.keyWindow?.rootViewController = mainViewController
-        UIApplication.shared.keyWindow?.makeKeyAndVisible()
-        
-    } else
-    
-    if !hasPassedInterestsScreen {
-            
-        let mainViewController = InterestsPitchViewController()
         
         UIApplication.shared.keyWindow?.rootViewController = mainViewController
         UIApplication.shared.keyWindow?.makeKeyAndVisible()
@@ -250,7 +266,7 @@ func switchToMain() {
     else {
         
         let storyboard = UIStoryboard(name: "Tabs", bundle: nil)
-        let mainViewController = CustomTabBarController()
+        let mainViewController = storyboard.instantiateInitialViewController() as! CustomTabBarController
         mainViewController.tabBar.barTintColor = getColor("White2Black")
         
         UIApplication.shared.keyWindow?.rootViewController = mainViewController
@@ -260,11 +276,6 @@ func switchToMain() {
 }
 
 func switchToAuth() {
-    let hasReceivedTutorial = UserDefaults.standard.bool(forKey: "com.gethighlow.hasReceivedTutorial")
-    if !hasReceivedTutorial {
-        return
-    }
-    
     let authStoryboard: UIStoryboard = UIStoryboard(name: "Authentication", bundle: nil)
     let signInViewController = authStoryboard.instantiateViewController(withIdentifier: "SignInViewController")
     
@@ -616,7 +627,7 @@ func openURL(_ url: String) {
 
 
 func getPaywall() -> SwiftPaywall {
-    let paywall = SwiftPaywall(termsOfServiceUrlString: "https://gethighlow.com/termsofservice", privacyPolicyUrlString: "https://gethighlow.com/privacy", allowRestore: true, backgroundColor: .white, textColor: AppColors.primary, productSelectedColor: AppColors.primary, productDeselectedColor: AppColors.secondary)
+    let paywall = SwiftPaywall(termsOfServiceUrlString: "https://gethighlow.com/eula", privacyPolicyUrlString: "https://gethighlow.com/privacy", allowRestore: true, backgroundColor: .white, textColor: AppColors.primary, productSelectedColor: AppColors.primary, productDeselectedColor: AppColors.secondary)
     paywall.titleLabel.text = "Get Full Access"
     paywall.subtitleLabel.text = "With High/Low Premium, you get unlimited diary blocks, unlimited time for audio diaries and meditation sessions, and access to exclusive content! "
     return paywall

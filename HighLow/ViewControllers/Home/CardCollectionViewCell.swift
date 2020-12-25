@@ -10,6 +10,10 @@ import UIKit
 
 class CardCollectionViewCell: UICollectionViewCell {
     let contView: UIView = UIView()
+    
+    override func updateColors() {
+        self.contView.backgroundColor = getColor("White2Gray")
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -30,5 +34,6 @@ class CardCollectionViewCell: UICollectionViewCell {
         contView.layer.shadowOpacity = 0.1
         contView.layer.shadowRadius = 10
         
+        updateColors()
     }
 }

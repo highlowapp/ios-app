@@ -15,6 +15,11 @@ class DiaryCollectionViewCell: UICollectionViewCell {
     var indexPath: IndexPath?
     let thumbnail: UIImageView = UIImageView()
     let title: UILabel = UILabel()
+    let separator = UIView()
+    let thumbArea = UIView()
+    let titleArea = UIView()
+    let container = UIView()
+    var more = UIImageView(image: UIImage(named: "more"))
     var activity: ActivityResource?
     
     weak var delegate: DiaryCollectionViewCellDelegate?
@@ -25,21 +30,29 @@ class DiaryCollectionViewCell: UICollectionViewCell {
         "audio": "AudioDiarySmallIcon"
     ]
     
+    override func updateColors() {
+        separator.backgroundColor = getColor("Separator")
+        thumbArea.backgroundColor = getColor("Separator")
+        titleArea.backgroundColor = getColor("White2Gray")
+        container.showBorder(getColor("Separator")!, 2)
+        more.image = getImage("more")
+        title.textColor = getColor("BlackText")
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        let container = UIView()
+        
         container.clipsToBounds = true
         self.contentView.addSubview(container)
         container.eqLeading(contentView).eqTrailing(contentView).eqTop(contentView).eqBottom(contentView)
         
-        let thumbArea = UIView()
         thumbArea.addSubview(thumbnail)
         container.addSubview(thumbArea)
         
-        let titleArea = UIView()
+        
         titleArea.addSubview(title)
         
-        let separator = UIView()
+        
         separator.backgroundColor = rgb(240, 240, 240)
         container.addSubview(separator)
         
@@ -48,7 +61,7 @@ class DiaryCollectionViewCell: UICollectionViewCell {
         thumbArea.eqTop(container).eqLeading(container).eqTrailing(container)
         thumbnail.centerX(thumbArea).centerY(thumbArea)
         
-        let more = UIImageView(image: UIImage(named: "more"))
+        more.image  = getImage("more")
         more.isUserInteractionEnabled = true
         
         thumbArea.addSubview(more)
@@ -83,6 +96,8 @@ class DiaryCollectionViewCell: UICollectionViewCell {
         self.contentView.layer.shadowRadius = 5
         self.contentView.layer.shadowOffset = CGSize(width: 0, height: 5)
         */
+        
+        updateColors()
     }
     
     func configure(indexPath: IndexPath, activity: ActivityResource) {

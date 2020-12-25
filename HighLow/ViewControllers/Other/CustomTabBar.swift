@@ -13,14 +13,36 @@ class CustomTabBar: UITabBar {
 
     private var shapeLayer: CALayer?
     
+    var barColor: UIColor? = .white {
+        didSet {
+            self.setNeedsDisplay()
+        }
+    }
+    
     override func draw(_ rect: CGRect) {
         self.addShape()
+    }
+    
+    override func updateColors() {
+        self.barColor = getColor("TabBar")
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        updateColors()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        updateColors()
     }
     
     private func addShape() {
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = createPath()
-        shapeLayer.fillColor = UIColor.white.cgColor
+        shapeLayer.fillColor = self.barColor?.cgColor
         shapeLayer.lineWidth = 1.0
         
         if let oldShapeLayer = self.shapeLayer {

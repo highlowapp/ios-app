@@ -10,7 +10,11 @@ import UIKit
 import TagListView
 import PopupDialog
 
-class EditProfileViewController: UITableViewController, UITableViewCellDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditInterestsTableViewCellDelegate, EditInterestViewControllerDelegate {
+class EditProfileViewController: UITableViewController, UITableViewCellDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, EditInterestsTableViewCellDelegate, EditInterestViewControllerDelegate, EditNameTableViewCellDelegate {
+    func didChange(name whichName: String, toName name: String) {
+        self.formState[whichName] = name
+    }
+    
     func willEdit() {
         let editInterestsViewController = EditInterestsViewController()
         let navigationController = UINavigationController(rootViewController: editInterestsViewController)
@@ -34,7 +38,19 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         
         formState["tags"] = arr
     }
-     
+    
+    var user: UserResource? {
+        didSet {
+            formState = [
+                "firstName": user?.firstname,
+                "lastName": user?.lastname,
+                "email": user?.email,
+                "bio": user?.bio,
+                "profileImage": user?.profileimage,
+            ]
+            tableView.reloadData()
+        }
+    }
     
     var formState: [String: Any] = [
         "firstName": "",
@@ -43,11 +59,7 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         "bio": "",
         "profileImage": "",
         "tags": []
-        ] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+        ]
     
     var updatedImage: UIImage?
     
@@ -120,7 +132,7 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -130,8 +142,6 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         case 1:
             return "Profile Image"
         case 2:
-            return "Interests"
-        case 3:
             return "Bio"
         default:
             return ""
@@ -176,15 +186,6 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         }
         
         if indexPath.section == 2 {
-            
-            let cell = EditInterestsTableViewCell(style: .default, reuseIdentifier: "editInterests")
-            cell.loadTags(formState["tags"] as! [String])
-            cell.delegate = self
-            return cell
-            
-        }
-        
-        if indexPath.section == 3 {
             let cell = EditBioTableViewCell(style: .default, reuseIdentifier: "editBio")
             
             cell.textView.text = formState["bio"] as? String
@@ -217,7 +218,7 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
     
     @objc func done() {
         
-        let loader = HLLoaderView(frame: .zero)
+        let loader = ProgressLoaderView()
         
         loader.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(loader)
@@ -226,25 +227,24 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
         loader.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         loader.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
         
-        loader.startLoading()
+        loader.allowsSkip = false
+        loader.setTitle("Saving...")
+        
+        let firstname = self.formState["firstName"] as? String ?? ""
+        let lastname = self.formState["lastName"] as? String ?? ""
+        let email = self.formState["email"] as? String ?? ""
+        let bio = self.formState["bio"] as? String ?? ""
         
         
-        let params: [String: String] = [
-            "firstname": self.formState["firstName"] as! String,
-            "lastname": self.formState["lastName"] as! String,
-            "email": self.formState["email"] as! String,
-            "bio": self.formState["bio"] as! String
-        ]
-        
-        //Make request
-        authenticatedRequest(url: "/user/set_profile", method: .post, parameters: params, file: updatedImage, onFinish: { json in
-            loader.stopLoading()
+        user?.setProfile(firstname: firstname, lastname: lastname, email: email, bio: bio, profileimage: updatedImage, onSuccess: { json in
+            loader.isHidden = true
             self.delegate?.editProfileViewControllerDidEndEditing()
             self.dismiss(animated: true, completion: nil)
         }, onError: { error in
-            loader.stopLoading()
-            
-            alert("An error occurred", "Please try again.")
+            loader.isHidden = true
+            alert()
+        }, onProgressUpdate: { progress in
+            loader.setProgress(Float(progress.fractionCompleted))
         })
         
     }
@@ -293,7 +293,7 @@ class EditProfileViewController: UITableViewController, UITableViewCellDelegate,
 class EditNameTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     let textField: UITextField = UITextField()
-    weak var delegate: UITableViewCellDelegate?
+    weak var delegate: EditNameTableViewCellDelegate?
     var namePiece: String = "firstName"
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -310,16 +310,22 @@ class EditNameTableViewCell: UITableViewCell, UITextFieldDelegate {
     
     private func setup() {
                 
-        self.addSubview(textField)
+        self.contentView.addSubview(textField)
         self.backgroundColor = getColor("White2Black")
+        self.isUserInteractionEnabled = true
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         textField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
         textField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
         textField.textColor = getColor("BlackText")
+        textField.addTarget(self, action: #selector(textFieldDidChangeValue(_:)), for: .editingChanged)
         self.bottomAnchor.constraint(equalTo: textField.bottomAnchor, constant: 10).isActive = true
         
+    }
+    
+    @objc func textFieldDidChangeValue(_ textField: UITextField) {
+        self.delegate?.didChange(name: self.namePiece, toName: textField.text ?? "")
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -328,6 +334,10 @@ class EditNameTableViewCell: UITableViewCell, UITextFieldDelegate {
         }
         parent.formState[self.namePiece] = textField.text ?? ""
     }
+}
+
+protocol EditNameTableViewCellDelegate: AnyObject {
+    func didChange(name whichName: String, toName name: String)
 }
 
 
@@ -353,19 +363,18 @@ class EditProfileImageTableViewCell: UITableViewCell {
     
     private func setup() {
         self.backgroundColor = getColor("White2Black")
-        self.addSubview(profileImage)
+        self.contentView.addSubview(profileImage)
         
         profileImage.isUserInteractionEnabled = true
         
         profileImage.translatesAutoresizingMaskIntoConstraints = false
         
-        profileImage.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        profileImage.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
+        profileImage.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 10).isActive = true
+        profileImage.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 10).isActive = true
         profileImage.widthAnchor.constraint(equalToConstant: 100).isActive = true
         profileImage.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
-        self.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 10).isActive = true
-        
+        self.contentView.bottomAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 10).isActive = true
         
         let tapper = UITapGestureRecognizer(target: self, action: #selector(onTap))
         
@@ -407,14 +416,13 @@ class EditBioTableViewCell: UITableViewCell, UITextViewDelegate {
         textView.delegate = self
         textView.textColor = getColor("BlackText")
         
-        self.addSubview(textView)
+        self.contentView.addSubview(textView)
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        textView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
-        textView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
+        textView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 10).isActive = true
+        textView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 10).isActive = true
+        textView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -10).isActive = true
         textView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        self.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: 10).isActive = true
-        
+        self.contentView.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: 10).isActive = true
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {

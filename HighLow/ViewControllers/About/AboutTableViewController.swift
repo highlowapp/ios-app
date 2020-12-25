@@ -70,7 +70,7 @@ class AboutTableViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewDidLoad()
         handleDarkMode()
         updateViewColors()
-        self.navigationController?.navigationBar.barStyle = .black
+        //self.navigationController?.navigationBar.barStyle = .black
         self.navigationController?.navigationBar.isTranslucent = false
         
         view.addSubview(tableView)

@@ -151,12 +151,10 @@ class SwiftPaywall: UIViewController {
     
     @objc private func purchaseSelectedPackage() {
         guard let indexPath = offeringCollectionView.indexPathsForSelectedItems?.first else {
-            print("No package selected")
             return
         }
         
         guard let package = offering?.availablePackages[indexPath.row] else {
-            print("No available package")
             return
         }
         
@@ -876,6 +874,8 @@ fileprivate extension Purchases.Package {
         case .weekly:
             return self.product.price.doubleValue * 52
         case .lifetime, .custom, .unknown:
+            return 0.0
+        @unknown default:
             return 0.0
         }
     }

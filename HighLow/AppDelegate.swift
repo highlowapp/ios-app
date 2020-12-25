@@ -20,7 +20,7 @@ import Purchases
 import CoreHaptics
 
 var quotes: [Quote] = []
-var DEV_MODE: Bool = true
+var DEV_MODE: Bool = false
 
 var SUPPORTS_HAPTICS: Bool = false
 
@@ -143,36 +143,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             params["profileimage"] = profileimage?.absoluteString
         }
         
-        AF.request(getHostName() + "/auth/oauth/sign_in", method: .post, parameters: params, encoding: URLEncoding.httpBody, headers: nil).responseJSON { response in
-            
-            switch response.result {
-            case .success(let result):
-                let json = result as! NSDictionary
-                if (json["error"] as? String) != nil {
-                    alert("Something went wrong", "We were unable to sign you in")
-                } else {
-                    
-                    let access_token = json["access"] as! String
-                    let refresh_token = json["refresh"] as! String
-                    let uid = json["uid"] as! String
-                    
-                    let accessSaveSuccessful: Bool = KeychainWrapper.standard.set(access_token, forKey: "access")
-                    let refreshSaveSuccessful: Bool = KeychainWrapper.standard.set(refresh_token, forKey: "refresh")
-                    let uidSaveSuccessful: Bool = KeychainWrapper.standard.set(uid, forKey: "uid")
-                    
-                    guard accessSaveSuccessful && refreshSaveSuccessful && uidSaveSuccessful else {
-                        alert("Something went wrong", "Please try again")
-                        return
-                    }
-                    
-                    self.switchToMain()
-                    
-                }
-            case .failure(_):
-                return
-            }
-            
-        }
+        AuthService.shared.oauthSignIn(firstname: firstname, lastname: lastname, email: email, profileimage: profileimage?.absoluteString, provider_key: provider_key!, provider_name: provider_name, onSuccess: { json in
+            self.switchToMain()
+        }, onError: { error in
+            alert("Something went wrong", "We were unable to sign you in")
+        })
         
     } 
     
@@ -219,17 +194,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let mainViewController = TermsAndConditionsViewController()
-            
-            self.window?.rootViewController = mainViewController
-            self.window?.makeKeyAndVisible()
-            
-        } else
-        
-        if !hasPassedInterestsScreen {
-            
-            self.window = UIWindow(frame: UIScreen.main.bounds)
-            
-            let mainViewController = InterestsPitchViewController()
             
             self.window?.rootViewController = mainViewController
             self.window?.makeKeyAndVisible()
@@ -303,16 +267,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        //UserDefaults.standard.set(false, forKey: "com.gethighlow.hasReceivedTutorial")
         CrispSDK.configure(websiteID: "d8e451b1-53f6-4306-aef1-babe2e1b36e9")
         Purchases.debugLogsEnabled = true
         Purchases.configure(withAPIKey: getRevenueCatPublicKey())
         
         AuthService.shared.isLoggedIn(ifLoggedIn: { uid in
             Purchases.shared.identify(uid) { (purchaserInfo, error) in
-                if error != nil {
-                    printer(error, .error)
-                }
             }
         }, ifNotLoggedIn: {
             
@@ -328,15 +288,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         if #available(iOS 13.0, *) {
             let navBarApp = UINavigationBarAppearance()
             navBarApp.configureWithOpaqueBackground()
-            navBarApp.backgroundColor = .white
+            navBarApp.backgroundColor = getColor("TabBar")
             navBarApp.shadowColor = .clear
+            navBarApp.titleTextAttributes = [.foregroundColor: getColor("Black2White") ?? .white]
         
             UINavigationBar.appearance().standardAppearance = navBarApp
             UINavigationBar.appearance().scrollEdgeAppearance = navBarApp
             UINavigationBar.appearance().compactAppearance = navBarApp
             
         } else {
-            //UINavigationBar.appearance().backgroundColor = .white
+            UINavigationBar.appearance().backgroundColor = getColor("TabBar")
+            UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: getColor("BlackText") ?? .black]
         }
             
         reachability.whenUnreachable = notReachable
@@ -375,22 +337,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
         
         GIDSignIn.sharedInstance()?.delegate = self
         
-        if let access = KeychainWrapper.standard.string(forKey: "access") as? String {
+        if KeychainWrapper.standard.string(forKey: "access") != nil {
             if let notificationInfo = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? NSDictionary {
                 
                 switchToMain()
                 
-                if let highlowid = notificationInfo["highlowid"] as? String {
-                    NotificationCenter.default.post(name: NSNotification.Name("com.gethighlow.highlowidFromNotification"), object: nil, userInfo: ["highlowid": highlowid])
-                }
-                else if let uid = notificationInfo["uid"] as? String {
-                    let friendsVC = FriendsTableViewController()
-                    friendsVC.uid = uid
-                    let navCon = UINavigationController(rootViewController: friendsVC)
-                    navCon.navigationBar.barStyle = .black
-                    navCon.navigationBar.isTranslucent = false
-                    navCon.navigationBar.barTintColor = AppColors.primary
-                    window?.rootViewController?.present(navCon, animated: true, completion: nil)
+                if let uid = notificationInfo["uid"] as? String {
+                    NotificationCenter.default.post(name: NSNotification.Name("com.gethighlow.uidFromNotification"), object: nil, userInfo: ["uid": uid])
                 } else if notificationInfo["isBugReport"] != nil {
                     let bugReport = ReportBugViewController()
                     let navCon = UINavigationController(rootViewController: bugReport)
@@ -398,6 +351,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
                     navCon.navigationBar.isTranslucent = false
                     navCon.navigationBar.barTintColor = AppColors.primary
                     window?.rootViewController?.present(navCon, animated: true, completion: nil)
+                } else if let activityId = notificationInfo["activityId"] as? String {
+                    
                 }
             } else {
                 //Go to main screen
@@ -406,20 +361,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             
             
         } else {
-            let hasReceivedTutorial = UserDefaults.standard.bool(forKey: "com.gethighlow.hasReceivedTutorial")
-            if !hasReceivedTutorial {
-                self.window = UIWindow(frame: UIScreen.main.bounds)
-                
-                let storyboard = UIStoryboard(name: "Tutorials", bundle: nil)
-                let mainViewController = storyboard.instantiateViewController(withIdentifier: "InitialViewController") as! TutorialPageViewController
-                
-                self.window?.rootViewController = mainViewController
-                self.window?.makeKeyAndVisible()
-            }
-            else {
-                GIDSignIn.sharedInstance()?.restorePreviousSignIn()
-                
-            }
+            GIDSignIn.sharedInstance()?.restorePreviousSignIn()
         }
         
         
@@ -453,17 +395,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
 
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if let highlowid = userInfo["highlowid"] as? String {
-            NotificationCenter.default.post(name: NSNotification.Name("com.gethighlow.highlowidFromNotification"), object: nil, userInfo: ["highlowid": highlowid])
-        }
-        else if let uid = userInfo["uid"] as? String {
-            let friendsVC = FriendsTableViewController()
-            friendsVC.uid = uid
-            let navCon = UINavigationController(rootViewController: friendsVC)
-            navCon.navigationBar.barStyle = .black
-            navCon.navigationBar.isTranslucent = false
-            navCon.navigationBar.barTintColor = AppColors.primary
-            window?.rootViewController?.present(navCon, animated: true, completion: nil)
+        if let uid = userInfo["uid"] as? String {
+            NotificationCenter.default.post(name: NSNotification.Name("com.gethighlow.uidFromNotification"), object: nil, userInfo: ["uid": uid])
         } else if userInfo["isBugReport"] != nil {
             let bugReport = ReportBugViewController()
             let navCon = UINavigationController(rootViewController: bugReport)
@@ -471,6 +404,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, GIDSignInDelegate, Messag
             navCon.navigationBar.isTranslucent = false
             navCon.navigationBar.barTintColor = AppColors.primary
             window?.rootViewController?.present(navCon, animated: true, completion: nil)
+        } else if (userInfo["activityId"] as? String) != nil {
+            
         }
     }
 

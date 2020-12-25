@@ -20,6 +20,12 @@ class NewPendingRequestCollectionViewCell: CardCollectionViewCell {
     let profileImageView: HLRoundImageView = HLRoundImageView(frame: .zero)
     let nameLabel: UILabel = UILabel()
     
+    override func updateColors() {
+        super.updateColors()
+        
+        self.nameLabel.textColor = getColor("BlackText")
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -50,6 +56,8 @@ class NewPendingRequestCollectionViewCell: CardCollectionViewCell {
         reject.leadingToTrailing(accept, 10).eqTop(accept).width(100).height(35)
         
         self.contView.bottomAnchor.constraint(equalTo: accept.bottomAnchor, constant: 20).isActive = true
+        
+        updateColors()
     }
     
     @objc func acceptFriendship() {

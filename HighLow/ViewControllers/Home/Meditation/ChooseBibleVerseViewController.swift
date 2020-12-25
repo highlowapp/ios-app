@@ -20,6 +20,7 @@ class ChooseBibleVerseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
         
         self.view.backgroundColor = .white
         self.addSubviews([verseChooser, verseDisplay])

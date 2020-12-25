@@ -167,80 +167,31 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
     }
     
     func signIn(email: String, password: String) {
-        let parameters: [String: Any] = [
-            "email": email,
-            "password": password
-        ]
         
         //Show activity indicator
         SubmitButton.startLoading()
         
-        
-        AF.request(getHostName() + "/auth/sign_in", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
+        //Sign them in 
+        AuthService.shared.signIn(email: email, password: password, onSuccess: { json in
             
             //Hide activity indicator
             self.SubmitButton.stopLoading()
             
-            switch response.result {
-            case .success(let result):
-                let JSON = result as! NSDictionary
-                
-                let errorExists = JSON["error"] != nil
-                
-                //If there was an error
-                if errorExists {
-                    
-                    let error = JSON["error"] as! String
-                    
-                    switch(error) {
-                        case "incorrect-email-or-password":
-                            self.Error.text = "Your email or password is incorrect"
-                        
-                        
-                        case "user-no-exist":
-                            self.Error.text = "A user with that email does not exist"
-                    
-                        default:
-                            self.Error.text = "An error has occurred"
-                    }
-                    
-                }
-                
-                else {
-                    
-                    //Get the access and refresh tokens and store it in the keychain
-                    let access_token = JSON["access"] as! String
-                    let refresh_token = JSON["refresh"] as! String
-                    let uid = JSON["uid"] as! String
-                    
-                    let accessSaveSuccessful: Bool = KeychainWrapper.standard.set(access_token, forKey: "access")
-                    let refreshSaveSuccessful: Bool = KeychainWrapper.standard.set(refresh_token, forKey: "refresh")
-                    let uidSaveSuccessful: Bool = KeychainWrapper.standard.set(uid, forKey: "uid")
-                    
-                    guard accessSaveSuccessful == true && refreshSaveSuccessful && uidSaveSuccessful else {
-                        let popup = PopupDialog(title: "Error", message: "Something went wrong when signing you in. Please try again.")
-                        popup.addButton(
-                            CancelButton(title: "OK", action: nil)
-                        )
-                        
-                        self.present(popup, animated: true, completion: nil)
-                        
-                        return
-                    }
-                    
-                    
-                    
-                    //They're authenticated; go to the tabs screen
-                    self.switchToTabsScreen()
-                    
-                    
-                }
-            case .failure(_):
-                return
+            //They're authenticated
+            self.switchToTabsScreen()
+            
+        }, onError: { error in
+            self.SubmitButton.stopLoading()
+            switch(error) {
+            case "incorrect-email-or-password":
+                self.Error.text = "Your email or password is incorrect"
+            case "user-no-exist":
+                self.Error.text = "A user with that email does not exist"
+            default:
+                self.Error.text = "An error has occurred"
             }
-            
-            
-        }
+        })
+        
     }
     
     
@@ -268,6 +219,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
     override func updateViewColors() {
         self.view.backgroundColor = getColor("White2Black")
         Container.backgroundColor = getColor("White2Black")
+        self.scrollView.backgroundColor = getColor("White2Black")
     }
 
     override func viewDidLoad() {
@@ -308,6 +260,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate, ASAuthorizati
         //Assign textField delegates
         Email.textField.delegate = self
         Password.textField.delegate = self
+        
+        
+        Password.textField.textContentType = .password
+        Email.textField.textContentType = .username
         
         //Secure text entry for password
         Password.isPassword = true

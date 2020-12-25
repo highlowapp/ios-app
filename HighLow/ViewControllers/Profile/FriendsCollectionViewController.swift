@@ -36,13 +36,21 @@ class FriendsCollectionViewController: UIViewController, UICollectionViewDelegat
     
     let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
     
+    override func updateViewColors() {
+        self.collectionView.backgroundColor = getColor("Gray2Black")
+        
+        self.collectionView.visibleCells.forEach { cell in
+            cell.updateColors()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
         self.layout.headerReferenceSize = CGSize(width: self.view.frame.size.width, height: 20)
         //self.layout.sectionTitleMappings = self.sectionTitleMappings
         self.layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         self.collectionView.collectionViewLayout = self.layout
-        self.collectionView.backgroundColor = rgb(240, 240, 240)
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.register(NewPendingRequestCollectionViewCell.self, forCellWithReuseIdentifier: "PendingRequestCell")
@@ -53,6 +61,8 @@ class FriendsCollectionViewController: UIViewController, UICollectionViewDelegat
         
         self.view.addSubview(collectionView)
         collectionView.eqLeading(self.view).eqTrailing(self.view).eqTop(self.view).eqBottom(self.view)
+        
+        updateViewColors()
         
         getFriends()
     }
@@ -76,8 +86,6 @@ class FriendsCollectionViewController: UIViewController, UICollectionViewDelegat
                 self.headers[-1] = "Pending Requests"
                 self.headers[0] = "Friends"
             }
-            print("Friends: \(self.friends.count)")
-            print("Pending Requests: \(self.pendingRequests.count)")
             self.collectionView.reloadData()
         }, onError: { error in
             alert()
@@ -166,6 +174,10 @@ class FriendsCollectionViewController: UIViewController, UICollectionViewDelegat
             let user = self.friends[indexPath.row]
             self.delegate?.userSelected(user)
         }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        self.delegate?.scrollViewDidScroll(scrollView)
     }
 
 }
@@ -272,4 +284,5 @@ protocol LeftAlignedCollectionViewFlowLayoutDelegate: AnyObject {
 protocol FriendsCollectionViewControllerDelegate: AnyObject {
     func userSelected(_ user: UserResource)
     func manageFriends()
+    func scrollViewDidScroll(_ scrollView: UIScrollView)
 }

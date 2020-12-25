@@ -30,8 +30,8 @@
 		4314A99824DCC5B10094DB2D /* AudioStreamReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99724DCC5B10094DB2D /* AudioStreamReader.swift */; };
 		4314A99A24DDFE190094DB2D /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4314A99924DDFE190094DB2D /* AudioPlayer.swift */; };
 		4318C0B622E6334600E393C9 /* HighLowTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4318C0B522E6334600E393C9 /* HighLowTableViewCell.swift */; };
-		4320BE9C25434C1F00B93262 /* ReflectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4320BE9B25434C1F00B93262 /* ReflectListView.swift */; };
-		4320BEA025434CA200B93262 /* webview.html in Resources */ = {isa = PBXBuildFile; fileRef = 4320BE9F25434CA200B93262 /* webview.html */; };
+		4320BE9C25434C1F00B93262 /* ReflectProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4320BE9B25434C1F00B93262 /* ReflectProfileListView.swift */; };
+		4320BEA025434CA200B93262 /* profileview.html in Resources */ = {isa = PBXBuildFile; fileRef = 4320BE9F25434CA200B93262 /* profileview.html */; };
 		43244D922388BE0E00B7B551 /* Calendar.gif in Resources */ = {isa = PBXBuildFile; fileRef = 43244D912388BE0E00B7B551 /* Calendar.gif */; };
 		43287A4622DD48BF004A2F52 /* ShowAllCommentsViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43287A4522DD48BF004A2F52 /* ShowAllCommentsViewCell.swift */; };
 		4329E3A822E7C1B8004D0735 /* EditProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4329E3A722E7C1B8004D0735 /* EditProfileViewController.swift */; };
@@ -39,7 +39,10 @@
 		433A662924FF0715008AECCB /* SimpleCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */; };
 		433A662C2501EBCD008AECCB /* MeditationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433A662B2501EBCD008AECCB /* MeditationViewController.swift */; };
 		433F0FFC25815B0E008EE958 /* ManageFriendsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433F0FFB25815B0E008EE958 /* ManageFriendsCollectionViewCell.swift */; };
-		433F10002581899E008EE958 /* BibleAPI.plist in Resources */ = {isa = PBXBuildFile; fileRef = 433F0FFF2581899E008EE958 /* BibleAPI.plist */; };
+		433F100425818AE7008EE958 /* BibleAPI.plist in Resources */ = {isa = PBXBuildFile; fileRef = 433F100325818AE7008EE958 /* BibleAPI.plist */; };
+		433F100A25819197008EE958 /* ReflectFeedListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433F100925819197008EE958 /* ReflectFeedListView.swift */; };
+		433F100E258191D7008EE958 /* feedview.html in Resources */ = {isa = PBXBuildFile; fileRef = 433F100D258191D7008EE958 /* feedview.html */; };
+		433F10142581A4D0008EE958 /* Chart.bundle.min.js in Resources */ = {isa = PBXBuildFile; fileRef = 433F10132581A4D0008EE958 /* Chart.bundle.min.js */; };
 		4352FB3B231207FD0005F00E /* FriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */; };
 		4352FB3D231209300005F00E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3C231209300005F00E /* User.swift */; };
 		4352FB3F2314E7F60005F00E /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4352FB3E2314E7F50005F00E /* FriendTableViewCell.swift */; };
@@ -66,6 +69,8 @@
 		435996B42548E24600DE6CCB /* humanized_time_span.js in Resources */ = {isa = PBXBuildFile; fileRef = 435996B32548E24600DE6CCB /* humanized_time_span.js */; };
 		435C939723ABEBC200328EBC /* Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435C939623ABEBC100328EBC /* Constraints.swift */; };
 		435C93A023AC4CEC00328EBC /* ImageTutorialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 435C939F23AC4CEC00328EBC /* ImageTutorialViewController.swift */; };
+		4362D53A2588173B00D5DFA7 /* darkmodestyles.css in Resources */ = {isa = PBXBuildFile; fileRef = 4362D5392588173B00D5DFA7 /* darkmodestyles.css */; };
+		4362D53E2588405B00D5DFA7 /* UpdatingNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4362D53D2588405B00D5DFA7 /* UpdatingNavigationViewController.swift */; };
 		4363493324D8BB9E0055719F /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4363493224D8BB9E0055719F /* RecordButton.swift */; };
 		4363493524D8D0D50055719F /* PlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4363493424D8D0D50055719F /* PlayButton.swift */; };
 		4363493724D9BD010055719F /* ProgressLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4363493624D9BD010055719F /* ProgressLoaderView.swift */; };
@@ -91,6 +96,7 @@
 		436F9BD422B03CED0047D56F /* HighLowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436F9BD322B03CED0047D56F /* HighLowView.swift */; };
 		436F9BD622B045140047D56F /* HLSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436F9BD522B045140047D56F /* HLSectionView.swift */; };
 		43709F3A2304D68600882031 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43709F392304D68600882031 /* Comment.swift */; };
+		437367052587EA1400534B9E /* listviewstyles.css in Resources */ = {isa = PBXBuildFile; fileRef = 437367042587EA1400534B9E /* listviewstyles.css */; };
 		437C22A522D55A3100DB6997 /* HLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437C22A422D55A3100DB6997 /* HLImageView.swift */; };
 		437F54D12376FF560036DBC2 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437F54D02376FF560036DBC2 /* MessageTableViewCell.swift */; };
 		437F54D52379AEAD0036DBC2 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437F54D42379AEAC0036DBC2 /* Reachability.swift */; };
@@ -123,7 +129,7 @@
 		43A7637B24A2C9DF001429A0 /* ActivityChartCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A7637A24A2C9DF001429A0 /* ActivityChartCell.swift */; };
 		43A7637D24A449CF001429A0 /* CardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A7637C24A449CF001429A0 /* CardTableViewCell.swift */; };
 		43A7637F24A56F3A001429A0 /* AnnouncementTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A7637E24A56F3A001429A0 /* AnnouncementTableViewCell.swift */; };
-		43A8484C249E906A00C29952 /* NewFeedTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484B249E906A00C29952 /* NewFeedTableViewController.swift */; };
+		43A8484C249E906A00C29952 /* NewFeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484B249E906A00C29952 /* NewFeedViewController.swift */; };
 		43A8484E249EB30100C29952 /* CustomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484D249EB30100C29952 /* CustomTabBarController.swift */; };
 		43A84850249EB3E600C29952 /* TabItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A8484F249EB3E600C29952 /* TabItems.swift */; };
 		43A84855249EB50800C29952 /* NewDiaryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A84854249EB50800C29952 /* NewDiaryViewController.swift */; };
@@ -229,8 +235,8 @@
 		4314A99724DCC5B10094DB2D /* AudioStreamReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioStreamReader.swift; sourceTree = "<group>"; };
 		4314A99924DDFE190094DB2D /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		4318C0B522E6334600E393C9 /* HighLowTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighLowTableViewCell.swift; sourceTree = "<group>"; };
-		4320BE9B25434C1F00B93262 /* ReflectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectListView.swift; sourceTree = "<group>"; };
-		4320BE9F25434CA200B93262 /* webview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = webview.html; sourceTree = "<group>"; };
+		4320BE9B25434C1F00B93262 /* ReflectProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectProfileListView.swift; sourceTree = "<group>"; };
+		4320BE9F25434CA200B93262 /* profileview.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = profileview.html; sourceTree = "<group>"; };
 		43244D912388BE0E00B7B551 /* Calendar.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = Calendar.gif; sourceTree = "<group>"; };
 		43287A4522DD48BF004A2F52 /* ShowAllCommentsViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAllCommentsViewCell.swift; sourceTree = "<group>"; };
 		4329E3A722E7C1B8004D0735 /* EditProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewController.swift; sourceTree = "<group>"; };
@@ -238,7 +244,10 @@
 		433A662824FF0715008AECCB /* SimpleCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleCollectionViewCell.swift; sourceTree = "<group>"; };
 		433A662B2501EBCD008AECCB /* MeditationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeditationViewController.swift; sourceTree = "<group>"; };
 		433F0FFB25815B0E008EE958 /* ManageFriendsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageFriendsCollectionViewCell.swift; sourceTree = "<group>"; };
-		433F0FFF2581899E008EE958 /* BibleAPI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BibleAPI.plist; sourceTree = "<group>"; };
+		433F100325818AE7008EE958 /* BibleAPI.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = BibleAPI.plist; sourceTree = "<group>"; };
+		433F100925819197008EE958 /* ReflectFeedListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectFeedListView.swift; sourceTree = "<group>"; };
+		433F100D258191D7008EE958 /* feedview.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = feedview.html; sourceTree = "<group>"; };
+		433F10132581A4D0008EE958 /* Chart.bundle.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Chart.bundle.min.js; sourceTree = "<group>"; };
 		4340802C22CE304C009778ED /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		4352FB3A231207FD0005F00E /* FriendsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
 		4352FB3C231209300005F00E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -266,6 +275,8 @@
 		435996B32548E24600DE6CCB /* humanized_time_span.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = humanized_time_span.js; sourceTree = "<group>"; };
 		435C939623ABEBC100328EBC /* Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constraints.swift; sourceTree = "<group>"; };
 		435C939F23AC4CEC00328EBC /* ImageTutorialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTutorialViewController.swift; sourceTree = "<group>"; };
+		4362D5392588173B00D5DFA7 /* darkmodestyles.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = darkmodestyles.css; sourceTree = "<group>"; };
+		4362D53D2588405B00D5DFA7 /* UpdatingNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatingNavigationViewController.swift; sourceTree = "<group>"; };
 		4363493224D8BB9E0055719F /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
 		4363493424D8D0D50055719F /* PlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayButton.swift; sourceTree = "<group>"; };
 		4363493624D9BD010055719F /* ProgressLoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressLoaderView.swift; sourceTree = "<group>"; };
@@ -291,6 +302,7 @@
 		436F9BD322B03CED0047D56F /* HighLowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighLowView.swift; sourceTree = "<group>"; };
 		436F9BD522B045140047D56F /* HLSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLSectionView.swift; sourceTree = "<group>"; };
 		43709F392304D68600882031 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		437367042587EA1400534B9E /* listviewstyles.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = listviewstyles.css; sourceTree = "<group>"; };
 		437C22A422D55A3100DB6997 /* HLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HLImageView.swift; sourceTree = "<group>"; };
 		437F54CF23762B7E0036DBC2 /* definite.m4r */ = {isa = PBXFileReference; lastKnownFileType = file; path = definite.m4r; sourceTree = "<group>"; };
 		437F54D02376FF560036DBC2 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
@@ -323,7 +335,7 @@
 		43A7637A24A2C9DF001429A0 /* ActivityChartCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartCell.swift; sourceTree = "<group>"; };
 		43A7637C24A449CF001429A0 /* CardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTableViewCell.swift; sourceTree = "<group>"; };
 		43A7637E24A56F3A001429A0 /* AnnouncementTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementTableViewCell.swift; sourceTree = "<group>"; };
-		43A8484B249E906A00C29952 /* NewFeedTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFeedTableViewController.swift; sourceTree = "<group>"; };
+		43A8484B249E906A00C29952 /* NewFeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFeedViewController.swift; sourceTree = "<group>"; };
 		43A8484D249EB30100C29952 /* CustomTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarController.swift; sourceTree = "<group>"; };
 		43A8484F249EB3E600C29952 /* TabItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabItems.swift; sourceTree = "<group>"; };
 		43A84854249EB50800C29952 /* NewDiaryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDiaryViewController.swift; sourceTree = "<group>"; };
@@ -487,7 +499,7 @@
 				43A7637C24A449CF001429A0 /* CardTableViewCell.swift */,
 				43F6CB5D257C602400AEB2E3 /* CardCollectionViewCell.swift */,
 				4307AB5422B059290013044C /* EditHLViewController.swift */,
-				43A8484B249E906A00C29952 /* NewFeedTableViewController.swift */,
+				43A8484B249E906A00C29952 /* NewFeedViewController.swift */,
 				436F9BD122AF57F90047D56F /* HomeViewController.swift */,
 				43F688862333AE9800B35715 /* CalendarViewController.swift */,
 				430B6F5522DE91D500046897 /* EditCommentViewController.swift */,
@@ -532,6 +544,7 @@
 				43A8484F249EB3E600C29952 /* TabItems.swift */,
 				4358C93623DB465200363CBF /* ImageFullScreenViewController.swift */,
 				439B869923B0FB4F006FC018 /* InterestsPitchViewController.swift */,
+				4362D53D2588405B00D5DFA7 /* UpdatingNavigationViewController.swift */,
 				4393CEDC2435353E00219591 /* DarkModeViewController.swift */,
 				43A8484D249EB30100C29952 /* CustomTabBarController.swift */,
 				43A84859249EC9EF00C29952 /* CustomTabBar.swift */,
@@ -726,7 +739,7 @@
 				438D5697238043E000639E71 /* Gifs */,
 				437F54CF23762B7E0036DBC2 /* definite.m4r */,
 				43548C7C23CE6E0800151285 /* GoogleService-Info.plist */,
-				433F0FFF2581899E008EE958 /* BibleAPI.plist */,
+				433F100325818AE7008EE958 /* BibleAPI.plist */,
 			);
 			path = HighLow;
 			sourceTree = "<group>";
@@ -803,17 +816,22 @@
 				43F85DF124A7DC97002EBF8A /* MaterialIcons-Regular.ttf */,
 				43F85DE624A7C6CE002EBF8A /* Sortable.js */,
 				435356DE24ABE74B00BE20AD /* Autolinker.js */,
+				433F10132581A4D0008EE958 /* Chart.bundle.min.js */,
 				43F85DE924A7C735002EBF8A /* ReflectEditor.swift */,
 				435356E024ABFFC500BE20AD /* ReflectEditorViewController.swift */,
 				435356E624B5386200BE20AD /* ReflectViewer.swift */,
-				4320BE9B25434C1F00B93262 /* ReflectListView.swift */,
+				4320BE9B25434C1F00B93262 /* ReflectProfileListView.swift */,
+				433F100925819197008EE958 /* ReflectFeedListView.swift */,
 				435356E224AC015800BE20AD /* ReflectChooseImageViewController.swift */,
 				43F85DEF24A7DAEB002EBF8A /* Block.js */,
 				43F85DED24A7DAE4002EBF8A /* blockTemplates.js */,
 				43F85DF824A7F5FE002EBF8A /* BlockManager.js */,
 				43F85DEB24A7C7C8002EBF8A /* index.html */,
 				438AD2F0251C257A0067CE90 /* view.html */,
-				4320BE9F25434CA200B93262 /* webview.html */,
+				4320BE9F25434CA200B93262 /* profileview.html */,
+				437367042587EA1400534B9E /* listviewstyles.css */,
+				4362D5392588173B00D5DFA7 /* darkmodestyles.css */,
+				433F100D258191D7008EE958 /* feedview.html */,
 			);
 			path = Reflect;
 			sourceTree = "<group>";
@@ -925,7 +943,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1220;
 				ORGANIZATIONNAME = "Caleb Hester";
 				TargetAttributes = {
 					43AF93092235FBF5004B89BA = {
@@ -971,20 +989,24 @@
 			files = (
 				43F85DF924A7F5FE002EBF8A /* BlockManager.js in Resources */,
 				43F85DEC24A7C7C8002EBF8A /* index.html in Resources */,
+				433F10142581A4D0008EE958 /* Chart.bundle.min.js in Resources */,
 				43F85DE724A7C6CE002EBF8A /* Sortable.js in Resources */,
+				4362D53A2588173B00D5DFA7 /* darkmodestyles.css in Resources */,
 				438D569623803C2900639E71 /* definite.m4r in Resources */,
 				43D5B44722A1AC2B00AB1DBA /* Tabs.storyboard in Resources */,
 				4396A85B2502B2B400CA1498 /* End Chime 2.mp3 in Resources */,
 				43D3C63023B8281E008FF09E /* Tutorials.storyboard in Resources */,
 				43F85DF324A7E0B7002EBF8A /* Roboto in Resources */,
-				433F10002581899E008EE958 /* BibleAPI.plist in Resources */,
+				433F100425818AE7008EE958 /* BibleAPI.plist in Resources */,
+				433F100E258191D7008EE958 /* feedview.html in Resources */,
 				435356DF24ABE74C00BE20AD /* Autolinker.js in Resources */,
 				43244D922388BE0E00B7B551 /* Calendar.gif in Resources */,
-				4320BEA025434CA200B93262 /* webview.html in Resources */,
+				4320BEA025434CA200B93262 /* profileview.html in Resources */,
 				430860FF229986E700C4B10F /* Authentication.storyboard in Resources */,
 				438D569523803B7400639E71 /* HomeScreen.gif in Resources */,
 				43F85DF024A7DAEB002EBF8A /* Block.js in Resources */,
 				435996B42548E24600DE6CCB /* humanized_time_span.js in Resources */,
+				437367052587EA1400534B9E /* listviewstyles.css in Resources */,
 				438AD2F1251C257A0067CE90 /* view.html in Resources */,
 				4358C93923DCEE6B00363CBF /* quotes.json in Resources */,
 				43548C7D23CE6E0800151285 /* GoogleService-Info.plist in Resources */,
@@ -1197,8 +1219,9 @@
 				436F9BD422B03CED0047D56F /* HighLowView.swift in Sources */,
 				430861012299884500C4B10F /* GradientUIView.swift in Sources */,
 				4352FB3D231209300005F00E /* User.swift in Sources */,
-				4320BE9C25434C1F00B93262 /* ReflectListView.swift in Sources */,
+				4320BE9C25434C1F00B93262 /* ReflectProfileListView.swift in Sources */,
 				433A662924FF0715008AECCB /* SimpleCollectionViewCell.swift in Sources */,
+				433F100A25819197008EE958 /* ReflectFeedListView.swift in Sources */,
 				4352FB47231B030B0005F00E /* LikeFlagTableViewCell.swift in Sources */,
 				433A662C2501EBCD008AECCB /* MeditationViewController.swift in Sources */,
 				439BFB3622B556F8007341B6 /* HLLoaderView.swift in Sources */,
@@ -1260,7 +1283,7 @@
 				437C22A522D55A3100DB6997 /* HLImageView.swift in Sources */,
 				436C17F722D378E800C3D7A9 /* LikeView.swift in Sources */,
 				4329E3A822E7C1B8004D0735 /* EditProfileViewController.swift in Sources */,
-				43A8484C249E906A00C29952 /* NewFeedTableViewController.swift in Sources */,
+				43A8484C249E906A00C29952 /* NewFeedViewController.swift in Sources */,
 				43A958D522DA184000BCE75A /* HighLow.swift in Sources */,
 				436A0B91249D52FA007C7A2C /* Activity.swift in Sources */,
 				430B6F5C22E1320800046897 /* StreakView.swift in Sources */,
@@ -1294,6 +1317,7 @@
 				437F54D12376FF560036DBC2 /* MessageTableViewCell.swift in Sources */,
 				4358C93D23DCEF5800363CBF /* Quote.swift in Sources */,
 				437F54D52379AEAD0036DBC2 /* Reachability.swift in Sources */,
+				4362D53E2588405B00D5DFA7 /* UpdatingNavigationViewController.swift in Sources */,
 				43D2504F233AD50D00B6F9CA /* DateHeader.swift in Sources */,
 				4352FB41231883D00005F00E /* PendingFriendRequestTableViewCell.swift in Sources */,
 				4318C0B622E6334600E393C9 /* HighLowTableViewCell.swift in Sources */,
@@ -1377,6 +1401,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1438,6 +1463,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1474,7 +1500,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HighLow/HighLow.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 22;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 7X48M57387;
@@ -1500,7 +1526,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = HighLow/HighLow.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 22;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 7X48M57387;
 				INFOPLIST_FILE = HighLow/Info.plist;

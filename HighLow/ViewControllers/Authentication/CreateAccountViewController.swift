@@ -64,84 +64,17 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
         let password = Password.textField.text ?? ""
         let confirmPassword = ConfirmPassword.textField.text ?? ""
         
-        let parameters: [String: Any] = [
-            "firstname": firstName,
-            "lastname": lastName,
-            "email": email,
-            "password": password,
-            "confirmpassword": confirmPassword
-        ]
-        
         //Show activity indicator
         SubmitButton.startLoading()
         
-        
-        //Make the request
-        AF.request(getHostName() + "/auth/sign_up", method: .post, parameters: parameters, encoding: URLEncoding.httpBody, headers: nil).validate().responseJSON { response in
-            
-            //Hide the activity indicator
+        AuthService.shared.signUp(firstname: firstName, lastname: lastName, email: email, password: password, confirmPassword: confirmPassword, onSuccess: { json in
             self.SubmitButton.stopLoading()
             
-            switch response.result {
-            case .success(let result):
-                //Convert to JSON
-                let JSON = result as! NSDictionary
-                
-                //Check for errors
-                let errorExists = JSON["error"] != nil
-                
-                if errorExists {
-                    
-                    let error = JSON["error"] as! String
-                    
-                    //Display an error message
-                    self.Error.text  = self.errorMessages[error] as? String
-                    
-                }
-                
-                //Otherwise...
-                else {
-                    
-                    //Get the token and store in the keychain
-                    let access = JSON["access"] as! String
-                    let refresh = JSON["refresh"] as! String
-                    let uid = JSON["uid"] as! String
- 
-                    let accessSaveSuccessful: Bool = KeychainWrapper.standard.set(access, forKey: "access")
-                    let refreshSaveSuccessful: Bool = KeychainWrapper.standard.set(refresh, forKey: "refresh")
-                    let uidSaveSuccessful: Bool = KeychainWrapper.standard.set(uid, forKey: "uid")
-                    
-                    guard accessSaveSuccessful == true && refreshSaveSuccessful == true && uidSaveSuccessful == true else {
-                        
-                        //Display an alert
-                        let popup = PopupDialog(title: "Error", message: "Something went wrong when signing you in. Please try again.")
-                        popup.addButton(
-                            CancelButton(title: "OK", action: nil)
-                        )
-                        
-                        self.present(popup, animated: true, completion: nil)
-                        
-                        return
-                        
-                    }
-                    
-                    
-                    //If the token saving was successful, go to the tabs screen!
-                    switchToMain()
-                    
-                    
-                    
-                }
-            case .failure(_):
-                return
-                
-            }
-            
-            
-            
-        }
-        
-        
+            switchToMain()
+        }, onError: { error in
+            self.SubmitButton.stopLoading()
+            self.Error.text = self.errorMessages[error] as? String
+        })
         
     }
     
@@ -168,6 +101,18 @@ class CreateAccountViewController: UIViewController, UITextFieldDelegate {
         //Secure text entry
         Password.isPassword = true
         ConfirmPassword.isPassword = true
+        
+        if #available(iOS 12.0, *) {
+            Password.textField.textContentType = .newPassword
+            ConfirmPassword.textField.textContentType = .newPassword
+        } else {
+            Password.textField.textContentType = .password
+            ConfirmPassword.textField.textContentType = .password
+        }
+        
+        Email.textField.textContentType = .username
+        
+        
         
         SubmitButton.gradientOn = false
         

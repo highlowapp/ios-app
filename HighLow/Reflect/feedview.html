@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+        <link href='./listviewstyles.css' rel='stylesheet'>
+        <link href='./darkmodestyles.css' rel='stylesheet'>
+    
+        <script src='./Autolinker.js'></script>
+        <script src='./Block.js'></script>
+        <script src='./BlockManager.js'></script>
+        <script src='./humanized_time_span.js'></script>
+        <script src='./Chart.bundle.min.js'></script>
+        <script>
+            /*!
+            * Determine if an element is in the viewport
+            * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
+            * @param  {Node}    elem The element
+            * @return {Boolean}      Returns true if element is in the viewport
+            */
+            var isInViewport = function (elem) {
+                var distance = elem.getBoundingClientRect();
+                return (
+                    (distance.top >= 0 && distance.top <= (window.innerHeight || document.documentElement.clientHeight)) ||
+                    (distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) && distance.bottom >= 0) &&
+
+                    (distance.left >= 0 ||
+                    distance.right <= (window.innerWidth || document.documentElement.clientWidth) )
+                );
+            };
+        </script>
+        <script>
+
+            function postMessageToHost(name, payload) {
+                if (window.webkit && window.webkit.messageHandlers) {
+                    window.webkit.messageHandlers[name].postMessage(payload)
+                } else {
+                    /*Show premium screen on web version*/
+                }
+            }
+
+            function darkMode() {
+                document.body.classList.add('dark')
+                document.getElementsByTagName('html')[0].classList.add('dark')
+            }
+
+            function lightMode() {
+                document.body.classList.remove('dark')
+                document.getElementsByTagName('html')[0].classList.remove('dark')
+            }
+
+            function randomString(len, charSet) {
+                charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                var randomString = '';
+                for (var i = 0; i < len; i++) {
+                    var randomPoz = Math.floor(Math.random() * charSet.length);
+                    randomString += charSet.substring(randomPoz,randomPoz+1);
+                }
+                return randomString;
+            }
+
+            function musicPlayer(audioUrl, title, row) {
+                const audioId = randomString(24)
+                const player = document.createElement('div')
+                player.classList.add('audio-player')
+                player.innerHTML = `
+                    <h3>${title}</h3>
+                `
+                const button = document.createElement('button')
+                button.className = 'tap-to-listen'
+                button.innerHTML = "<i class='material-icons'>play_arrow</i>"
+                button.addEventListener('click', e => {
+                    postMessageToHost('activitySelected', row)
+                })
+                player.appendChild(button)
+                return player
+            }
+
+            function meditationDisplay(timeLength) {
+                return `<h1>${Math.round(timeLength/60) + ' min'}</h1>`
+            }
+
+            function addComment(user, comment, row) {
+
+            }
+
+            class User {
+        
+                constructor(data) {
+                    this.firstname = data['firstname']
+                    this.lastname = data['lastname']
+                    this.uid = data['uid']
+                    this.email = data['email']
+                    this.profileimage = data['profileimage']
+                    this.streak = data['streak']
+                    this.bio = data['bio']
+                }
+
+                fullName() {
+                    return this.firstname + ' ' + this.lastname
+                }
+
+                getProfileImage() {
+                    if (this.profileimage.startsWith('http')) {
+                        return this.profileimage
+                    }
+                    return 'https://storage.googleapis.com/highlowfiles/' + this.profileimage
+                }
+            }
+
+            class Activity {
+
+                constructor(data) {
+                    this.activityId = data['activity_id']
+                    this.uid = data['uid']
+                    this.type = data['type']
+                    this.title = data['title']
+                    this.timestamp = data['timestamp']
+                    this.data = data['data']
+                    this.date = data['date']
+                    this.flagged = data['flagged']
+                    this.comments = data['comments']
+                }
+
+                update(data) {
+                    this.activityId = data['activityId'] || this.activityId
+                    this.uid = data['uid'] || this.uid
+                    this.type = data['type'] || this.type
+                    this.title = data['title'] || this.title
+                    this.timestamp = data['timestamp'] || this.timestamp
+                    this.data = data['data'] || this.data
+                    this.date = data['date'] || this.date
+
+                    if (data['flagged'] != null && data['flagged'] != undefined) { this.flagged = data['flagged'] }
+                    this.comments = data['comments'] || this.comments
+                }
+
+                diff(data) {
+                    let keys = []
+
+                    if (data['activityId'] != this.activityId) { keys.push('activityId') }
+                    if (data['uid'] != this.activityId) { keys.push('uid') }
+                    if (data['type'] != this.type) { keys.push('type') }
+                    if (data['title'] != this.title) { keys.push('title') }
+                    if (data['timestamp'] != this.timestamp) { keys.push('timestamp') }
+                    for (let item in data['data']) {
+                        if (data['data'][item] !== this.data[item]) { keys.push('data'); break }
+                    }
+                    if (data['date'] != this.date) { keys.push('date') }
+                    if (data['flagged'] != this.flagged) { keys.push('flagged') }
+                    if (data['comments'].length != this.comments.length) { keys.push('comments') }
+                    else {
+                        for (let i = 0; i < data['comments'].length; i++) {
+                            for (let item in data['comments'][i]) {
+                                if (data['comments'][i][item] !== this.comments[i][item]) { keys.push('comments'); break }
+                            }
+                        }
+                    }
+
+                    return keys
+                }
+            }
+
+            class ActivityCard {
+                constructor(activity, user, row) {
+                    this.activity = activity
+                    this.el = document.createElement('div')
+                    this.el.classList.add('activity')
+                    this.row = row
+                    this.user = user
+
+                    this.userArea = document.createElement('div')
+
+                    let userAction = 'posted'
+
+                    switch(activity.type) {
+                        case 'diary':
+                            userAction = 'created a <b>diary entry</b>'
+                            break
+                        case 'highlow':
+                            userAction = 'created a <b>High/Low</b>'
+                            break
+                        case 'audio':
+                            userAction = 'created an <b>audio entry</b>'
+                            break
+                        case 'meditation':
+                            userAction = 'did a <b>meditation session</b>'
+                            break
+                    }
+
+                    const timestamp = activity.timestamp
+                    userAction += ' ' + humanized_time_span(timestamp) + ':'
+                    this.userArea.innerHTML = `
+                        <div class='user'><img src='${user.getProfileImage()}' class='profileimage'><span class='name-and-action'><b>${user.fullName()}</b> ${userAction}</span></div>
+                    `
+
+                    this.flagButton = document.createElement('div')
+                    this.flagButton.className = 'flag-button'
+                    this.flagButton.onclick = (e) => {
+                        e.preventDefault()
+                        postMessageToHost("flag", this.activity.activityId)
+                        return false
+                    }
+                    this.flagButton.style.color = this.activity.flagged ? '#FB2A57':'rgb(200, 200, 200)'
+                    this.flagButton.innerHTML = `<i class='material-icons'>${!this.activity.flagged ? 'outlined_flag':'flag'}</i><p>${this.activity.flagged ? 'Reported': 'Report'}</p>`;
+                    this.userArea.appendChild(this.flagButton)
+                    this.userArea.classList.add('user')
+                    this.el.appendChild(this.userArea)
+
+                    this.userArea.getElementsByClassName('user')[0].addEventListener('click', e => {
+                        postMessageToHost('userSelected', this.user.uid)
+                    })
+
+                    if (activity.type == 'diary' || activity.type == 'highlow') {
+                        this.blockArea = document.createElement('div')
+                        this.el.appendChild(this.blockArea)
+                        this.blockManager = new BlockManager(this.blockArea)
+                        this.blockManager.loadBlocks(activity.data['blocks'], true)
+                        this.blockArea.addEventListener('click', e => {
+                            postMessageToHost('activitySelected', this.row)
+                        })
+                    } else if (activity.type == 'audio') {
+                        this.audioVisualizer = musicPlayer(activity.data['audio_file'], activity.title, row)
+                        this.el.appendChild(this.audioVisualizer)
+                    } else if (activity.type == 'meditation') {
+                        this.meditationDisplay = document.createElement('div')
+                        this.meditationDisplay.classList.add('meditation')
+                        this.meditationDisplay.innerHTML = meditationDisplay(activity.data['length'])
+                        this.el.appendChild(this.meditationDisplay)
+                    }
+
+                    this.commentsArea = document.createElement('div')
+                    this.commentsArea.classList.add('comments')
+
+                    this.addComment = document.createElement('div')
+                    this.addComment.classList.add('add-comment')
+
+                    this.addComment.innerHTML = `
+                        <img src='${viewingUser.getProfileImage()}' class='profileimage'> 
+                    `
+
+                    this.addCommentInput = document.createElement('input')
+                    this.addCommentInput.classList.add('comment-textarea')
+                    this.addCommentInput.placeholder = 'Leave a comment'
+
+                    this.addComment.appendChild(this.addCommentInput)
+
+                    const addCommentButton = document.createElement('button')
+                    addCommentButton.innerHTML = 'Submit'
+                    addCommentButton.addEventListener('click', (e) => {
+                        let message = this.addCommentInput.value
+                        postMessageToHost('submitComment', {
+                            'message': message,
+                            'activityId': this.activity.activityId
+                        })
+
+                        this.addCommentInput.value = ''
+                    })
+
+                    this.addComment.appendChild(addCommentButton)
+
+
+                    this.el.appendChild(this.commentsArea)
+
+                    this.reloadComments()
+                }
+
+                reloadComments() {
+                    this.commentsArea.innerHTML = ''
+
+                    for (let i = 0; i < this.activity.comments.length; i++) {
+                        const commentCard = new CommentCard(this.activity.comments[i])
+                        this.commentsArea.appendChild(commentCard.getElement())
+                    }
+
+                    this.commentsArea.appendChild(this.addComment)
+                }
+
+                getElement() {
+                    return this.el
+                }
+
+                update(data) {
+                    let diff = this.activity.diff(data)
+                    this.activity.update(data)
+                    for (let key in diff) {
+                        this.updateKey(diff[key])
+                    }
+                }
+
+                updateKey(key) {
+                    switch (key) {
+                        case 'comments':
+                            this.reloadComments()
+                            break
+                        case 'data':
+                            if (this.activity.type == "highlow" || this.activity.type == "diary") {
+                                this.blockManager.loadBlocks(this.activity.data['blocks'], true)
+                            } else if (this.activity.type == "meditation") {
+                                this.meditationDisplay.innerHTML = meditationDisplay(this.activity.data['length'])
+                            }
+                            break
+                        case 'flagged':
+                        this.flagButton.style.color = this.activity.flagged ? '#FB2A57':'rgb(200, 200, 200)'
+                            this.flagButton.innerHTML = `<i class='material-icons'>${!this.activity.flagged ? 'outlined_flag':'flag'}</i><p>${this.activity.flagged ? 'Reported': 'Report'}</p>`
+                            break
+                        default:
+                            break
+                    }
+                }
+            }
+
+            class Announcement {
+                constructor(data) {
+                    this.message = data['message']
+                    this.severity = data['severity']
+                    this.link = data['link']
+                }
+            }
+
+            class ActivityChartCard {
+                constructor(data) {
+                    this.chartData = []
+                    this.labels = []
+
+                    for (let i = 0; i < data['chart'].length; i++) {
+                        this.chartData.push(data['chart'][i]['activities'])
+                        this.labels.push(data['chart'][i]['date'])
+                    }
+
+                    this.el = document.createElement('div')
+                    this.el.classList.add('activity-chart')
+                    const content = `
+                        <h2>Your Activity</h2>
+                    `
+                    this.el.innerHTML = content
+
+                    this.canvas = document.createElement('canvas')
+                    this.canvas.classList.add('chart')
+                    this.el.appendChild(this.canvas)
+                    this.ctx = this.canvas.getContext('2d')
+                    this.canvas.height = 100
+
+                    console.log(this.chartData)
+
+                    this.chart = new Chart(this.ctx, {
+                        type: 'line',
+                        data: {
+                            labels: this.labels,
+                            datasets: [
+                                {
+                                    label: 'Activities',
+                                    backgroundColor: 'rgba(69, 246, 76, 0.3)',
+                                    borderColor: 'rgb(69, 246, 76)',
+                                    data: this.chartData,
+                                    pointRadius: 0
+                                }
+                            ]
+                        }, 
+                        options: {
+                            legend: {
+                                display: false 
+                            },
+                            scales: {
+                                xAxes: [{
+                                    display: false
+                                }],
+                                yAxes: [{
+                                    display: false,
+                                    ticks: {
+                                        suggestedMin: 0
+                                    }
+                                }]
+                            }
+                        }
+                    })
+                }
+
+                getElement() {
+                    return this.el
+                }
+            }
+
+            class AnnouncementCard {
+
+                constructor(announcementData) {
+                    this.severityToColor = ['green', 'orange', 'red']
+                    this.announcement = new Announcement(announcementData)
+
+                    this.el = document.createElement('div')
+                    this.el.classList.add('announcement')
+                    this.el.style.background = this.severityToColor[this.announcement.severity]
+                    const content = `
+                        <a href='${this.announcement.link}'><span>${this.announcement.message}</span><i class='material-icons'>navigate_next</i></a>
+                    `
+                    this.el.innerHTML = content
+                }
+
+                getElement() {
+                    return this.el
+                }
+            }
+
+            class Comment {
+                constructor(commentData) {
+                    this.uid = commentData['uid']
+                    this.commentId = commentData['commentid']
+                    this.timestamp = commentData['_timestamp']
+                    this.message = commentData['message']
+                }
+
+                asJson() {
+                    return {
+                        uid: this.uid,
+                        commentid: this.commentId,
+                        _timestamp: this.timestamp,
+                        message: this.message
+                    }
+                }
+            }
+
+            class CommentCard {
+                constructor(commentData) {
+                    this.user = new User(commentData)
+                    this.comment = new Comment(commentData)
+
+                    this.el = document.createElement('div')
+                    this.el.classList.add('comment')
+                    const content = `
+                    <img src='${this.user.getProfileImage()}' class='profileimage'><span class='comment-content'><p><strong>${this.user.fullName()}</strong> ${humanized_time_span(this.comment.timestamp)}:</p><p class='comment-message'>${this.comment.message}</p></span>
+                    `
+                    this.el.innerHTML = content
+                    if (this.user.uid == viewingUser.uid) {
+                        const moreOptions = document.createElement('i')
+                        moreOptions.className = 'material-icons'
+                        moreOptions.classList.add('comment-more-button')
+                        moreOptions.onclick = (e) => {
+                            postMessageToHost('moreOptions', this.comment.asJson())
+                        }
+                        moreOptions.innerHTML = 'more_vert'
+                        this.el.appendChild(moreOptions)
+                    }
+                }
+
+                getElement() {
+                    return this.el
+                }
+            }
+        </script>
+        
+    </head>
+    <body>
+        <div id='list'>
+            
+        </div>
+
+        <div class='end-message'>
+            You've reached the end 🎉
+        </div>
+
+        <script>
+            let feedItems = []
+            let feedItemsList = document.getElementById('list')
+            let globalUser = undefined
+            let viewingUser = undefined
+
+            function setViewingUser(userData) {
+                viewingUser = new User(userData)
+            }
+
+
+            function setFeedData(feedJson, reset = false) {
+                if (reset) {
+                    feedItems = []
+                    feedItemsList.innerHTML = ''
+                }
+                const len = feedItems.length
+                for (let i = 0; i < feedJson.length; i++) {
+                    const feedItem = feedJson[i]
+                    if (feedItem['type'] == 'activity') {
+                        const activity = new ActivityCard( new Activity(feedItem['activity']), new User(feedItem['user']), reset ? i:i + len )
+                        feedItems.push(activity)
+                    } else if (feedItem['type'] == 'announcement') {
+                        const announcement = new AnnouncementCard(feedItem)
+                        feedItems.push(announcement)
+                    } else if (feedItem['type'] == 'activity_chart') {
+                        const activityChart = new ActivityChartCard(feedItem)
+                        feedItems.push(activityChart)
+                    }
+                }
+
+                loadFeedItems()
+            }
+
+            function loadFeedItems() {
+
+                //For every feed item...
+                for (let i = 0; i < feedItems.length; i++) {
+                    
+                    //Add it to the list 
+                    feedItemsList.appendChild( feedItems[i].getElement() )
+
+                }
+
+                //Finish loading
+                finishedLoadingContent()
+
+            }
+
+            function updateActivity(activityData) {
+
+                //Get the activityId
+                const activityId = activityData['activity_id']
+
+                //Start the row at 0
+                let row = 0
+                
+                //Go through all the feed items
+                for (let i = 0; i < feedItems.length; i++) {
+
+                    //Get the current item
+                    const feedItem = feedItems[i]
+
+                    //If the feedItem has the type "activity"...
+                    if (feedItem instanceof ActivityCard) {
+
+                        //Get the activity
+                        const activity = feedItem.activity
+
+                        //If the activity has the correct activityId...
+                        if (activity.activityId == activityId) {
+
+                            //Update the activity
+                            feedItem.update(activityData)
+
+                            //Stop the loop
+                            break
+                        }
+                    }
+                }
+            }
+
+            let isLoadingNewContent = false
+
+            window.addEventListener('scroll', (event) => {
+
+                //Get all the feed items
+                const allFeedItems = feedItemsList.children
+
+                //Get the last feed item
+                const lastElement = allFeedItems[ allFeedItems.length - 1 ]
+
+                //If we're not loading new content, and the last element is in the viewport...
+                if ( !isLoadingNewContent && isInViewport(lastElement) ) {
+
+                    //We are loading new content
+                    isLoadingNewContent = true
+
+                    //Tell the host to load the next page
+                    postMessageToHost('loadNextPage', 0)
+                }
+            })
+
+            function finishedLoadingContent() {
+                //Stop loading new content
+                isLoadingNewContent = false
+            }
+        </script>
+    </body>
+</html>

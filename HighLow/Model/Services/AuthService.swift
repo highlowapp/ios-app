@@ -9,6 +9,7 @@
 import Foundation
 import SwiftKeychainWrapper
 import GoogleSignIn
+import FirebaseAnalytics
 
 class AuthService {
     static let shared = AuthService()
@@ -41,7 +42,9 @@ class AuthService {
         APIService.shared.makeRequest("/auth/sign_in", method: .post, params: params, onSuccess: { json in
             APIService.shared.authenticate(access: json.value(forKey: "access") as? String, refresh: json.value(forKey: "refresh") as? String, uid: json.value(forKey: "uid") as? String)
             self.uid = json.value(forKey: "uid") as? String
-            
+            Analytics.logEvent(AnalyticsEventLogin, parameters: [
+                AnalyticsParameterMethod: "email"
+            ])
             onSuccess(json)
         }, onError: onError)
     }
@@ -58,7 +61,7 @@ class AuthService {
         APIService.shared.makeRequest("/auth/sign_up", method: .post, params: params, onSuccess: { json in
             APIService.shared.authenticate(access: json.value(forKey: "access") as? String, refresh: json.value(forKey: "refresh") as? String, uid: json.value(forKey: "uid") as? String)
             self.uid = json.value(forKey: "uid") as? String
-            
+            Analytics.logEvent(AnalyticsEventSignUp, parameters: nil)
             onSuccess(json)
         }, onError: onError)
     }
@@ -95,7 +98,9 @@ class AuthService {
         APIService.shared.makeRequest("/auth/oauth/sign_in", method: .post, params: params, onSuccess: { json in
             APIService.shared.authenticate(access: json.value(forKey: "access") as? String, refresh: json.value(forKey: "refresh") as? String, uid: json.value(forKey: "uid") as? String)
             self.uid = json.value(forKey: "uid") as? String
-            
+            Analytics.logEvent(AnalyticsEventLogin, parameters: [
+                AnalyticsParameterMethod: provider_name
+            ])
             onSuccess(json)
         }, onError: onError)
     }

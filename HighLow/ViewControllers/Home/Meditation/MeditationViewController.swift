@@ -27,6 +27,7 @@ class MeditationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
         
         let gradient = GradientUIView()
         gradient.startColor = AppColors.primary.withAlphaComponent(0.39)

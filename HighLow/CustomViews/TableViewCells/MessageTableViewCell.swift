@@ -52,3 +52,32 @@ class MessageTableViewCell: UITableViewCell {
     }
 
 }
+
+
+class MessageCollectionViewCell: UICollectionViewCell {
+    
+    var message: String = "Your High/Lows will show up here"
+    
+    let messageLabel: UILabel = UILabel()
+    
+    func setMessage(_ msg: String) {
+        self.message = msg
+        messageLabel.text = msg
+    }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        messageLabel.text = message
+        messageLabel.textColor = .gray
+        messageLabel.textAlignment = .center
+        messageLabel.numberOfLines = 0
+            
+        self.contentView.addSubview(messageLabel)
+        
+        messageLabel.centerX(contentView).eqTop(contentView, 20).eqWidth(contentView, 0.0, 0.9)
+        
+        contentView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor).isActive = true
+    }
+
+}

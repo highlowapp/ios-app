@@ -33,12 +33,12 @@ function humanized_time_span(date, ref_date, date_formats, time_units) {
         { ceiling: null, text: "$years years ago" }      
       ],
       future: [
-        { ceiling: 60, text: "in $seconds seconds" },
-        { ceiling: 3600, text: "in $minutes minutes" },
-        { ceiling: 86400, text: "in $hours hours" },
-        { ceiling: 2629744, text: "in $days days" },
-        { ceiling: 31556926, text: "in $months months" },
-        { ceiling: null, text: "in $years years" }
+        { ceiling: 60, text: "just now" },
+        { ceiling: 3600, text: "just now" },
+        { ceiling: 86400, text: "just now" },
+        { ceiling: 2629744, text: "just now" },
+        { ceiling: 31556926, text: "just now" },
+        { ceiling: null, text: "just now" }
       ]
     };
     //Time units must be be ordered largest -> smallest

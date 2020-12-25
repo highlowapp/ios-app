@@ -341,12 +341,7 @@ class AudioStreamer: AudioStreamDownloadManagerDelegate, AudioPlayer {
         
         playerNode.stop()
         
-        do {
-            try audioReader.seek(packetOffset)
-        } catch {
-            printer("Seek Failed", .error)
-            return
-        }
+        audioReader.seek(packetOffset)
         
         if isPlaying {
             playerNode.play()

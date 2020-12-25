@@ -15,11 +15,7 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
         [AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
          AddOption(image: "HighLowSmallIcon", title: "High/Low", action: #selector(createHighLow)),
          AddOption(image: "AudioDiarySmallIcon", title: "Audio Diary", action: #selector(createAudioEntry)),
-         AddOption(image: "Meditation", title: "Meditation", action: #selector(startMeditationSession))],
-        [AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
-         AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
-         AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry)),
-         AddOption(image: "DiaryThumbnail", title: "Diary Entry", action: #selector(createDiaryEntry))]
+         AddOption(image: "Meditation", title: "Meditation", action: #selector(startMeditationSession))]
     ]
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -53,9 +49,14 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
     
     
     let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
+    
+    override func updateViewColors() {
+        collectionView.backgroundColor = getColor("White2Gray")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
 
         self.view = PopupView()
         
@@ -74,6 +75,8 @@ class AddingOptionsViewController: UIViewController, UICollectionViewDelegate, U
         collectionView.register(AddOptionCell.self, forCellWithReuseIdentifier: "AddOption")
         
         collectionView.isPagingEnabled = true
+        
+        updateViewColors()
     }
     
     @objc func createDiaryEntry() {
@@ -198,7 +201,7 @@ class PopupView: UIView {
     private func addShape() {
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = createPath()
-        shapeLayer.fillColor = UIColor.white.cgColor
+        shapeLayer.fillColor = getColor("White2Gray")?.cgColor
         shapeLayer.lineWidth = 1.0
         
         if let oldShapeLayer = self.shapeLayer {

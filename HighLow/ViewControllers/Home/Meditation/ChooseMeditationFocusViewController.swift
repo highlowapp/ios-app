@@ -19,6 +19,7 @@ class ChooseMeditationFocusViewController: UIViewController, UITableViewDelegate
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        handleDarkMode()
         
         let navigationBar = UINavigationBar()
         

@@ -14,7 +14,7 @@ class SharingPolicyViewController: UIViewController, UICollectionViewDelegate, U
         SharingPolicyOption(image: UIImage(named: "Lock")!, title: "Private", policyDescription: "Only you can see your entry", categoryTitle: "none"),
         SharingPolicyOption(image: UIImage(named: "Globe")!, title: "Public", policyDescription: "Anyone can view your entry", categoryTitle: "all"),
         SharingPolicyOption(image: UIImage(named: "FriendsGroup")!, title: "Friends", policyDescription: "You and your friends can see your entry", categoryTitle: "friends"),
-        SharingPolicyOption(image: UIImage(named: "SupportGroup")!, title: "Support Group", policyDescription: "Members of your Support Group can see your entry", categoryTitle: "supportGroup"),
+       /* SharingPolicyOption(image: UIImage(named: "SupportGroup")!, title: "Support Group", policyDescription: "Members of your Support Group can see your entry", categoryTitle: "supportGroup"),*/
         SharingPolicyOption(image: UIImage(named: "ChooseIndividually")!, title: "Choose", policyDescription: "The people you choose can see your entry", categoryTitle: "uids")
     ]
     
@@ -35,28 +35,42 @@ class SharingPolicyViewController: UIViewController, UICollectionViewDelegate, U
     let collectionView: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     let descriptor: UILabel = UILabel()
     let save: HLButton = HLButton()
+    let _title = UILabel()
+    let separator = UIView()
+    let saveArea = UIView()
+    
+    override func updateViewColors() {
+        view.backgroundColor = getColor("White2Black")
+        _title.textColor = getColor("BlackText")
+        separator.backgroundColor = getColor("Separator")
+        saveArea.backgroundColor = getColor("White2Black")
+        collectionView.backgroundColor = getColor("White2Black")
+        
+        collectionView.visibleCells.forEach { cell in
+            cell.updateColors()
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
-        
+        handleDarkMode()
+                
         let cancel = UIButton()
         cancel.setTitle("Cancel", for: .normal)
         cancel.setTitleColor(AppColors.primary, for: .normal)
         cancel.addTarget(self, action: #selector(close), for: .touchUpInside)
         
-        let title = UILabel()
-        title.text = "Who sees your content?"
-        title.font = .preferredFont(forTextStyle: .title1)
-        title.textAlignment = .center
-        title.numberOfLines = 0
+        
+        _title.text = "Who sees your content?"
+        _title.font = .preferredFont(forTextStyle: .title1)
+        _title.textAlignment = .center
+        _title.numberOfLines = 0
         
         
-        let separator = UIView()
+        
         separator.backgroundColor = rgb(240, 240, 240)
         
-        let saveArea = UIView()
+        
         saveArea.backgroundColor = .white
         /*
         saveArea.layer.shadowRadius = 5
@@ -88,8 +102,8 @@ class SharingPolicyViewController: UIViewController, UICollectionViewDelegate, U
         view.addSubview(cancel)
         cancel.eqTop(view, 10).eqTrailing(view, -20)
         
-        view.addSubview(title)
-        title.topToBottom(cancel, 20).eqWidth(view, 0, 0.8).centerX(view)
+        view.addSubview(_title)
+        _title.topToBottom(cancel, 20).eqWidth(view, 0, 0.8).centerX(view)
 
         view.addSubview(collectionView)
         
@@ -112,7 +126,10 @@ class SharingPolicyViewController: UIViewController, UICollectionViewDelegate, U
         separator.bottomToTop(saveArea).eqLeading(view).eqTrailing(view).height(1)
         
         
-        collectionView.topToBottom(title, 10).bottomToTop(separator).eqLeading(view).eqTrailing(view)
+        collectionView.topToBottom(_title, 10).bottomToTop(separator).eqLeading(view).eqTrailing(view)
+        
+        
+        updateViewColors()
         
         activity?.getSharingPolicy(onSuccess: { sharingPolicy in
             guard let sharedWith = sharingPolicy["sharing_policy"] as? String else {
